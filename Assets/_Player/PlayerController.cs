@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 
-public class PlayerController : MonoBehaviour {
+public class PlayerController : MonoBehaviour
+{
 
     GameManager gm;
     Rigidbody2D rb;
@@ -13,16 +14,18 @@ public class PlayerController : MonoBehaviour {
     GameObject bulletFired;
 
     // Use this for initialization
-    void Awake () {
+    void Awake()
+    {
         gm = GameManager.instance;
         rb = this.GetComponent<Rigidbody2D>();
         trail = this.GetComponent<TrailRenderer>();
     }
-	
-	// Update is called once per frame
-	void Update () {
+
+    // Update is called once per frame
+    void Update()
+    {
         if (gm.gamestarted == false)
-            this.transform.Rotate(Vector3.forward, 50*Time.deltaTime);
+            this.transform.Rotate(Vector3.forward, 50 * Time.deltaTime);
 
         Controls();
     }
@@ -30,7 +33,7 @@ public class PlayerController : MonoBehaviour {
     // Controls for the player
     void Controls()
     {
-#if UNITY_EDITOR || UNITY_STANDALONE
+#if UNITY_ANDROID
         //Get shot's direction
         Vector2 direction = Camera.main.ScreenToWorldPoint(Input.mousePosition) - this.transform.position;
         direction.Normalize();
@@ -62,7 +65,7 @@ public class PlayerController : MonoBehaviour {
                     rb.AddTorque(-rb.angularVelocity + 50 * -1);
                 }
 
-                else if(Vector2.Angle(Vector2.up, direction) <= 170 && Vector2.Angle(Vector2.up, direction) > 165)
+                else if (Vector2.Angle(Vector2.up, direction) <= 170 && Vector2.Angle(Vector2.up, direction) > 165)
                     rb.AddTorque(-rb.angularVelocity + 250 * -1);
                 else if (Vector2.Angle(Vector2.up, direction) < 165)
                     rb.AddTorque(-rb.angularVelocity + 500 * -1);
@@ -71,20 +74,6 @@ public class PlayerController : MonoBehaviour {
                 Camera.main.transform.DOShakePosition(0.5f, 0.2f, 20, 90);
             }
         }
-             
-#endif
-
-#if UNITY_ANDROID
-        for (int i = 0; i < Input.touchCount; ++i)
-        {
-            if (Input.GetTouch(i).phase == TouchPhase.Began)
-            {
-                RaycastHit hit;
-                if (Physics.Raycast(Camera.main.ScreenToWorldPoint(Input.GetTouch(i).position), Camera.main.transform.TransformDirection(Vector3.forward) * 10000, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("ThrowCollider")) && hit.collider.tag == "player" && canthrow == true && objectif.packageThrown == false)
-                {
-                    
-                }
-        }
-#endif
     }
-}
+#endif
+}   
