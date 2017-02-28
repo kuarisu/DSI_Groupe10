@@ -9,3 +9,8 @@ RULES (so we don't have any issue when merging):
 - One scene per personne.
 
 (- Be careful with the modifications you make on a prefab)
+
+SET UP :
+- File -> Build setting -> Android -> Open current scene -> Build (you can delete this build after)
+- Edit -> Project Setting -> Editor -> Device -> any anhdroid Device
+- Ratio -> 16:10 Portrait
