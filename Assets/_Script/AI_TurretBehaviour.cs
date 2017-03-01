@@ -28,7 +28,7 @@ public class AI_TurretBehaviour : MonoBehaviour {
 	void Update () {
 		if ( Vector3.Distance (transform.position, targetedPlayer.transform.position) < minimumActivationLength) {
 
-			if (targetPlayer == true){
+			if (targetPlayer == true){ 
 				transform.LookAt (targetedPlayer.transform.position);
 			}
 

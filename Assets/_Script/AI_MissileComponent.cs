@@ -17,12 +17,12 @@ public class AI_MissileComponent : MonoBehaviour {
 		//transform.position = new Vector3 (transform.position.x, transform.position.y, 0.0f);
 	}
 
-	void OnCollisionEnter2D (Collision2D other){
+	/*void OnCollisionEnter2D (Collision2D other){
 		if (other.gameObject.name == "Player"){
 			Debug.Log ("cc");
 			Destroy (this.gameObject);
 		}
 
 		Debug.Log ("slt");
-	}
+	}*/
 }
