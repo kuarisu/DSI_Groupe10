@@ -124,7 +124,7 @@ public class EnemyController : MonoBehaviour {
             MoveRight();
         }
         
-        if (transform.position.x < boundary.xMin)
+        if (transform.position.x <= boundary.xMin)
         {
             shouldMoveLeft = false;
         }
