@@ -81,12 +81,12 @@ public class UIManager : MonoBehaviour {
 
     void LeaveUp()
     {
-        title.transform.DOMoveY(700, 1f).SetEase(Ease.InBack);
+        title.transform.DOMoveY(Screen.height + 150, 1f).SetEase(Ease.InBack);
     }
 
     void LeaveDown()
     {
-        startText.transform.DOMoveY(-100, 1f).SetEase(Ease.InBack);
+        startText.transform.DOMoveY(0 - 150, 1f).SetEase(Ease.InBack);
     }
 
 }

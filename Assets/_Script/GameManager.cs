@@ -19,8 +19,8 @@ public class GameManager : MonoBehaviour {
             instance.loaded = true;
             Destroy(gameObject);
         }
-
         gamestarted = false;
+        Screen.orientation = ScreenOrientation.Portrait;
     }
 
     // Update is called once per frame
