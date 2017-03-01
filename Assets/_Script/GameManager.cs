@@ -7,6 +7,7 @@ public class GameManager : MonoBehaviour {
     public static GameManager instance;
     public bool loaded;
     public bool gamestarted;
+    public float chunkSize;
 
     void Awake()
     {
@@ -20,7 +21,11 @@ public class GameManager : MonoBehaviour {
             Destroy(gameObject);
         }
         gamestarted = false;
+
         Screen.orientation = ScreenOrientation.Portrait;
+
+        //Set camera size depending on aspect ratio
+        Camera.main.orthographicSize = ((Screen.height * chunkSize) / Screen.width) / 2;
     }
 
     // Update is called once per frame
