@@ -190,7 +190,6 @@ public class EnemyController : MonoBehaviour {
         float distance = offset.magnitude;
 
         rb.position = Vector2.Lerp(rb.position, endPoint, distance / speedZ * Time.deltaTime / 10);
-        Debug.Log("distance =  " + distance);
     }
 
     void clampEnemeyToBoundry()          

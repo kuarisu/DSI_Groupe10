@@ -36,7 +36,8 @@ public class AI_BonusOnHitComponent : MonoBehaviour {
 		
 	}
 
-	void OnCollisionEntre2D (Collision2D other){
+    void OnTriggerEnter2D(Collider2D other)
+    {
 		if (other.gameObject.name == "Player"){
 			if (moreMaxAmmo == true){
 				Debug.Log ("Here we can define how many max ammo the player will have after getting this bonus");
@@ -58,7 +59,7 @@ public class AI_BonusOnHitComponent : MonoBehaviour {
 
 		}
 
-		if (other.gameObject.name == "PlayerBullet"){
+		if (other.gameObject.name == "Bullet"){
 			if ( destroyable == true){
 				howManyHP = howManyHP - 1;
 				if (howManyHP == 0) {
