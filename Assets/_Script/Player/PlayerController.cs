@@ -6,8 +6,11 @@ using DG.Tweening;
 
 public class PlayerController : MonoBehaviour
 {
-
+    [SerializeField]
     GameManager gm;
+
+
+
     Rigidbody2D rb;
     TrailRenderer trail;
 
@@ -58,6 +61,7 @@ public class PlayerController : MonoBehaviour
     void Awake()
     {
         gm = GameManager.instance;
+        Debug.Log(gm.transform.name);
         rb = this.GetComponent<Rigidbody2D>();
         trail = this.GetComponent<TrailRenderer>();
         targetPosition = new Vector2(mainCam.transform.position.x, mainCam.transform.position.y + startOffset);
@@ -88,7 +92,6 @@ public class PlayerController : MonoBehaviour
         {
             Vector2 direction = Camera.main.ScreenToWorldPoint(Input.mousePosition) - this.transform.position;
             direction.Normalize();
-
             if (gm.gamestarted == false)
             {
                 gm.gamestarted = true;
