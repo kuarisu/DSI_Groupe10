@@ -3,37 +3,50 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class Boundary                         // use to limit the movement of the target
+public class Boundary                         // use to limit the movement of the enemy
 {
-    public float xMin, xMax;
+    public float xMin, xMax, yMin, yMax;
 }
 
 public class EnemyController : MonoBehaviour {
+    
     public float speedVertical;
     public float speedHorizontal;
     public Boundary boundary;
     [Tooltip("Decide a relative position you want to move to when trigger movePointToPoint function")]
     public Vector2 relativeOffset;                    //it's a relative vector which equals (Endpoint - StartPoint)
+
+    [Tooltip("back to the original point, but remenber to check out when after used")]
+    public bool backToOrigin;
     public bool chooseRandomAction;
     
     public bool moveUp;
     public bool moveDown;
     public bool moveLeft;
     public bool moveRight;
+    public bool moveToPlayer;
     public bool movePointToPoint;
+   
 
     [Header("Move Horzontally")]
     [Tooltip("Decide whether to turn left or right first when trigger loopHorzontal function")]
     public bool GoLeftFirst;
     [Tooltip("The enemy will swing horizontally")]
     public bool loopHorizontal;
-             
-    
+
+    [Header("Rotate Around Player")]
+    [Tooltip("radius of the circle")]
+    public float radius;
+    [Tooltip("First move toward player, then rotate")]
+    public bool rotateAroundPlayer;
+
 
 
     Vector2 moveDirection;
     Rigidbody2D rb;
+    GameObject target;                      //normally it's the player
 
+    private Vector3 originalPosition;
     private bool shouldMoveLeft;              // judge if enemy should move to left
     private Vector2 movement;
     private float speedZ;                    // of speed of the enemy when it don't move horizontal and vertical
@@ -44,7 +57,7 @@ public class EnemyController : MonoBehaviour {
     private float thinkTimeLeft;
     private int randomOrder;
     private ORDER order;
-
+    private float distanceToThePlayer;
 
 
     enum ORDER
@@ -55,20 +68,28 @@ public class EnemyController : MonoBehaviour {
         RIGHT,
         LOOPHORIZONTAL,
         POINTTOPOINT,
-        ZUP
+        ZUP,
+        MOVETOPLAYER,
+        ROTATEAROUNDPLAYER
     };
 
     void Awake()
     {
+        originalPosition = transform.position;
+        target = GameObject.Find("Player");
         shouldMoveLeft = GoLeftFirst;
         speedZ = Mathf.Sqrt(speedVertical * speedVertical + speedHorizontal * speedHorizontal);
         startPoint.Set(transform.position.x, transform.position.y);        //start point is exactly where is enemy is at beginning
         //endPoint = startPoint + relativeOffset;
         thinkTimeLeft = 0;
+        
     }
     void Start () {
         rb = GetComponent<Rigidbody2D>();
-       
+
+        distanceToThePlayer = DetectiveDistance(rb.position, target.transform.position);
+
+
     }
 
 	void Update () {
@@ -78,6 +99,8 @@ public class EnemyController : MonoBehaviour {
         //MoveLoopHorizontal();
         //MovePointToPoint();
         //TestMonitor();
+        //MoveToPlayer();
+        //RotateAroundPlayer();
     }
 
     void FixedUpdate()
@@ -93,8 +116,8 @@ public class EnemyController : MonoBehaviour {
             }
             ExecuteRandomAction();
         }
-       
-
+        if (backToOrigin)
+            BackToOrigin();
         if (moveUp)
             MoveUp();
         if (moveDown)
@@ -107,36 +130,10 @@ public class EnemyController : MonoBehaviour {
             MoveLoopHorizontal();
         if (movePointToPoint)
             MovePointToPoint();
-       
-           
-        /*
-        ORDER order = AcceptOrder();
-        switch (order)
-        {
-            case ORDER.UP:
-                MoveUp();
-                break;
-            case ORDER.DOWN:
-                MoveDown();
-                break;
-            case ORDER.LEFT:
-                MoveLeft();
-                break;
-            case ORDER.RIGHT:
-                MoveRight();
-                break;
-            case ORDER.LOOPHORIZONTAL:
-                MoveLoopHorizontal();
-                break;
-            case ORDER.POINTTOPOINT:
-                MovePointToPoint();
-                break;
-            case ORDER.ZUP:
-                MoveUp();
-                MoveLoopHorizontal();
-                break;
-           }
-        */
+        if (moveToPlayer)
+            MoveToPlayer();
+        if (rotateAroundPlayer)
+            RotateAroundPlayer();
 
     }
 
@@ -162,6 +159,11 @@ public class EnemyController : MonoBehaviour {
         }
     }
 
+    void BackToOrigin()
+    {
+        transform.position = originalPosition;
+    }
+
     void MoveUp()
     {
         movement.Set(0, speedVertical * Time.deltaTime);
@@ -169,7 +171,7 @@ public class EnemyController : MonoBehaviour {
         //rb.velocity = Vector2.up * speed * Time.deltaTime;
         //rb.position = new Vector2(rb.position.x, rb.position.y + speedVertical * Time.deltaTime);
         //rb.MovePosition(rb.position + Vector2.up * speed * Time.deltaTime);
-
+        ClampEnemeyToBoundry();
     }
 
     void MoveDown()
@@ -178,6 +180,7 @@ public class EnemyController : MonoBehaviour {
         rb.position += movement;
         //rb.velocity = Vector2.down * speed * Time.deltaTime;
         //rb.position = new Vector2(rb.position.x, rb.position.y - speedVertical * Time.deltaTime);
+        ClampEnemeyToBoundry();
     }
 
     void MoveLeft()
@@ -223,56 +226,42 @@ public class EnemyController : MonoBehaviour {
         //Debug.Log("spend time =  " + Time.time);
     }
 
+    void MoveToPlayer()
+    {
+        rb.position = Vector2.MoveTowards(rb.position, target.transform.position, distanceToThePlayer / speedZ * Time.deltaTime);
+    }
+
+    void RotateAroundPlayer()                   //attatation, this function must work with LookAtTarget2D script attach to the enemy
+    {
+        MoveToPlayer();
+        float distance = DetectiveDistance(rb.position, target.transform.position);
+        if (distance < radius)
+        {
+            transform.Translate(speedZ * Time.deltaTime, 0, 0, Space.Self);
+        }
+    }
+
+
     void ClampEnemeyToBoundry()          
     {
         rb.position = new Vector2
            (
                Mathf.Clamp(rb.position.x, boundary.xMin, boundary.xMax),
-               rb.position.y
+               Mathf.Clamp(rb.position.y, boundary.yMin, boundary.yMax)
            );
     }
 
-    //IEnumerator ChooseRandomAction()
-    //{
-    //    int randomOrder = Random.Range(0, 6);
-    //    ORDER order = AcceptOrder(randomOrder);
-    //    switch (order)
-    //    {
-    //        case ORDER.UP:
-    //            MoveUp();
+    float DetectiveDistance(Vector3 startPoint, Vector3 endPoint)
+    {
+        Vector3 relativeVecotr = endPoint - startPoint;
+       
+        return relativeVecotr.magnitude;
+    }
 
-    //            break;
-    //        case ORDER.DOWN:
-    //            MoveDown();
 
-    //            break;
-    //        case ORDER.LEFT:
-    //            MoveLeft();
-
-    //            break;
-    //        case ORDER.RIGHT:
-    //            MoveRight();
-
-    //            break;
-    //        case ORDER.LOOPHORIZONTAL:
-    //            MoveLoopHorizontal();
-
-    //            break;
-    //        case ORDER.POINTTOPOINT:
-    //            MovePointToPoint();
-
-    //            break;
-    //        case ORDER.ZUP:
-    //            MoveUp();
-    //            MoveLoopHorizontal();
-    //            break;
-    //    }
-    //    Debug.Log("the order = " + order);
-    //    yield return new WaitForSeconds(0.1f);
-    //}
     void ChooseRandomAction()
     {
-        randomOrder = Random.Range(0, 7); //return 0 ~ 6
+        randomOrder = Random.Range(0, 9); //return 0 ~ 8, the 9 is not include
         order = AcceptOrder(randomOrder);
     }
     void ExecuteRandomAction()
@@ -301,6 +290,12 @@ public class EnemyController : MonoBehaviour {
                 MoveUp();
                 MoveLoopHorizontal();
                 break;
+            case ORDER.MOVETOPLAYER:
+                MoveToPlayer();
+                break;
+            case ORDER.ROTATEAROUNDPLAYER:
+                RotateAroundPlayer();
+                break;
         }
         Debug.Log("the order = " + order);
     }
@@ -322,6 +317,10 @@ public class EnemyController : MonoBehaviour {
             order = ORDER.POINTTOPOINT;
         if (orderNumber == 6)
             order = ORDER.ZUP;
+        if (orderNumber == 7)
+            order = ORDER.MOVETOPLAYER;
+        if (orderNumber == 8)
+            order = ORDER.ROTATEAROUNDPLAYER;
         return order;
     }
 }
