@@ -15,6 +15,7 @@ public class UIManager : MonoBehaviour {
     public GameObject settings;
     public GameObject leaderboards;
     public GameObject start;
+    public GameObject highscore;
 
     [Header("SETTINGS")]
     public Canvas settingsCanvas;
@@ -39,12 +40,14 @@ public class UIManager : MonoBehaviour {
     GameManager gm;
     bool hasleft;
     bool clikedButton;
+    Text highScoreText;
 
 	// Use this for initialization
 	void Start () {
         TitleFeedback();
         StartFeedback();
         gm = GameManager.instance;
+        highScoreText = highscore.GetComponent<Text>();
         hasleft = false;
 
         isSound = true;
@@ -95,6 +98,8 @@ public class UIManager : MonoBehaviour {
     {
         if (!SplashScreen.isFinished) return;
         gm.LaunchGame();
+        highscore.transform.DOScale(3, 1f);
+        highScoreText.DOFade(0, 1f);
         achievements.SetActive(false);
         settings.SetActive(false);
         leaderboards.SetActive(false);
