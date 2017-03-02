@@ -8,7 +8,8 @@ public class ObjetSpawn : MonoBehaviour {
 
     private void OnEnable()
     {
-        Instantiate(m_ObjectToBeSpawn, transform.position, Quaternion.identity);
+        GameObject clone = Instantiate(m_ObjectToBeSpawn, transform.position, Quaternion.identity);
+        clone.transform.parent = this.gameObject.transform.root.transform;
         this.gameObject.SetActive(false);
     }
 }
