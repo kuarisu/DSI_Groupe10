@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class AI_OnHitPlayerComponent : MonoBehaviour {
 
@@ -25,10 +26,12 @@ public class AI_OnHitPlayerComponent : MonoBehaviour {
 	void OnCollisionEnter2D (Collision2D other){
 		if (other.gameObject.name == "Player"){
 			if (killThePlayer == true){
-				Destroy (other.gameObject);
+				//Destroy (other.gameObject);
+                //Application.LoadLevel(Application.loadedLevel);
+                SceneManager.LoadScene("Prototype");
 
-				//If we need to instantiate something after Death, do it here
-			}
+                //If we need to instantiate something after Death, do it here
+            }
 
 			if (stealAmmo == true){
 				Debug.Log ("Link the float in gestion of the number of bullet inside the PlayerControlleur");
