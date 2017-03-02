@@ -11,16 +11,23 @@ public class Boundary                         // use to limit the movement of th
 public class EnemyController : MonoBehaviour {
     public float speedVertical;
     public float speedHorizontal;
-    public Boundary boundary;               
-    public Vector2 offset;                    //it's a relative vector which equals (Endpoint - StartPoint)
-    public bool GoLeftFirst;
-
+    public Boundary boundary;
+    [Tooltip("Decide a relative position you want to move to when trigger movePointToPoint function")]
+    public Vector2 relativeOffset;                    //it's a relative vector which equals (Endpoint - StartPoint)
+    public bool chooseRandomAction;
+    
     public bool moveUp;
     public bool moveDown;
     public bool moveLeft;
     public bool moveRight;
+    public bool movePointToPoint;
+
+    [Header("Move Horzontally")]
+    [Tooltip("Decide whether to turn left or right first when trigger loopHorzontal function")]
+    public bool GoLeftFirst;
+    [Tooltip("The enemy will swing horizontally")]
     public bool loopHorizontal;
-    public bool movePointToPoint;               
+             
     
 
 
@@ -33,16 +40,22 @@ public class EnemyController : MonoBehaviour {
     private Vector2 startPoint;
     private Vector2 endPoint;
 
+    private float AIThinkPeriod = 3f;   //every 3 seconds, Ai will make a decistion
+    private float thinkTimeLeft;
+    private int randomOrder;
+    private ORDER order;
+
+
 
     enum ORDER
     {
-        NOTHING,
         UP,
         DOWN,
         LEFT,
         RIGHT,
         LOOPHORIZONTAL,
         POINTTOPOINT,
+        ZUP
     };
 
     void Awake()
@@ -50,14 +63,14 @@ public class EnemyController : MonoBehaviour {
         shouldMoveLeft = GoLeftFirst;
         speedZ = Mathf.Sqrt(speedVertical * speedVertical + speedHorizontal * speedHorizontal);
         startPoint.Set(transform.position.x, transform.position.y);        //start point is exactly where is enemy is at beginning
-        endPoint = startPoint + offset;
-
+        //endPoint = startPoint + relativeOffset;
+        thinkTimeLeft = 0;
     }
     void Start () {
         rb = GetComponent<Rigidbody2D>();
-	}
-	
-	// Update is called once per frame
+       
+    }
+
 	void Update () {
         //MoveRight();
         //MoveLeft();
@@ -69,6 +82,19 @@ public class EnemyController : MonoBehaviour {
 
     void FixedUpdate()
     {
+        
+        if (chooseRandomAction)
+        {
+            thinkTimeLeft -= Time.deltaTime;
+            if (thinkTimeLeft <= 0)                    // every x seconds, AI will choose an action(x = AIThinkPeriod). 
+            {
+                ChooseRandomAction();
+                thinkTimeLeft = AIThinkPeriod;
+            }
+            ExecuteRandomAction();
+        }
+       
+
         if (moveUp)
             MoveUp();
         if (moveDown)
@@ -81,6 +107,8 @@ public class EnemyController : MonoBehaviour {
             MoveLoopHorizontal();
         if (movePointToPoint)
             MovePointToPoint();
+       
+           
         /*
         ORDER order = AcceptOrder();
         switch (order)
@@ -156,7 +184,7 @@ public class EnemyController : MonoBehaviour {
     {
         movement.Set(-speedHorizontal * Time.deltaTime, 0);
         rb.position += movement;
-        clampEnemeyToBoundry();
+        ClampEnemeyToBoundry();
         //rb.velocity = Vector2.left * speed * Time.deltaTime;
         //rb.position = new Vector2(rb.position.x - speedHorizontal * Time.deltaTime, rb.position.y);
         //rb.MovePosition(rb.position + Vector2.left * speed * Time.deltaTime);
@@ -167,7 +195,7 @@ public class EnemyController : MonoBehaviour {
     {
         movement.Set(speedHorizontal * Time.deltaTime, 0);
         rb.position += movement;
-        clampEnemeyToBoundry();
+        ClampEnemeyToBoundry();
         //rb.velocity = Vector2.right * speed * Time.deltaTime;
         //rb.position = new Vector2(rb.position.x + speedHorizontal * Time.deltaTime, rb.position.y);
     }
@@ -185,14 +213,17 @@ public class EnemyController : MonoBehaviour {
 
     void MovePointToPoint()
     {
+       
+        endPoint = startPoint + relativeOffset;
         //calulate the distance between endPoint and startPoint
-        //Vector2 temp = endPoint - startPoint;
-        float distance = offset.magnitude;
-
-        rb.position = Vector2.Lerp(rb.position, endPoint, distance / speedZ * Time.deltaTime / 10);
+        float distance = relativeOffset.magnitude;
+        //endPoint = rb.position + relativeOffset;
+        //rb.position = Vector2.LerpUnclamped(rb.position, endPoint, distance / speedZ * Time.deltaTime / 10);    // lerp will cause uneven speed moving behaviour, sometimes useful
+        rb.position = Vector2.MoveTowards(rb.position, endPoint, distance / speedZ * Time.deltaTime);
+        //Debug.Log("spend time =  " + Time.time);
     }
 
-    void clampEnemeyToBoundry()          
+    void ClampEnemeyToBoundry()          
     {
         rb.position = new Vector2
            (
@@ -201,20 +232,96 @@ public class EnemyController : MonoBehaviour {
            );
     }
 
-    ORDER AcceptOrder()
+    //IEnumerator ChooseRandomAction()
+    //{
+    //    int randomOrder = Random.Range(0, 6);
+    //    ORDER order = AcceptOrder(randomOrder);
+    //    switch (order)
+    //    {
+    //        case ORDER.UP:
+    //            MoveUp();
+
+    //            break;
+    //        case ORDER.DOWN:
+    //            MoveDown();
+
+    //            break;
+    //        case ORDER.LEFT:
+    //            MoveLeft();
+
+    //            break;
+    //        case ORDER.RIGHT:
+    //            MoveRight();
+
+    //            break;
+    //        case ORDER.LOOPHORIZONTAL:
+    //            MoveLoopHorizontal();
+
+    //            break;
+    //        case ORDER.POINTTOPOINT:
+    //            MovePointToPoint();
+
+    //            break;
+    //        case ORDER.ZUP:
+    //            MoveUp();
+    //            MoveLoopHorizontal();
+    //            break;
+    //    }
+    //    Debug.Log("the order = " + order);
+    //    yield return new WaitForSeconds(0.1f);
+    //}
+    void ChooseRandomAction()
     {
-        if (moveUp)
-            return ORDER.UP;
-        if (moveDown)
-            return ORDER.DOWN;
-        if (moveLeft)
-            return ORDER.LEFT;
-        if (moveRight)
-            return ORDER.RIGHT;
-        if (loopHorizontal)
-            return ORDER.LOOPHORIZONTAL;
-        if (movePointToPoint)
-            return ORDER.POINTTOPOINT;
-        return ORDER.NOTHING;
+        randomOrder = Random.Range(0, 7); //return 0 ~ 6
+        order = AcceptOrder(randomOrder);
+    }
+    void ExecuteRandomAction()
+    {
+        switch (order)
+        {
+            case ORDER.UP:
+                MoveUp();       
+                break;
+            case ORDER.DOWN:
+                MoveDown();
+                break;
+            case ORDER.LEFT:
+                MoveLeft();
+                break;
+            case ORDER.RIGHT:
+                MoveRight();
+                break;
+            case ORDER.LOOPHORIZONTAL:
+                MoveLoopHorizontal();
+                break;
+            case ORDER.POINTTOPOINT:
+                MovePointToPoint();
+                break;
+            case ORDER.ZUP:
+                MoveUp();
+                MoveLoopHorizontal();
+                break;
+        }
+        Debug.Log("the order = " + order);
+    }
+
+    ORDER AcceptOrder(int orderNumber)
+    {
+        ORDER order = new ORDER();
+        if (orderNumber == 0)
+            order = ORDER.UP;
+        if (orderNumber == 1)
+            order = ORDER.DOWN;
+        if (orderNumber == 2)
+            order = ORDER.LEFT;
+        if (orderNumber == 3)
+            order = ORDER.RIGHT;
+        if (orderNumber == 4)
+            order = ORDER.LOOPHORIZONTAL;
+        if (orderNumber == 5)
+            order = ORDER.POINTTOPOINT;
+        if (orderNumber == 6)
+            order = ORDER.ZUP;
+        return order;
     }
 }
