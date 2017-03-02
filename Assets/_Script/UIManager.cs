@@ -31,6 +31,7 @@ public class UIManager : MonoBehaviour {
 
     [Header("PLAYERUI")]
     public Canvas playerUI;
+    public Text Score;
 
     bool isSound;
     bool isNormal;
@@ -65,6 +66,17 @@ public class UIManager : MonoBehaviour {
             LeaveDown();
             GameStart();
             hasleft = true;
+        }
+
+        if(Input.GetKeyDown(KeyCode.K))
+        {
+            gm.score += 1647;
+            Score.text = gm.score.ToString();
+            DOTween.Restart("ShakeScale");
+            DOTween.Kill("ShakeScale");
+            Score.transform.DOShakeScale(1, 1, 20, 90, true).SetEase(Ease.InQuad).SetId("ShakeScale");
+            Score.transform.DOShakePosition(1, Vector3.up*10, 20,0,false,true).SetEase(Ease.InQuad).SetId("ShakeScale");
+            Score.transform.DOShakeRotation(0.8f, 5, 20, 90, true).SetEase(Ease.InQuad).SetId("ShakeScale");
         }
     }
 

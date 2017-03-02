@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour {
     public bool gamestarted;
     public bool hasGameLaunched;
     public float chunkSize;
+    public int score;
 
     PlayerController playerController;
 

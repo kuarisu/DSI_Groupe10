@@ -17,6 +17,7 @@ public class PlayerController : MonoBehaviour
     bool isHoldingDown;
     bool doRotate;
     Vector3 startRotation;
+    float backforceTimer = 3f;
 
     public Camera mainCam;
     public Vector2 targetPosition;
@@ -27,6 +28,8 @@ public class PlayerController : MonoBehaviour
     public float distanceOffsetX;
 
     [Header("GAMEPLAY")]
+    [Tooltip("Distance minimum needed between top of the screen and player position")]
+    public float minDistTop;
     [Tooltip("Force applied to player at the beginning")]
     public int startpunch;
     [Tooltip("Force applied to player when he fires bullets")]
@@ -67,7 +70,10 @@ public class PlayerController : MonoBehaviour
         gm = GameManager.instance;
         rb = this.GetComponent<Rigidbody2D>();
         trail = this.GetComponent<TrailRenderer>();
+        startOffset = (startOffset * mainCam.orthographicSize);
         targetPosition = new Vector2(mainCam.transform.position.x, mainCam.transform.position.y + startOffset);
+        if (mainCam.transform.position.y - targetPosition.y < minDistTop)
+            targetPosition = new Vector2(targetPosition.x, mainCam.orthographicSize - minDistTop);
         transform.position = new Vector3(0,-3,0);
         fired = false;
         startRotation = transform.rotation.eulerAngles;
@@ -83,6 +89,18 @@ public class PlayerController : MonoBehaviour
 
             BackForceY();
             BackForceX();
+        }
+
+        if (Vector3.Dot(-transform.up, Vector3.down) < 1f)
+        {
+            if (backforceTimer > 1f && !isRotating)
+            {
+                BackForceRotation();
+            }
+            else
+            {
+                backforceTimer += Time.deltaTime;
+            }
         }
 
     }
@@ -142,6 +160,7 @@ public class PlayerController : MonoBehaviour
         float rot_z = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         bulletFired.transform.rotation = Quaternion.Euler(0f, 0f, rot_z + 90);
         transform.rotation = Quaternion.Euler(0f, 0f, rot_z + 90);
+        backforceTimer = 0f;
 
         bulletFired.GetComponent<Rigidbody2D>().velocity = direction * bulletSpeed;
 
@@ -149,8 +168,8 @@ public class PlayerController : MonoBehaviour
         Camera.main.transform.position = new Vector3(0, 0, -10);
         Camera.main.transform.DOShakePosition(duration, new Vector3(strenght / 2, strenght, 0), 20, 90);
         bulletNumber--;
-
-        BackForceRotation();
+        DOTween.Kill("Rotation");
+        isRotating = false;
     }
 
     void BackForceY()
@@ -180,12 +199,16 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    bool isRotating = false;
+
     void BackForceRotation()
     {
-        if (Vector3.Dot(-transform.up, Vector3.down) < 1f)
-        {
-            DOTween.Kill("Rotation");
-            transform.DORotate(startRotation, backForceRot).SetEase(Ease.OutBack).SetId("Rotation");
-        }
+        isRotating = true;
+        transform.DORotate(startRotation, 0.3f + backForceRot * (1 - Vector3.Dot(-transform.up, Vector3.down))).SetEase(Ease.OutSine).SetId("Rotation").OnComplete(ResetBool);
     }
-    } 
+
+    void ResetBool()
+    {
+        isRotating = false;
+    }
+} 
