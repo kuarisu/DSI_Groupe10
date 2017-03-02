@@ -60,8 +60,7 @@ public class PlayerController : MonoBehaviour
     // Use this for initialization
     void Awake()
     {
-        gm = GameManager.instance;
-        Debug.Log(gm.transform.name);
+        //gm = GameManager.instance;
         rb = this.GetComponent<Rigidbody2D>();
         trail = this.GetComponent<TrailRenderer>();
         targetPosition = new Vector2(mainCam.transform.position.x, mainCam.transform.position.y + startOffset);
