@@ -57,7 +57,7 @@ public class PlayerController : MonoBehaviour
     // Use this for initialization
     void Awake()
     {
-        gm = GameManager.instance;
+
         rb = this.GetComponent<Rigidbody2D>();
         trail = this.GetComponent<TrailRenderer>();
         targetPosition = new Vector2(mainCam.transform.position.x, mainCam.transform.position.y + startOffset);
@@ -65,6 +65,10 @@ public class PlayerController : MonoBehaviour
         fired = false;
     }
 
+    private void Start()
+    {
+        gm = GameManager.instance;
+    }
     // Update is called once per frame
     void Update()
     {
