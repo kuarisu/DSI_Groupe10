@@ -6,11 +6,8 @@ using DG.Tweening;
 
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField]
+
     GameManager gm;
-
-
-
     Rigidbody2D rb;
     TrailRenderer trail;
 
@@ -60,25 +57,26 @@ public class PlayerController : MonoBehaviour
     // Use this for initialization
     void Awake()
     {
-        //gm = GameManager.instance;
+        gm = GameManager.instance;
         rb = this.GetComponent<Rigidbody2D>();
         trail = this.GetComponent<TrailRenderer>();
         targetPosition = new Vector2(mainCam.transform.position.x, mainCam.transform.position.y + startOffset);
-        transform.position = targetPosition;
+        transform.position = new Vector3(0,-3,0);
         fired = false;
     }
 
     // Update is called once per frame
     void Update()
     {
-        //if (gm.gamestarted == false)
-            //this.transform.Rotate(Vector3.forward, 50 * Time.deltaTime);
-
-        if(SplashScreen.isFinished == true)
+        if(SplashScreen.isFinished == true && gm.hasGameLaunched)
             Controls();
 
-        BackForceY();
-        BackForceX();
+        if (gm.hasGameLaunched)
+        {
+            BackForceY();
+            BackForceX();
+        }
+
     }
 
     // Controls for the player
@@ -89,38 +87,22 @@ public class PlayerController : MonoBehaviour
 #if UNITY_EDITOR || UNITY_STANDALONE
         if (Input.GetMouseButtonDown(0) && Camera.main.ScreenToWorldPoint(Input.mousePosition).y < transform.position.y /*&& bulletNumber > 0*/)
         {
-            Vector2 direction = Camera.main.ScreenToWorldPoint(Input.mousePosition) - this.transform.position;
+            Vector2 direction = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position;
             direction.Normalize();
-            if (gm.gamestarted == false)
-            {
-                gm.gamestarted = true;
-                /*rb.velocity = Vector2.up * startpunch;
-                rb.AddTorque(startrotationforce);*/
-            }
-            else
-            {
-                rb.AddForce(new Vector2(Mathf.Clamp(-direction.x * sidepunch, -maxsidepunch, maxsidepunch), -direction.y) * firepunch, ForceMode2D.Impulse);
-                bulletFired = (GameObject)Instantiate(bullet, transform.position, transform.rotation);
 
-                // Rotate the bullet towards the input
-                float rot_z = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-                bulletFired.transform.rotation = Quaternion.Euler(0f, 0f, rot_z + 90);
+            rb.AddForce(new Vector2(Mathf.Clamp(-direction.x * sidepunch, -maxsidepunch, maxsidepunch), -direction.y) * firepunch, ForceMode2D.Impulse);
+            bulletFired = Instantiate(bullet, transform.position, transform.rotation);
 
-                bulletFired.GetComponent<Rigidbody2D>().velocity = direction * bulletSpeed;
+            // Rotate the bullet towards the input
+            float rot_z = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            bulletFired.transform.rotation = Quaternion.Euler(0f, 0f, rot_z + 90);
 
-                /*// Add more or less force to rotation according to the angle between Up Vector and shot's direction
-                if (Vector2.Angle(Vector2.up, direction) > 170)
-                    rb.AddTorque(-rb.angularVelocity + lowanglerotforce);
-                else if (Vector2.Angle(Vector2.up, direction) <= 170 && Vector2.Angle(Vector2.up, direction) > 165)
-                    rb.AddTorque(-rb.angularVelocity + midanglerotforce);
-                else if (Vector2.Angle(Vector2.up, direction) < 165)
-                    rb.AddTorque(-rb.angularVelocity + faranglerotforce);*/
+            bulletFired.GetComponent<Rigidbody2D>().velocity = direction * bulletSpeed;
 
-                // Screen Shake
-                Camera.main.transform.position = new Vector3(0, 0, -10);
-                Camera.main.transform.DOShakePosition(duration, new Vector3(strenght/2,strenght,0), 20, 90);
-                bulletNumber--;
-            }
+            // Screen Shake
+            Camera.main.transform.position = new Vector3(0, 0, -10);
+            Camera.main.transform.DOShakePosition(duration, new Vector3(strenght / 2, strenght, 0), 20, 90);
+            bulletNumber--;
         }
         #endif
 
@@ -129,30 +111,23 @@ public class PlayerController : MonoBehaviour
 #if UNITY_ANDROID
         for (int i = 0; i < Input.touchCount; ++i)
         {
-            if (Input.GetTouch(0).phase == TouchPhase.Began && Camera.main.ScreenToWorldPoint(Input.GetTouch(0).position).y < transform.position.y)
+            if (Input.GetTouch(0).phase == TouchPhase.Began && Camera.main.ScreenToWorldPoint(Input.GetTouch(0).position).y < transform.position.y /*&& bulletNumber > 0*/)
             {
                 Vector2 direction = Camera.main.ScreenToWorldPoint(Input.GetTouch(0).position) - this.transform.position;
                 direction.Normalize();
+             
+                rb.AddForce(new Vector2(Mathf.Clamp(-direction.x * sidepunch,-maxsidepunch,maxsidepunch), -direction.y) * firepunch, ForceMode2D.Impulse);
+                bulletFired = Instantiate(bullet, transform.position, transform.rotation);
 
-                if (gm.gamestarted == false)
-                {
-                    gm.gamestarted = true;
-                }
-                else
-                {
-                    rb.AddForce(new Vector2(Mathf.Clamp(-direction.x * sidepunch,-maxsidepunch,maxsidepunch), -direction.y) * firepunch, ForceMode2D.Impulse);
-                    bulletFired = (GameObject)Instantiate(bullet, transform.position, transform.rotation);
+                // Rotate the bullet towards the input
+                float rot_z = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+                bulletFired.transform.rotation = Quaternion.Euler(0f, 0f, rot_z + 90);
 
-                    // Rotate the bullet towards the input
-                    float rot_z = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-                    bulletFired.transform.rotation = Quaternion.Euler(0f, 0f, rot_z + 90);
+                bulletFired.GetComponent<Rigidbody2D>().velocity = direction * bulletSpeed;
 
-                    bulletFired.GetComponent<Rigidbody2D>().velocity = direction * bulletSpeed;
-
-                    // Screen Shake
-                    Camera.main.transform.position = new Vector3(0, 0, -10);
-                    Camera.main.transform.DOShakePosition(duration, new Vector3(strenght / 2, strenght, 0), 20, 90);
-                }
+                // Screen Shake
+                Camera.main.transform.position = new Vector3(0, 0, -10);
+                Camera.main.transform.DOShakePosition(duration, new Vector3(strenght / 2, strenght, 0), 20, 90);
             }
         }
 #endif
