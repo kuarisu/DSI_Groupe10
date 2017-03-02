@@ -15,6 +15,8 @@ public class PlayerController : MonoBehaviour
     GameObject bulletFired;
     bool fired;
     bool isHoldingDown;
+    bool doRotate;
+    Vector3 startRotation;
 
     public Camera mainCam;
     public Vector2 targetPosition;
@@ -37,6 +39,8 @@ public class PlayerController : MonoBehaviour
     public int backForceY;
     [Tooltip("Force applied to player to make it back to the vertical center")]
     public int backForceX;
+    [Tooltip("Time in seconds before player gets to his original rotation")]
+    public float backForceRot;
     public int bulletSpeed;
     public int bulletNumber;
     public float rateOfFire;
@@ -66,16 +70,17 @@ public class PlayerController : MonoBehaviour
         targetPosition = new Vector2(mainCam.transform.position.x, mainCam.transform.position.y + startOffset);
         transform.position = new Vector3(0,-3,0);
         fired = false;
+        startRotation = transform.rotation.eulerAngles;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(SplashScreen.isFinished == true && gm.hasGameLaunched)
-            Controls();
-
         if (gm.hasGameLaunched)
         {
+            if (SplashScreen.isFinished)
+                Controls();
+
             BackForceY();
             BackForceX();
         }
@@ -144,6 +149,8 @@ public class PlayerController : MonoBehaviour
         Camera.main.transform.position = new Vector3(0, 0, -10);
         Camera.main.transform.DOShakePosition(duration, new Vector3(strenght / 2, strenght, 0), 20, 90);
         bulletNumber--;
+
+        BackForceRotation();
     }
 
     void BackForceY()
@@ -170,6 +177,15 @@ public class PlayerController : MonoBehaviour
             vectorToNormalize.Normalize();
             rb.AddForce(vectorToNormalize * -backForceX * Mathf.Abs(distanceOffsetX * 1.2f / maxOffsetX), ForceMode2D.Force);
             transform.position = new Vector3(Mathf.Clamp(transform.position.x, -maxOffsetX, maxOffsetX), transform.position.y, transform.position.z);
+        }
+    }
+
+    void BackForceRotation()
+    {
+        if (Vector3.Dot(-transform.up, Vector3.down) < 1f)
+        {
+            DOTween.Kill("Rotation");
+            transform.DORotate(startRotation, backForceRot).SetEase(Ease.OutBack).SetId("Rotation");
         }
     }
     } 
