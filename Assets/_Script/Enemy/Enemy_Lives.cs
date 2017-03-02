@@ -11,19 +11,11 @@ public class Enemy_Lives : MonoBehaviour {
     [SerializeField]
     float m_TimerBeforeDestroy; //The Game Designers can change the delay before destroying the enemy. If it's 0, it will be instant.
 
-    [SerializeField]
-    Text m_DebugNbLifeText;     //Just a text to debug and show easily the number of lives left to the enemy
-
-    private void Start()
-    {
-        m_DebugNbLifeText.text = m_NumberOfLives.ToString(); // Change the debug text
-    }
 
     // The function called by the bullet each time it hits an enemy with life.
     public void Hited()
     {
         m_NumberOfLives--;
-        m_DebugNbLifeText.text = m_NumberOfLives.ToString();
 
         if (m_NumberOfLives <= 0) //If the enemy lives number falls to 0, the enemy dies.
         {
