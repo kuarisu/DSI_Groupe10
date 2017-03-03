@@ -89,7 +89,9 @@ public class EnemyController : MonoBehaviour {
     }
     void Start () {
         rb = GetComponent<Rigidbody2D>();
-        distanceToTargetAtBegin = DetectiveDistance(rb.position, target.transform.position);
+		if (target != null) {
+			distanceToTargetAtBegin = DetectiveDistance (rb.position, target.transform.position);
+		}
 
 
     }
@@ -108,7 +110,11 @@ public class EnemyController : MonoBehaviour {
 
     void FixedUpdate()
     {
-        LookAtTarget();
+		if (target != null) {
+			
+			LookAtTarget ();
+		}
+
         if (chooseRandomAction)
         {
             thinkTimeLeft -= Time.deltaTime;

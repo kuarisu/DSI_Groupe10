@@ -9,7 +9,7 @@ public class ObjectSpawn : MonoBehaviour
 
     private void OnEnable()
     {
-        GameObject clone = Instantiate(m_ObjectToBeSpawn, transform.position, Quaternion.identity);
+		GameObject clone = Instantiate(m_ObjectToBeSpawn, transform.position, transform.rotation);
         clone.transform.parent = this.gameObject.transform.root.transform;
         this.gameObject.SetActive(false);
     }
