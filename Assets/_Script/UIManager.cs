@@ -39,7 +39,7 @@ public class UIManager : MonoBehaviour {
     bool isRate;
 
     GameManager gm;
-    bool hasleft;
+    bool menuIsHidden;
     bool clikedButton;
     Text highScoreText;
 
@@ -49,7 +49,7 @@ public class UIManager : MonoBehaviour {
         StartFeedback();
         gm = GameManager.instance;
         highScoreText = highscore.GetComponent<Text>();
-        hasleft = false;
+        menuIsHidden = false;
 
         isSound = true;
         isNormal = true;
@@ -60,23 +60,16 @@ public class UIManager : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-        if (gm.gamestarted && !hasleft)
+        if (gm.gamestarted && !menuIsHidden)
         {
             LeaveUp();
             LeaveDown();
-            GameStart();
-            hasleft = true;
+            menuIsHidden = true;
         }
 
         if(Input.GetKeyDown(KeyCode.K))
         {
-            gm.score += 1647;
-            Score.text = gm.score.ToString();
-            DOTween.Restart("ShakeScale");
-            DOTween.Kill("ShakeScale");
-            Score.transform.DOShakeScale(1, 1, 20, 90, true).SetEase(Ease.InQuad).SetId("ShakeScale");
-            Score.transform.DOShakePosition(1, Vector3.up*10, 20,0,false,true).SetEase(Ease.InQuad).SetId("ShakeScale");
-            Score.transform.DOShakeRotation(0.8f, 5, 20, 90, true).SetEase(Ease.InQuad).SetId("ShakeScale");
+           
         }
     }
 
@@ -109,13 +102,13 @@ public class UIManager : MonoBehaviour {
     public void GameStart()
     {
         if (!SplashScreen.isFinished) return;
+        start.SetActive(false);
         gm.LaunchGame();
         highscore.transform.DOScale(3, 1f);
         highScoreText.DOFade(0, 1f);
         achievements.SetActive(false);
         settings.SetActive(false);
         leaderboards.SetActive(false);
-        start.SetActive(false);
     }
 
     public void ToggleSound(bool isOn)

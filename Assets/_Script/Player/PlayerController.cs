@@ -8,6 +8,8 @@ public class PlayerController : MonoBehaviour
 {
 
     GameManager gm;
+    LevelManager lm;
+    UIManager ui;
     Rigidbody2D rb;
     TrailRenderer trail;
 
@@ -68,6 +70,8 @@ public class PlayerController : MonoBehaviour
     void Awake()
     {
         gm = GameManager.instance;
+        lm = gm.levelManager;
+        ui = gm.uiManager;
         rb = this.GetComponent<Rigidbody2D>();
         trail = this.GetComponent<TrailRenderer>();
         startOffset = (startOffset * mainCam.orthographicSize);
@@ -155,6 +159,7 @@ public class PlayerController : MonoBehaviour
 
         rb.AddForce(new Vector2(Mathf.Clamp(-direction.x * sidepunch, -maxsidepunch, maxsidepunch), -direction.y) * firepunch, ForceMode2D.Impulse);
         bulletFired = Instantiate(bullet, transform.position, transform.rotation);
+        bulletFired.transform.SetParent(lm.currentChunk[1].transform);
 
         // Rotate the bullet and player towards the input
         float rot_z = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;

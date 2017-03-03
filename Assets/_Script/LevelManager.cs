@@ -10,6 +10,7 @@ public class LevelManager : MonoBehaviour {
     public float tileSizeZ;
     public List<GameObject> chunks = new List<GameObject>();
     public List<GameObject> backgrounds = new List<GameObject>();
+    public GameObject bulletDestroyer;
     public int currentbgIndex;
     public float bgSpeedRatio;
 
@@ -19,16 +20,17 @@ public class LevelManager : MonoBehaviour {
     Vector2 playerStartPos;
     float playerOffsetY;
     float maxOffsetY;
-    List<GameObject> currentChunk = new List<GameObject>(2);
+    public List<GameObject> currentChunk = new List<GameObject>(2);
     List<GameObject> currentBackground = new List<GameObject>(2);
     GameManager gm;
 
     void Start()
     {
-        InstantiateBackground();
-        InstantiateChunks();
-
         gm = GameManager.instance;
+        currentChunk.Clear();
+
+        InstantiateBackground();
+        bulletDestroyer.transform.position = new Vector3(0, -(Camera.main.orthographicSize + 5), 0);
 
         playerController = GameObject.Find("Player").GetComponent<PlayerController>();
         player = playerController.GetComponent<Transform>();
@@ -52,7 +54,7 @@ public class LevelManager : MonoBehaviour {
             MoveChunks();
     }
 
-    void InstantiateChunks()
+    public void InstantiateChunks()
     {
         GameObject firstChunk = (GameObject)Instantiate(chunks[(int)Random.Range(0, chunks.Count - 1)], new Vector3(0, -46, 1), new Quaternion(0, 0, 0, 0));
         currentChunk.Add(firstChunk);

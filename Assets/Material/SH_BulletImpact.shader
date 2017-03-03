@@ -29,7 +29,7 @@ Shader "Shader Forge/SH_BulletImpact" {
             #include "UnityCG.cginc"
             #pragma multi_compile_fwdbase
             #pragma multi_compile_fog
-            #pragma only_renderers d3d9 d3d11 glcore gles 
+            #pragma only_renderers d3d9 d3d11 glcore gles gles3 
             #pragma target 3.0
             uniform float4 _TintColor;
             uniform float4 _Color_02;
@@ -60,20 +60,14 @@ Shader "Shader Forge/SH_BulletImpact" {
                 float _Vcols = i.vertexColor.r;
                 float node_5169 = (1.0 - (node_6893*pow(node_6893,2.0)));
                 float node_5144 = _Vcols;
-                float node_5864 = (node_5169+node_5144);
-                float node_9103 = ((node_5144*pow(node_5144,0.5))+node_5169);
                 float node_9821 = (sin((atan2(node_2224.g,node_2224.r)*5.0))*0.5+0.5);
                 float node_2409 = _Vcols;
                 float node_5062 = _Vcols;
-                float node_7708 = floor(((node_5062*pow(node_5062,1.5))+node_5169));
                 float node_2315 = 0.1;
                 float node_7073 = _Vcols;
                 float node_9803 = _Vcols;
-                float node_4156 = floor(((node_9803*pow(node_9803,7.0))+node_5169));
                 float node_9386 = _Vcols;
-                float node_7894 = ((saturate(floor(node_5864))*saturate((1.0 - floor(node_9103)))*saturate(ceil((node_9821-node_2409))))+(saturate(node_7708)*saturate(ceil((node_9821-pow(node_2409,node_2315))))*saturate((1.0 - floor(((node_7073*pow(node_7073,2.0))+node_5169)))))+(saturate(node_4156)*saturate((1.0 - floor(((node_9386*pow(node_9386,8.0))+node_5169))))));
-                float node_8965 = saturate(node_7894);
-                float3 emissive = (lerp(_TintColor.rgb,_Color_02.rgb,(node_6893*_Vcols))*node_8965);
+                float3 emissive = (lerp(_TintColor.rgb,_Color_02.rgb,(node_6893*_Vcols))*saturate(((saturate(floor((node_5169+node_5144)))*saturate((1.0 - floor(((node_5144*pow(node_5144,0.5))+node_5169))))*saturate(ceil((node_9821-node_2409))))+(saturate(floor(((node_5062*pow(node_5062,1.5))+node_5169)))*saturate(ceil((node_9821-pow(node_2409,node_2315))))*saturate((1.0 - floor(((node_7073*pow(node_7073,2.0))+node_5169)))))+(saturate(floor(((node_9803*pow(node_9803,7.0))+node_5169)))*saturate((1.0 - floor(((node_9386*pow(node_9386,8.0))+node_5169))))))));
                 float3 finalColor = emissive;
                 fixed4 finalRGBA = fixed4(finalColor,1);
                 UNITY_APPLY_FOG_COLOR(i.fogCoord, finalRGBA, fixed4(0,0,0,1));
