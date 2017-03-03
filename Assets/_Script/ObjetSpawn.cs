@@ -16,19 +16,21 @@ public class ObjetSpawn : MonoBehaviour {
 
     private void OnEnable()
     {
-        if (transform.childCount > 0)
-            DestroyImmediate(transform.GetChild(0).gameObject);
-
+		if (!Application.isPlaying) {
+			if (transform.childCount > 0)
+				DestroyImmediate (transform.GetChild (0).gameObject);
+		}
     }
 
     void Update()
     {
-        if (shouldSpawn)
-        {
-            if (clone)
-                DestroyImmediate(clone);
+		if (!Application.isPlaying) {
+			if (shouldSpawn) {
+				if (clone)
+					DestroyImmediate (clone);
 
-            clone = Instantiate(Enemies[(int)enemyToSpawn], transform.position, transform.rotation, transform);
-        }
+				clone = Instantiate (Enemies [(int)enemyToSpawn], transform.position, transform.rotation, transform);
+			}
+		}
     }
 }
