@@ -29,7 +29,7 @@ Shader "Shader Forge/SH_BulletImpact" {
             #include "UnityCG.cginc"
             #pragma multi_compile_fwdbase
             #pragma multi_compile_fog
-            #pragma only_renderers d3d9 d3d11 glcore gles gles3 
+            #pragma only_renderers d3d9 d3d11 glcore gles gles3 metal d3d11_9x 
             #pragma target 3.0
             uniform float4 _TintColor;
             uniform float4 _Color_02;
