@@ -172,7 +172,7 @@ public class PlayerController : MonoBehaviour
         bulletFired.GetComponent<Rigidbody2D>().velocity = direction * bulletSpeed;
 
         // Screen Shake
-        Camera.main.transform.position = new Vector3(0, 0, -10);
+        gm.CameraPos(gm.isRight);
         Camera.main.transform.DOShakePosition(duration, new Vector3(strenght / 2, strenght, 0), 20, 90);
 
         currentBullet--;
