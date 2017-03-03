@@ -26,15 +26,21 @@ public class AI_TurretBehaviour : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if ( targetedPlayer != null && Vector3.Distance (transform.position, targetedPlayer.transform.position) < minimumActivationLength) {
-
-			if (targetPlayer == true){ 
-				transform.LookAt (targetedPlayer.transform.position);
-			}
+		if ( targetedPlayer != null && Vector3.Distance (transform.position, targetedPlayer.transform.position) < minimumActivationLength && this.transform.localPosition.y < targetedPlayer.transform.position.y)
+        {
+            if (targetPlayer == true)
+            {
+                Vector2 direction = targetedPlayer.transform.position - transform.position;
+                float rot_z = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+                transform.rotation = Quaternion.Euler(0f, 0f, rot_z - 90f);
+            }
 
 			timer += Time.deltaTime;
-			if(launchMissile == true){
-				if (timer > cadence){
+
+			if(launchMissile == true)
+            {
+				if (timer > cadence)
+                {
 					timer = 0;
 					Debug.Log ("ShootMissile");
 					GameObject clone;
@@ -42,6 +48,7 @@ public class AI_TurretBehaviour : MonoBehaviour {
 					Vector2 direction = targetedPlayer.transform.position - transform.position;
 					float rot_z = Mathf.Atan2 (direction.y, direction.x) * Mathf.Rad2Deg;
 					clone.transform.rotation = Quaternion.Euler (0f, 0f, rot_z - 90f);
+                    clone.transform.parent = this.gameObject.transform.root.transform;
 					clone.GetComponent<AI_MissileComponent> ().speedAIMissile = speedMissile;
 				}
 			}

@@ -31,14 +31,17 @@ public class UIManager : MonoBehaviour {
 
     [Header("PLAYERUI")]
     public Canvas playerUI;
+    public Text Score;
+    public Image ammoCount;
+    public Material M_ammoCount;
 
-    bool isSound;
-    bool isNormal;
-    bool isRight;
-    bool isRate;
+    public bool isSound;
+    public bool isNormal;
+    public bool isRight;
+    public bool isRate;
 
     GameManager gm;
-    bool hasleft;
+    bool menuIsHidden;
     bool clikedButton;
     Text highScoreText;
 
@@ -48,7 +51,8 @@ public class UIManager : MonoBehaviour {
         StartFeedback();
         gm = GameManager.instance;
         highScoreText = highscore.GetComponent<Text>();
-        hasleft = false;
+        menuIsHidden = false;
+        M_ammoCount = ammoCount.material;
 
         isSound = true;
         isNormal = true;
@@ -59,12 +63,16 @@ public class UIManager : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-        if (gm.gamestarted && !hasleft)
+        if (gm.gamestarted && !menuIsHidden)
         {
             LeaveUp();
             LeaveDown();
-            GameStart();
-            hasleft = true;
+            menuIsHidden = true;
+        }
+
+        if(Input.GetKeyDown(KeyCode.K))
+        {
+           
         }
     }
 
@@ -97,13 +105,13 @@ public class UIManager : MonoBehaviour {
     public void GameStart()
     {
         if (!SplashScreen.isFinished) return;
+        start.SetActive(false);
         gm.LaunchGame();
         highscore.transform.DOScale(3, 1f);
         highScoreText.DOFade(0, 1f);
         achievements.SetActive(false);
         settings.SetActive(false);
         leaderboards.SetActive(false);
-        start.SetActive(false);
     }
 
     public void ToggleSound(bool isOn)
@@ -150,6 +158,7 @@ public class UIManager : MonoBehaviour {
         if (isRight && !isRightHanded)
         {
             isRight = false;
+            gm.CameraPos(false);
             Right.GetComponent<Text>().color = unselected;
             Left.transform.DOScale(0.8f, 0.1f).SetEase(Ease.Linear).SetLoops(2, LoopType.Yoyo);
             Left.GetComponent<Text>().color = Color.white;
@@ -157,10 +166,12 @@ public class UIManager : MonoBehaviour {
         else if (!isRight && isRightHanded)
         {
             isRight = true;
+            gm.CameraPos(true);
             Right.GetComponent<Text>().color = Color.white;
             Right.transform.DOScale(0.8f, 0.1f).SetEase(Ease.Linear).SetLoops(2, LoopType.Yoyo);
             Left.GetComponent<Text>().color = unselected;
         }
+
     }
 
 

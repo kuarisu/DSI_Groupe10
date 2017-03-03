@@ -6,13 +6,18 @@ public class EnemiesManager : MonoBehaviour {
 
     public List<GameObject> m_ListOfEnemies = new List<GameObject>();
     bool m_ElementsEnbaled = false;
+    GameManager gm;
+
+    void Awake()
+    {
+        gm = GameManager.instance;
+    }
 
 	void Update () {
-		if(GameManager.instance.gamestarted == true && !m_ElementsEnbaled)
+		if(gm.gamestarted == true && !m_ElementsEnbaled)
         {
             m_ElementsEnbaled = true;
             EnablingEnemies();
-
         }
 	}
 

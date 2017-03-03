@@ -5,12 +5,15 @@ using UnityEngine.UI;
 
 public class Enemy_Lives : MonoBehaviour {
 
+    public GameObject explosion;
+    public int points;
+    GameObject ownChunk;
+
     [SerializeField]
-    int m_NumberOfLives;        //The Game Designers can change the number of lifves the enemy has.
+    public int m_NumberOfLives;        //The Game Designers can change the number of lifves the enemy has.
 
     [SerializeField]
     float m_TimerBeforeDestroy; //The Game Designers can change the delay before destroying the enemy. If it's 0, it will be instant.
-
 
     // The function called by the bullet each time it hits an enemy with life.
     public void Hited()
@@ -33,8 +36,11 @@ public class Enemy_Lives : MonoBehaviour {
     //Coroutine so we can add some daly before destroying the enemy and maybe add animation and visual effects here
     IEnumerator DeathCoroutine()
     {
+        GameManager.instance.Scoring(points);
         this.GetComponent<Collider2D>().enabled = false; // Disable the collider so it won't have any impact on the reste of the game.
-        yield return new WaitForSeconds(m_TimerBeforeDestroy);
+        //yield return new WaitForSeconds(m_TimerBeforeDestroy);
+        GameObject clone = Instantiate(explosion, transform.position, transform.rotation);
+        clone.transform.SetParent(transform.root);
         Destroy(this.gameObject);
         yield break;
     }
