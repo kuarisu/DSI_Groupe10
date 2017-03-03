@@ -47,7 +47,7 @@ public class PlayerController : MonoBehaviour
     [Tooltip("Time in seconds before player gets to his original rotation")]
     public float backForceRot;
     public int bulletSpeed;
-    public int bulletNumber;
+    public int maxBullet;
     public float rateOfFire;
     float lastShot;
 
@@ -66,6 +66,8 @@ public class PlayerController : MonoBehaviour
     public float duration;
     public int vibrato;
 
+    int currentBullet;
+
     // Use this for initialization
     void Awake()
     {
@@ -81,6 +83,7 @@ public class PlayerController : MonoBehaviour
         transform.position = new Vector3(0,-3,0);
         fired = false;
         startRotation = transform.rotation.eulerAngles;
+        currentBullet = maxBullet;
     }
 
     // Update is called once per frame
@@ -106,7 +109,6 @@ public class PlayerController : MonoBehaviour
                 backforceTimer += Time.deltaTime;
             }
         }
-
     }
 
     // Controls for the player
@@ -115,7 +117,7 @@ public class PlayerController : MonoBehaviour
 
         //INPUTS FOR EDITOR AND STANDALONE
 #if UNITY_EDITOR || UNITY_STANDALONE
-        if (Input.GetMouseButton(0) && Camera.main.ScreenToWorldPoint(Input.mousePosition).y < transform.position.y && Time.time > rateOfFire + lastShot /*&& bulletNumber > 0*/)
+        if (Input.GetMouseButton(0) && Camera.main.ScreenToWorldPoint(Input.mousePosition).y < transform.position.y && Time.time > rateOfFire + lastShot && currentBullet > 0)
         {
             Fire();
             lastShot = Time.time;
@@ -130,7 +132,7 @@ public class PlayerController : MonoBehaviour
 #if UNITY_ANDROID
         for (int i = 0; i < Input.touchCount; ++i)
         {
-            if (Input.GetTouch(0).phase == TouchPhase.Began && Camera.main.ScreenToWorldPoint(Input.GetTouch(0).position).y < transform.position.y /*&& bulletNumber > 0*/)
+            if (Input.GetTouch(0).phase == TouchPhase.Began && Camera.main.ScreenToWorldPoint(Input.GetTouch(0).position).y < transform.position.y && currentBullet > 0)
             {
                 isHoldingDown = true;
                 lastShot = Time.time;
@@ -172,7 +174,9 @@ public class PlayerController : MonoBehaviour
         // Screen Shake
         Camera.main.transform.position = new Vector3(0, 0, -10);
         Camera.main.transform.DOShakePosition(duration, new Vector3(strenght / 2, strenght, 0), 20, 90);
-        bulletNumber--;
+
+        currentBullet--;
+        ui.M_ammoCount.SetFloat("_AmmoCurrent", currentBullet);
         DOTween.Kill("Rotation");
         isRotating = false;
     }
