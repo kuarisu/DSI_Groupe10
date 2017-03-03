@@ -33,7 +33,7 @@ Shader "Shader Forge/SH_EnemyProjectileTrail" {
             #include "UnityCG.cginc"
             #pragma multi_compile_fwdbase
             #pragma multi_compile_fog
-            #pragma only_renderers d3d9 d3d11 glcore gles gles3 
+            #pragma only_renderers d3d9 d3d11 glcore gles gles3 metal d3d11_9x 
             #pragma target 3.0
             uniform float4 _TimeEditor;
             uniform sampler2D _MainTex; uniform float4 _MainTex_ST;
@@ -64,8 +64,8 @@ Shader "Shader Forge/SH_EnemyProjectileTrail" {
             float4 frag(VertexOutput i) : COLOR {
 ////// Lighting:
 ////// Emissive:
-                float4 node_3573 = _Time + _TimeEditor;
-                float2 node_3117 = (i.uv0+node_3573.g*float2(-1,0.5));
+                float4 node_5818 = _Time + _TimeEditor;
+                float2 node_3117 = (i.uv0+node_5818.g*float2(-1,0.5));
                 float2 node_933 = (node_3117*_Diform_Tile_01);
                 float4 node_3976 = tex2D(_Diform,TRANSFORM_TEX(node_933, _Diform));
                 float2 node_3339 = (node_3117*_Diform_Tile_02);
