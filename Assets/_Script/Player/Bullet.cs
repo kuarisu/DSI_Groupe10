@@ -4,8 +4,9 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour {
 
-	// Use this for initialization
-	public void Awake () {
+
+    // Use this for initialization
+    public void Awake () {
         Destroy(gameObject, 2f);
 	}
 	

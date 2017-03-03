@@ -25,17 +25,20 @@ public class Bullet_HitEnemy : MonoBehaviour {
                 impact = Instantiate(impact,col.transform.position,transform.rotation);
 
             impact.transform.SetParent(gm.levelManager.currentChunk[1].transform);
+            SoundManager.Instance.BulletDestroyed.Play();
             Destroy(gameObject);
         }
         else if(col.gameObject.tag != "BulletDestroyer")
         {
             impact = Instantiate(impact, transform.position, transform.rotation);
             impact.transform.SetParent(gm.levelManager.currentChunk[1].transform);
+            SoundManager.Instance.BulletDestroyed.Play();
             Destroy(gameObject);
         }
         else
         {
             GetComponent<Collider2D>().enabled = false;
+            SoundManager.Instance.BulletDestroyed.Play();
             Destroy(gameObject, 1f);
         }
     }
