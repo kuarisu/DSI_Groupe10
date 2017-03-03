@@ -36,10 +36,9 @@ public class GameManager : MonoBehaviour {
         Screen.orientation = ScreenOrientation.Portrait;
         playerController = GameObject.Find("Player").GetComponent<PlayerController>();
 
-        //Set camera size depending on aspect ratio
-        Camera.main.transform.position = new Vector3(0, 0, -10);
+        //Camera Initialization
+        CameraPos(true);
         Camera.main.orthographicSize = ((Screen.height * chunkSize) / Screen.width) / 2;
-
     }
 
     public void LaunchGame()
@@ -47,12 +46,27 @@ public class GameManager : MonoBehaviour {
         gamestarted = true;
         playerController.gameObject.transform.DOMoveY(playerController.targetPosition.y, 1.75f).SetEase(Ease.InOutBack).OnComplete(GameLaunched);
         levelManager.InstantiateChunks();
+
+        //Initialize ammo bar UI
+        uiManager.M_ammoCount.SetFloat("_AmmoMax", playerController.maxBullet);
+        uiManager.M_ammoCount.SetFloat("_AmmoCurrent", playerController.maxBullet);
+        uiManager.M_ammoCount.SetVector("_ColorFull", Color.yellow);
+        uiManager.M_ammoCount.SetVector("_ColorEmpty", Color.red);
+
     }
 
     public void GameLaunched()
     {
         hasGameLaunched = true;
         uiManager.playerUI.gameObject.SetActive(true);
+    }
+
+    public void CameraPos(bool right)
+    {
+        if (right)
+            Camera.main.transform.position = new Vector3(-0.25f, 0, -10);
+        else
+            Camera.main.transform.position = new Vector3(0.25f, 0, -10);
     }
 
     public void Scoring(int add)
