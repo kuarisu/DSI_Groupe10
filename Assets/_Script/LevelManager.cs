@@ -13,8 +13,7 @@ public class LevelManager : MonoBehaviour {
     public int currentbgIndex;
     public float bgSpeedRatio;
 
-    private float speedModifier;
-
+    float speedModifier;
     PlayerController playerController;
     Transform player;
     Vector2 playerStartPos;
@@ -22,16 +21,20 @@ public class LevelManager : MonoBehaviour {
     float maxOffsetY;
     List<GameObject> currentChunk = new List<GameObject>(2);
     List<GameObject> currentBackground = new List<GameObject>(2);
+    GameManager gm;
 
     void Start()
     {
         InstantiateBackground();
         InstantiateChunks();
 
+        gm = GameManager.instance;
+
         playerController = GameObject.Find("Player").GetComponent<PlayerController>();
         player = playerController.GetComponent<Transform>();
         playerStartPos = playerController.targetPosition;
         maxOffsetY = playerController.maxOffsetY;
+
     }
 
     void Update()
@@ -44,14 +47,16 @@ public class LevelManager : MonoBehaviour {
             speedModifier = Mathf.Lerp(0, 1, playerOffsetY / maxOffsetY);
 
         MoveBackground();
-        MoveChunks();
+
+        if (gm.gamestarted)
+            MoveChunks();
     }
 
     void InstantiateChunks()
     {
-        GameObject firstChunk = (GameObject)Instantiate(chunks[(int)Random.Range(0, chunks.Count - 1)], new Vector3(0, 0, 1), new Quaternion(0, 0, 0, 0));
+        GameObject firstChunk = (GameObject)Instantiate(chunks[(int)Random.Range(0, chunks.Count - 1)], new Vector3(0, -46, 1), new Quaternion(0, 0, 0, 0));
         currentChunk.Add(firstChunk);
-        GameObject secondChunk = (GameObject)Instantiate(chunks[(int)Random.Range(0, chunks.Count - 1)], new Vector3(0, -46, 1), new Quaternion(0, 0, 0, 0));
+        GameObject secondChunk = (GameObject)Instantiate(chunks[(int)Random.Range(0, chunks.Count - 1)], new Vector3(0, -92, 1), new Quaternion(0, 0, 0, 0));
         currentChunk.Add(secondChunk);
     }
 
