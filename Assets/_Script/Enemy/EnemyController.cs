@@ -158,11 +158,11 @@ public class EnemyController : MonoBehaviour {
             MoveRight();
         }
         
-        if (transform.position.x <= boundary.xMin)
+		if (transform.position.x <= originalPosition.x + boundary.xMin)
         {
             shouldMoveLeft = false;
         }
-        if (transform.position.x >= boundary.xMax)
+		if (transform.position.x >= originalPosition.x + boundary.xMax)
         {
             shouldMoveLeft = true;
         }
@@ -267,8 +267,8 @@ public class EnemyController : MonoBehaviour {
     {
         rb.position = new Vector2
            (
-               Mathf.Clamp(rb.position.x, boundary.xMin, boundary.xMax),
-               Mathf.Clamp(rb.position.y, boundary.yMin, boundary.yMax)
+				Mathf.Clamp(rb.position.x, originalPosition.x + boundary.xMin,originalPosition.x +  boundary.xMax),
+				rb.position.y
            );
     }
 
