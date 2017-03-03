@@ -199,7 +199,7 @@ public class PlayerController : MonoBehaviour
     {
         distanceOffsetX = transform.position.x;
 
-        if (Mathf.Abs(distanceOffsetX) > 0.1f && transform.position.y > 4.6)
+        if (Mathf.Abs(distanceOffsetX) > 0.1f)
         {
             Vector2 vectorToNormalize = new Vector2(transform.position.x, 0f);
             vectorToNormalize.Normalize();
