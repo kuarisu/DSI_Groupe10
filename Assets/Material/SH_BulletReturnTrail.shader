@@ -31,7 +31,7 @@ Shader "Shader Forge/SH_BulletReturnTrail" {
             #include "UnityCG.cginc"
             #pragma multi_compile_fwdbase
             #pragma multi_compile_fog
-            #pragma only_renderers d3d9 d3d11 glcore gles gles3 
+            #pragma only_renderers d3d9 d3d11 glcore gles gles3 metal d3d11_9x 
             #pragma target 3.0
             uniform float4 _TimeEditor;
             uniform sampler2D _MainTex; uniform float4 _MainTex_ST;
@@ -64,11 +64,11 @@ Shader "Shader Forge/SH_BulletReturnTrail" {
                 i.screenPos.y *= _ProjectionParams.x;
 ////// Lighting:
 ////// Emissive:
-                float4 node_8544 = _Time + _TimeEditor;
+                float4 node_6073 = _Time + _TimeEditor;
                 float2 node_4610 = (float2(i.screenPos.x*(_ScreenParams.r/_ScreenParams.g), i.screenPos.y).rg*_Tile);
-                float2 node_3247 = (node_4610+node_8544.g*float2(1,0.5));
+                float2 node_3247 = (node_4610+node_6073.g*float2(1,0.5));
                 float4 node_6858 = tex2D(_Diform,TRANSFORM_TEX(node_3247, _Diform));
-                float2 node_3889 = ((node_4610*(_Tile/2.1))+node_8544.g*float2(-0.1,-0.1));
+                float2 node_3889 = ((node_4610*(_Tile/2.1))+node_6073.g*float2(-0.1,-0.1));
                 float4 node_9797 = tex2D(_Diform,TRANSFORM_TEX(node_3889, _Diform));
                 float node_9394 = ((node_6858.g+node_9797.r)/2.0);
                 float2 node_5973 = lerp(i.uv0,float2(node_9394,node_9394),saturate((saturate((i.uv0.r*2.0))-0.5)));

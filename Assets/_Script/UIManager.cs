@@ -32,11 +32,13 @@ public class UIManager : MonoBehaviour {
     [Header("PLAYERUI")]
     public Canvas playerUI;
     public Text Score;
+    public Image ammoCount;
+    public Material M_ammoCount;
 
-    bool isSound;
-    bool isNormal;
-    bool isRight;
-    bool isRate;
+    public bool isSound;
+    public bool isNormal;
+    public bool isRight;
+    public bool isRate;
 
     GameManager gm;
     bool menuIsHidden;
@@ -50,6 +52,7 @@ public class UIManager : MonoBehaviour {
         gm = GameManager.instance;
         highScoreText = highscore.GetComponent<Text>();
         menuIsHidden = false;
+        M_ammoCount = ammoCount.material;
 
         isSound = true;
         isNormal = true;
@@ -155,6 +158,7 @@ public class UIManager : MonoBehaviour {
         if (isRight && !isRightHanded)
         {
             isRight = false;
+            gm.CameraPos(false);
             Right.GetComponent<Text>().color = unselected;
             Left.transform.DOScale(0.8f, 0.1f).SetEase(Ease.Linear).SetLoops(2, LoopType.Yoyo);
             Left.GetComponent<Text>().color = Color.white;
@@ -162,10 +166,12 @@ public class UIManager : MonoBehaviour {
         else if (!isRight && isRightHanded)
         {
             isRight = true;
+            gm.CameraPos(true);
             Right.GetComponent<Text>().color = Color.white;
             Right.transform.DOScale(0.8f, 0.1f).SetEase(Ease.Linear).SetLoops(2, LoopType.Yoyo);
             Left.GetComponent<Text>().color = unselected;
         }
+
     }
 
 
