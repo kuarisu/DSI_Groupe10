@@ -27,6 +27,11 @@ public class GameManager : MonoBehaviour {
     public int playerXP;
     public int playerLvl;
 
+    public float TimeBeforeRespawn;
+    public float TimeForEffect;
+    public GameObject PlayerVisual;
+    public ParticleSystem PlayerDestruction;
+
 
     void Awake()
     {
@@ -148,7 +153,36 @@ public class GameManager : MonoBehaviour {
         Debug.Log("HighScore After: " + highScore);
         score = 0;
         SetSave();
+
+        StartCoroutine(DestroyedCoroutine());
+        StartCoroutine(DeathEffect());
+        PlayerDestruction.Play();
+
+        PlayerVisual.GetComponent<Collider2D>().enabled = false;
+
+    }
+
+
+    IEnumerator DestroyedCoroutine()
+    {
+        yield return new WaitForSeconds(TimeBeforeRespawn);
         SceneManager.LoadScene(0);
+    }
+
+    IEnumerator DeathEffect()
+    {
+        float _Value = 0;
+        float _CurrentTime = 0;
+        while (_CurrentTime <= TimeForEffect)
+        {
+            _Value = Mathf.Lerp(0, 1, _CurrentTime);
+            PlayerVisual.GetComponent<SpriteRenderer>().material.SetFloat("_Destroy", _Value);
+            _CurrentTime += Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+
+        yield break;
+
     }
 
     public void SetSave()
