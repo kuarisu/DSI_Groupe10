@@ -63,9 +63,9 @@ public class Main : MonoBehaviour
 // Example of game class
 class Player
 {
-	public int XP;
-	public int Money;
-	public float Energy;
+	public int XP = 0;
+	public int Money = 0;
+	public float Energy = 0;
 
 	public void EnterMainMenu()
 	{

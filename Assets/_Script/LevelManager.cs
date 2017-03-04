@@ -16,8 +16,6 @@ public class LevelManager : MonoBehaviour {
 
     float speedModifier;
     PlayerController playerController;
-    Transform player;
-    Vector2 playerStartPos;
     float playerOffsetY;
     float maxOffsetY;
     public List<GameObject> currentChunk = new List<GameObject>(2);
@@ -33,8 +31,6 @@ public class LevelManager : MonoBehaviour {
         bulletDestroyer.transform.position = new Vector3(0, -(Camera.main.orthographicSize + 5), 0);
 
         playerController = GameObject.Find("Player").GetComponent<PlayerController>();
-        player = playerController.GetComponent<Transform>();
-        playerStartPos = playerController.targetPosition;
         maxOffsetY = playerController.maxOffsetY;
 
     }

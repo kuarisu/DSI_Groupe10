@@ -31,9 +31,13 @@ public class UIManager : MonoBehaviour {
 
     [Header("PLAYERUI")]
     public Canvas playerUI;
+    public GameObject playerProgress;
+    public GameObject bulletIndicator;
+    public GameObject playerInterface;
     public Text Score;
     public Image ammoCount;
     public Material M_ammoCount;
+    public GameObject leftRight;
 
     public bool isSound;
     public bool isNormal;
@@ -69,11 +73,11 @@ public class UIManager : MonoBehaviour {
             LeaveDown();
             menuIsHidden = true;
         }
+    }
 
-        if(Input.GetKeyDown(KeyCode.K))
-        {
-           
-        }
+    public void SetHighScore()
+    {
+        highScoreText.text = "" + gm.highScore;
     }
 
     public void ShowAchievements()
@@ -158,7 +162,7 @@ public class UIManager : MonoBehaviour {
         if (isRight && !isRightHanded)
         {
             isRight = false;
-            gm.CameraPos(false);
+            gm.isRight = false;
             Right.GetComponent<Text>().color = unselected;
             Left.transform.DOScale(0.8f, 0.1f).SetEase(Ease.Linear).SetLoops(2, LoopType.Yoyo);
             Left.GetComponent<Text>().color = Color.white;
@@ -166,7 +170,7 @@ public class UIManager : MonoBehaviour {
         else if (!isRight && isRightHanded)
         {
             isRight = true;
-            gm.CameraPos(true);
+            gm.isRight = true;
             Right.GetComponent<Text>().color = Color.white;
             Right.transform.DOScale(0.8f, 0.1f).SetEase(Ease.Linear).SetLoops(2, LoopType.Yoyo);
             Left.GetComponent<Text>().color = unselected;
