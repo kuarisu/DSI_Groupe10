@@ -162,10 +162,13 @@ public class GameManager : MonoBehaviour {
         PlayerVisual.GetComponent<Collider2D>().enabled = false;
     }
 
+    Dictionary<string, object> DeathDictionary = new Dictionary <string, object>();
 
     IEnumerator DestroyedCoroutine()
     {
+        DeathDictionary.Add("score", score);
         yield return new WaitForSeconds(TimeBeforeRespawn);
+        Amplitude.Instance.logEvent("Death", DeathDictionary);
         SceneManager.LoadScene(0);
     }
 
