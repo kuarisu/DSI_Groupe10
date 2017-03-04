@@ -34,7 +34,8 @@ public class UIManager : MonoBehaviour {
     public GameObject playerProgress;
     public GameObject bulletIndicator;
     public GameObject playerInterface;
-    public Text Score;
+    public Text score;
+    public int scoreToDraw;
     public Image ammoCount;
     public Material M_ammoCount;
     public GameObject leftRight;
@@ -43,25 +44,28 @@ public class UIManager : MonoBehaviour {
     public bool isNormal;
     public bool isRight;
     public bool isRate;
+    public bool factorySettings;
 
     GameManager gm;
+    LevelManager lm;
     bool menuIsHidden;
     bool clikedButton;
     Text highScoreText;
+    bool scoreUpdated;
 
 	// Use this for initialization
-	void Start () {
+	void Awake () {
+        gm = GameManager.instance;
+        lm = gm.levelManager;
         TitleFeedback();
         StartFeedback();
-        gm = GameManager.instance;
         highScoreText = highscore.GetComponent<Text>();
         menuIsHidden = false;
         M_ammoCount = ammoCount.material;
 
-        isSound = true;
-        isNormal = true;
-        isRight = true;
-        isRate = false;
+        InitSettings();
+
+        SetHighScore();
     }
 
     // Update is called once per frame
@@ -72,6 +76,81 @@ public class UIManager : MonoBehaviour {
             LeaveUp();
             LeaveDown();
             menuIsHidden = true;
+        }
+
+        if (gm.hasGameLaunched && !scoreUpdated)
+        {
+            scoreUpdated = true;
+            StartCoroutine("ScoreOverDistance");
+        }
+        ScoreUpdate();
+    }
+
+    IEnumerator ScoreOverDistance()
+    {
+        gm.score += gm.scorePerSecond;
+        yield return new WaitForSeconds(0.1f);
+        scoreUpdated = false;
+    }
+
+    public void ScoreUpdate()
+    {
+        if(scoreToDraw <= gm.score) {
+            score.text = scoreToDraw.ToString();
+            scoreToDraw++;
+        }
+        
+    }
+
+    public void InitSettings()
+    {
+        if (PlayerPrefs.HasKey("isSound"))
+            gm.GetSave();
+        else
+        {
+            isSound = true;
+            isNormal = true;
+            isRight = true;
+            isRate = false;
+        }
+    }
+
+    public void CheckSettings()
+    {
+        //Sound On or Off?
+        if (isSound)
+        {
+            On.GetComponent<Text>().color = Color.white;
+            Off.GetComponent<Text>().color = unselected;
+        }
+        else if(!isSound)
+        {
+            On.GetComponent<Text>().color = unselected;
+            Off.GetComponent<Text>().color = Color.white;
+        }
+
+        //Normal or Fantastic?
+        if (isNormal)
+        {
+            Normal.GetComponent<Text>().color = Color.white;
+            High.GetComponent<Text>().color = unselected;
+        }
+        else if (!isNormal)
+        {
+            High.GetComponent<Text>().color = unselected;
+            Normal.GetComponent<Text>().color = Color.white;
+        }
+
+        //Is Right or Left-Handed?
+        if (isRight)
+        {
+            Right.GetComponent<Text>().color = Color.white;
+            Left.GetComponent<Text>().color = unselected;
+        }
+        else if (!isRight)
+        {
+            Right.GetComponent<Text>().color = unselected;
+            Left.GetComponent<Text>().color = Color.white;
         }
     }
 
@@ -92,6 +171,8 @@ public class UIManager : MonoBehaviour {
         if (!SplashScreen.isFinished) return;
         settingsCanvas.gameObject.SetActive(true);
         settings.transform.DOPunchScale(new Vector3(0.2f, 0.2f, 1), 1f, 4, 1);
+
+        CheckSettings();
     }
 
     public void ShowLeaderboards()
@@ -162,7 +243,6 @@ public class UIManager : MonoBehaviour {
         if (isRight && !isRightHanded)
         {
             isRight = false;
-            gm.isRight = false;
             Right.GetComponent<Text>().color = unselected;
             Left.transform.DOScale(0.8f, 0.1f).SetEase(Ease.Linear).SetLoops(2, LoopType.Yoyo);
             Left.GetComponent<Text>().color = Color.white;
@@ -170,7 +250,6 @@ public class UIManager : MonoBehaviour {
         else if (!isRight && isRightHanded)
         {
             isRight = true;
-            gm.isRight = true;
             Right.GetComponent<Text>().color = Color.white;
             Right.transform.DOScale(0.8f, 0.1f).SetEase(Ease.Linear).SetLoops(2, LoopType.Yoyo);
             Left.GetComponent<Text>().color = unselected;
