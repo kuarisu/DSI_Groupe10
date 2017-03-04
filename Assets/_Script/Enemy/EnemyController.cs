@@ -9,7 +9,8 @@ public class Boundary                         // use to limit the movement of th
 }
 
 public class EnemyController : MonoBehaviour {
-    
+
+    public float MinDistance;
     public float speedVertical;
     public float speedHorizontal;
     public Boundary boundary;
@@ -110,39 +111,43 @@ public class EnemyController : MonoBehaviour {
 
     void FixedUpdate()
     {
-		if (target != null) {
-			
-			LookAtTarget ();
-		}
-
-        if (chooseRandomAction)
+        if (Vector2.Distance(GameManager.instance.player.transform.position, this.transform.position) < MinDistance)
         {
-            thinkTimeLeft -= Time.deltaTime;
-            if (thinkTimeLeft <= 0)                    // every x seconds, AI will choose an action(x = AIThinkPeriod). 
+            if (target != null)
             {
-                ChooseRandomAction();
-                thinkTimeLeft = AIThinkPeriod;
+
+                LookAtTarget();
             }
-            ExecuteRandomAction();
+
+            if (chooseRandomAction)
+            {
+                thinkTimeLeft -= Time.deltaTime;
+                if (thinkTimeLeft <= 0)                    // every x seconds, AI will choose an action(x = AIThinkPeriod). 
+                {
+                    ChooseRandomAction();
+                    thinkTimeLeft = AIThinkPeriod;
+                }
+                ExecuteRandomAction();
+            }
+            if (backToOrigin)
+                BackToOrigin();
+            if (moveUp)
+                MoveUp();
+            if (moveDown)
+                MoveDown();
+            if (moveLeft)
+                MoveLeft();
+            if (moveRight)
+                MoveRight();
+            if (loopHorizontal)
+                MoveLoopHorizontal();
+            if (movePointToPoint)
+                MovePointToPoint();
+            if (moveToTarget)
+                MoveToTarget();
+            if (rotateAroundTarget)
+                RotateAroundTarget();
         }
-        if (backToOrigin)
-            BackToOrigin();
-        if (moveUp)
-            MoveUp();
-        if (moveDown)
-            MoveDown();
-        if (moveLeft)
-            MoveLeft();
-        if (moveRight)
-            MoveRight();
-        if (loopHorizontal)
-            MoveLoopHorizontal();
-        if (movePointToPoint)
-            MovePointToPoint();
-        if (moveToTarget)
-            MoveToTarget();
-        if (rotateAroundTarget)
-            RotateAroundTarget();
 
     }
 
