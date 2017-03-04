@@ -64,7 +64,7 @@ public class PlayerController : MonoBehaviour
     public float duration;
     public int vibrato;
 
-    int currentBullet;
+    public int currentBullet;
 
     // Use this for initialization
     void Awake()
@@ -169,11 +169,15 @@ public class PlayerController : MonoBehaviour
         bulletFired.GetComponent<Rigidbody2D>().velocity = direction * bulletSpeed;
 
         // Screen Shake
-        gm.CameraPos(gm.isRight);
+        if(gm.uiManager.isRight == true)
+            Camera.main.transform.DOMoveX(-Camera.main.orthographicSize * 0.035f, 2f);
+        else if(gm.uiManager.isRight == false)
+            Camera.main.transform.DOMoveX(Camera.main.orthographicSize * 0.035f, 2f);
+
         Camera.main.transform.DOShakePosition(duration, new Vector3(strenght / 2, strenght, 0), 20, 90);
 
-        currentBullet--;
-        ui.M_ammoCount.SetFloat("_AmmoCurrent", currentBullet);
+        Bullets(-1);
+
         DOTween.Kill("Rotation");
         isRotating = false; 
     }
@@ -182,6 +186,12 @@ public class PlayerController : MonoBehaviour
     {
         SoundManager.Instance.ShotFired.pitch = Random.Range(0.8f, 1.3f);
         SoundManager.Instance.ShotFired.Play();
+    }
+
+    public void Bullets(int bullet)
+    {
+        currentBullet += bullet;
+        ui.M_ammoCount.SetFloat("_AmmoCurrent", currentBullet);
     }
 
     void BackForceY()
