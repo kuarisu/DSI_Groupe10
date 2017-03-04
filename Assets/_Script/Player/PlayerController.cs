@@ -18,7 +18,7 @@ public class PlayerController : MonoBehaviour
     bool doRotate;
     Vector3 startRotation;
     float backforceTimer = 3f;
-    bool isInChunkPoint;
+    public bool isInChunkPoint;
 
     public Camera mainCam;
     public Vector2 targetPosition;
@@ -193,19 +193,22 @@ public class PlayerController : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.tag == "chunkpoint")
+        if (collision.tag == "Chunkpoint")
         {
-            currentBullet = maxBullet;
+            Bullets(maxBullet - currentBullet);
             isInChunkPoint = true;
+            Debug.Log("Entrée");
         }
     }
 
     void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.tag == "chunkpoint")
+        if (collision.tag == "Chunkpoint")
         {
+            Bullets(maxBullet - currentBullet);
             currentBullet = maxBullet;
             isInChunkPoint = false;
+            gm.uiManager.slider.value = 0;
         }
     }
 

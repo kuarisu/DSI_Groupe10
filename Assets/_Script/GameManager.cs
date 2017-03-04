@@ -20,6 +20,7 @@ public class GameManager : MonoBehaviour {
     public float chunkSize;
     public int score;
     public int scoreToDraw;
+    public bool isUiInPos;
 
     //Data to save
     public int highScore;
@@ -59,6 +60,7 @@ public class GameManager : MonoBehaviour {
     {
         gamestarted = false;
         hasGameLaunched = false;
+        isUiInPos = false;
         GetSave();
         //highScore = score;
         score = 0;
@@ -100,7 +102,7 @@ public class GameManager : MonoBehaviour {
         //For a right-handed player: UI is on the left
         if (right)
         {
-            Camera.main.transform.DOMoveX(-Camera.main.orthographicSize * 0.035f, 2f);
+            Camera.main.transform.DOMoveX(-Camera.main.orthographicSize * 0.035f, 2f).OnComplete(UiInPos);
             uiManager.score.transform.localPosition = new Vector3(chunkSize, uiManager.score.transform.localPosition.y, 0);
 
             RectTransform rectTransform = uiManager.playerInterface.GetComponent<RectTransform>();
@@ -122,7 +124,6 @@ public class GameManager : MonoBehaviour {
             rectTransform.pivot = new Vector2(1, 0.5f);
             rectTransform.anchoredPosition = new Vector3(50, 0, 0);
 
-            //uiManager.ammoCount.transform.DOScaleX(-uiManager.ammoCount.transform.localScale.x,0.1f);
             uiManager.isRight = false;
         }
         
@@ -203,5 +204,10 @@ public class GameManager : MonoBehaviour {
     public void OnApplicationQuit()
     {
        SetSave();
+    }
+
+    void UiInPos()
+    {
+        isUiInPos = true;
     }
 }

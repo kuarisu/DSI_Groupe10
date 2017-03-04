@@ -45,15 +45,17 @@ public class UIManager : MonoBehaviour {
     public bool isRight;
     public bool isRate;
     public bool factorySettings;
+    public Slider slider;
 
     GameManager gm;
     bool menuIsHidden;
     bool clikedButton;
     Text highScoreText;
     bool scoreUpdated;
+    float timePassed;
 
-	// Use this for initialization
-	void Awake () {
+    // Use this for initialization
+    void Awake () {
         gm = GameManager.instance;
         TitleFeedback();
         StartFeedback();
@@ -64,6 +66,10 @@ public class UIManager : MonoBehaviour {
         InitSettings();
 
         SetHighScore();
+
+        slider = playerProgress.GetComponent<Slider>();
+        slider.value = 0;
+        slider.maxValue = gm.levelManager.maxChunk;
     }
 
     // Update is called once per frame
@@ -81,7 +87,12 @@ public class UIManager : MonoBehaviour {
             scoreUpdated = true;
             StartCoroutine("ScoreOverDistance");
         }
+
         ScoreUpdate();
+
+        //The end value needs to be more precise!
+        //if (gm.hasGameLaunched && gm.player.isInChunkPoint == false)
+            //slider.value += (slider.maxValue*Time.deltaTime/26f);
     }
 
     IEnumerator ScoreOverDistance()
@@ -96,8 +107,19 @@ public class UIManager : MonoBehaviour {
         if(scoreToDraw <= gm.score) {
             score.text = scoreToDraw.ToString();
             scoreToDraw++;
-        }
-        
+        }      
+    }
+
+    public void GameStart()
+    {
+        if (!SplashScreen.isFinished) return;
+        start.SetActive(false);
+        gm.LaunchGame();
+        highscore.transform.DOScale(3, 1f);
+        highScoreText.DOFade(0, 1f);
+        achievements.SetActive(false);
+        settings.SetActive(false);
+        leaderboards.SetActive(false);
     }
 
     public void InitSettings()
@@ -183,18 +205,6 @@ public class UIManager : MonoBehaviour {
     public void HideSettings()
     {
         settingsCanvas.gameObject.SetActive(false);
-    }
-
-    public void GameStart()
-    {
-        if (!SplashScreen.isFinished) return;
-        start.SetActive(false);
-        gm.LaunchGame();
-        highscore.transform.DOScale(3, 1f);
-        highScoreText.DOFade(0, 1f);
-        achievements.SetActive(false);
-        settings.SetActive(false);
-        leaderboards.SetActive(false);
     }
 
     public void ToggleSound(bool isOn)
