@@ -26,7 +26,7 @@ public class AI_TurretBehaviour : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if ( targetedPlayer != null && Vector3.Distance (transform.position, targetedPlayer.transform.position) < minimumActivationLength && this.transform.localPosition.y < targetedPlayer.transform.position.y)
+		if ( targetedPlayer != null && Vector3.Distance (transform.position, targetedPlayer.transform.position) < minimumActivationLength && this.transform.parent.transform.position.y < targetedPlayer.transform.position.y)
         {
             if (targetPlayer == true)
             {
