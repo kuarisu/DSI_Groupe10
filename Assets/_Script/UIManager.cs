@@ -88,13 +88,13 @@ public class UIManager : MonoBehaviour {
             menuIsHidden = true;
         }
 
-        if (gm.hasGameLaunched && !scoreUpdated)
+        if (gm.hasGameLaunched && gm.isPlayerDead == false)
         {
-            scoreUpdated = true;
-            StartCoroutine("ScoreOverDistance");
+            ScoreUpdate();
+            // StartCoroutine("ScoreOverDistance");
         }
 
-        ScoreUpdate();
+
 
         //The end value needs to be more precise!
         //if (gm.hasGameLaunched && gm.player.isInChunkPoint == false)
@@ -103,17 +103,21 @@ public class UIManager : MonoBehaviour {
 
     IEnumerator ScoreOverDistance()
     {
-        gm.score += gm.scorePerSecond;
+        gm.score += (int)(gm.scorePerSecond*Time.deltaTime);
         yield return new WaitForSeconds(0.1f);
         scoreUpdated = false;
     }
 
+    public float UIlocalScore;
+
     public void ScoreUpdate()
     {
-        if(scoreToDraw <= gm.score) {
-            score.text = scoreToDraw.ToString();
-            scoreToDraw += (int)(scoreToDraw*Time.deltaTime);
-        }      
+        UIlocalScore += Time.deltaTime * gm.scorePerSecond;
+        gm.score = (int)UIlocalScore;
+        /* if (scoreToDraw <= gm.score) {
+             scoreToDraw++;
+         }    */
+        score.text = gm.score.ToString();
     }
 
     public void GameStart()

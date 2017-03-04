@@ -138,8 +138,8 @@ public class GameManager : MonoBehaviour {
 
     public void Scoring(int add)
     {
-        score += add;
-        uiManager.scoreToDraw += add;
+        uiManager.UIlocalScore += add/2;
+        //uiManager.scoreToDraw += score;
         DOTween.Restart("ShakeScale");
         DOTween.Kill("ShakeScale");
         uiManager.score.transform.DOShakeScale(1, 1, 20, 90, true).SetEase(Ease.InQuad).SetId("ShakeScale");
