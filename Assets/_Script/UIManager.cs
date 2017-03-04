@@ -112,7 +112,7 @@ public class UIManager : MonoBehaviour {
     {
         if(scoreToDraw <= gm.score) {
             score.text = scoreToDraw.ToString();
-            scoreToDraw++;
+            scoreToDraw += (int)(scoreToDraw*Time.deltaTime);
         }      
     }
 

@@ -78,7 +78,7 @@ public class LevelManager : MonoBehaviour {
     void MoveChunks()
     {
         foreach(GameObject chunk in currentChunk)
-            chunk.transform.position = chunk.transform.position + Vector3.up * (scrollSpeed + speedModifier * scrollSpeedRange)/100;
+            chunk.transform.position = (chunk.transform.position + Vector3.up * (scrollSpeed + speedModifier * scrollSpeedRange)/100);
 
         NewChunk();
         SliderChange();    
