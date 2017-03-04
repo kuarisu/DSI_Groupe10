@@ -13,7 +13,6 @@ public class PlayerController : MonoBehaviour
     Rigidbody2D rb;
     TrailRenderer trail;
 
-    public AudioSource ShotFired;
     public GameObject bullet;
     GameObject bulletFired;
     bool fired;
@@ -161,7 +160,7 @@ public class PlayerController : MonoBehaviour
         direction.Normalize();
 
         rb.AddForce(new Vector2(Mathf.Clamp(-direction.x * sidepunch, -maxsidepunch, maxsidepunch), -direction.y) * firepunch, ForceMode2D.Impulse);
-        ShotFired.Play();
+        SoundManager.Instance.ShotFired.Play();
         bulletFired = Instantiate(bullet, transform.position, transform.rotation);
         bulletFired.transform.SetParent(lm.currentChunk[1].transform);
 
