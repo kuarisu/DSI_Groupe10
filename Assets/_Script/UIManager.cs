@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Rendering;
 using DG.Tweening;
+using UnityEngine.SceneManagement;
 
 public class UIManager : MonoBehaviour {
 
@@ -16,6 +17,8 @@ public class UIManager : MonoBehaviour {
     public GameObject leaderboards;
     public GameObject start;
     public GameObject highscore;
+    public GameObject play;
+    public GameObject earlyAccess;
 
     [Header("SETTINGS")]
     public Canvas settingsCanvas;
@@ -27,6 +30,7 @@ public class UIManager : MonoBehaviour {
     public GameObject Left;
     public GameObject Yes;
     public GameObject No;
+    public GameObject Reset;
     public Color unselected;
 
     [Header("PLAYERUI")]
@@ -70,6 +74,8 @@ public class UIManager : MonoBehaviour {
         slider = playerProgress.GetComponent<Slider>();
         slider.value = 0;
         slider.maxValue = gm.levelManager.maxChunk;
+        if (gm.firstTime == false)
+            earlyAccess.SetActive(false);
     }
 
     // Update is called once per frame
@@ -265,6 +271,19 @@ public class UIManager : MonoBehaviour {
 
     }
 
+    public void ToggleEA()
+    {
+        earlyAccess.SetActive(false);
+        gm.firstTime = false;
+    }
+
+    public void ResetSave()
+    {
+        gm.ResetSave();
+        gm.ResetSettings();
+        Reset.transform.DOScale(0.8f, 0.1f).SetEase(Ease.Linear).SetLoops(2, LoopType.Yoyo);
+        SceneManager.LoadScene(0);
+    }
 
     // Visual Feedbacks
     void TitleFeedback()

@@ -21,11 +21,13 @@ public class GameManager : MonoBehaviour {
     public int score;
     public int scoreToDraw;
     public bool isUiInPos;
+    public bool isPlayerDead;
 
     //Data to save
     public int highScore;
     public int playerXP;
     public int playerLvl;
+    public bool firstTime;
 
     public float TimeBeforeRespawn;
     public float TimeForEffect;
@@ -46,7 +48,7 @@ public class GameManager : MonoBehaviour {
 
         Amplitude amplitude = Amplitude.Instance;
         amplitude.logging = true;
-        amplitude.init("caaf09e8db5cbc7855e8d33eae1a7f29");
+        amplitude.init("7cc53a06785cde378112e5cd205bae7d");
 
         levelManager = GetComponent<LevelManager>();
         uiManager = GetComponent<UIManager>();
@@ -57,8 +59,6 @@ public class GameManager : MonoBehaviour {
         Camera.main.orthographicSize = ((Screen.height * (chunkSize + (0.5f * Screen.height / Screen.width))) / Screen.width) / 2;
 
         InitGame();
-
-        Amplitude.Instance.logEvent("Playing");
     }
 
     public void InitGame()
@@ -66,6 +66,8 @@ public class GameManager : MonoBehaviour {
         gamestarted = false;
         hasGameLaunched = false;
         isUiInPos = false;
+        isPlayerDead = false;
+        firstTime = true;
         GetSave();
         //highScore = score;
         score = 0;
@@ -147,19 +149,17 @@ public class GameManager : MonoBehaviour {
 
     public void PlayerDeath()
     {
-        Debug.Log("HighScore Before: " + highScore);
+        isPlayerDead = true;
+
         if (score > highScore)
             highScore = score;
-        Debug.Log("HighScore After: " + highScore);
         score = 0;
         SetSave();
-
         StartCoroutine(DestroyedCoroutine());
         StartCoroutine(DeathEffect());
         PlayerDestruction.Play();
 
         PlayerVisual.GetComponent<Collider2D>().enabled = false;
-
     }
 
 
@@ -171,12 +171,14 @@ public class GameManager : MonoBehaviour {
 
     IEnumerator DeathEffect()
     {
+        levelManager.scrollSpeed = 0;
         float _Value = 0;
         float _CurrentTime = 0;
         while (_CurrentTime <= TimeForEffect)
         {
             _Value = Mathf.Lerp(0, 1, _CurrentTime);
             PlayerVisual.GetComponent<SpriteRenderer>().material.SetFloat("_Destroy", _Value);
+            player.transform.FindChild("FX_AvatarTrail").gameObject.SetActive(false);
             _CurrentTime += Time.deltaTime;
             yield return new WaitForEndOfFrame();
         }
@@ -196,6 +198,8 @@ public class GameManager : MonoBehaviour {
         PlayerPrefs.SetString("isSound", uiManager.isSound.ToString());
         PlayerPrefs.SetString("isRight", uiManager.isRight.ToString());
         PlayerPrefs.SetString("isNormal", uiManager.isSound.ToString());
+
+        PlayerPrefs.SetString("firstTime", firstTime.ToString());
 
         PlayerPrefs.Save();
     }
@@ -218,6 +222,12 @@ public class GameManager : MonoBehaviour {
             uiManager.isNormal = true;
         else
             uiManager.isNormal = false;
+
+        if (PlayerPrefs.HasKey("firstTime"))
+        {
+            if (PlayerPrefs.GetString("firstTime") == "False")
+                firstTime = false;
+        }
     }
 
     public void ResetSave()
@@ -233,6 +243,8 @@ public class GameManager : MonoBehaviour {
         PlayerPrefs.DeleteKey("isSound");
         PlayerPrefs.DeleteKey("isRight");
         PlayerPrefs.DeleteKey("isNormal");
+        PlayerPrefs.DeleteKey("firstTime");
+        InitGame();
     }
 
     public void OnApplicationQuit()

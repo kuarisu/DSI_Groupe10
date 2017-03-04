@@ -87,7 +87,7 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (gm.hasGameLaunched)
+        if (gm.hasGameLaunched && gm.isPlayerDead == false)
         {
             if (SplashScreen.isFinished)
                 Controls();
