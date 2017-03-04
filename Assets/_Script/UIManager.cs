@@ -43,6 +43,7 @@ public class UIManager : MonoBehaviour {
     public bool isNormal;
     public bool isRight;
     public bool isRate;
+    public bool factorySettings;
 
     GameManager gm;
     bool menuIsHidden;
@@ -50,18 +51,17 @@ public class UIManager : MonoBehaviour {
     Text highScoreText;
 
 	// Use this for initialization
-	void Start () {
+	void Awake () {
+        gm = GameManager.instance;
         TitleFeedback();
         StartFeedback();
-        gm = GameManager.instance;
         highScoreText = highscore.GetComponent<Text>();
         menuIsHidden = false;
         M_ammoCount = ammoCount.material;
 
-        isSound = true;
-        isNormal = true;
-        isRight = true;
-        isRate = false;
+        InitSettings();
+
+        SetHighScore();
     }
 
     // Update is called once per frame
@@ -72,6 +72,58 @@ public class UIManager : MonoBehaviour {
             LeaveUp();
             LeaveDown();
             menuIsHidden = true;
+        }
+    }
+
+    public void InitSettings()
+    {
+        if (PlayerPrefs.HasKey("isSound"))
+            gm.GetSave();
+        else
+        {
+            isSound = true;
+            isNormal = true;
+            isRight = true;
+            isRate = false;
+        }
+    }
+
+    public void CheckSettings()
+    {
+        //Sound On or Off?
+        if (isSound)
+        {
+            On.GetComponent<Text>().color = Color.white;
+            Off.GetComponent<Text>().color = unselected;
+        }
+        else if(!isSound)
+        {
+            On.GetComponent<Text>().color = unselected;
+            Off.GetComponent<Text>().color = Color.white;
+        }
+
+        //Normal or Fantastic?
+        if (isNormal)
+        {
+            Normal.GetComponent<Text>().color = Color.white;
+            High.GetComponent<Text>().color = unselected;
+        }
+        else if (!isNormal)
+        {
+            High.GetComponent<Text>().color = unselected;
+            Normal.GetComponent<Text>().color = Color.white;
+        }
+
+        //Is Right or Left-Handed?
+        if (isRight)
+        {
+            Right.GetComponent<Text>().color = Color.white;
+            Left.GetComponent<Text>().color = unselected;
+        }
+        else if (!isRight)
+        {
+            Right.GetComponent<Text>().color = unselected;
+            Left.GetComponent<Text>().color = Color.white;
         }
     }
 
@@ -92,6 +144,8 @@ public class UIManager : MonoBehaviour {
         if (!SplashScreen.isFinished) return;
         settingsCanvas.gameObject.SetActive(true);
         settings.transform.DOPunchScale(new Vector3(0.2f, 0.2f, 1), 1f, 4, 1);
+
+        CheckSettings();
     }
 
     public void ShowLeaderboards()
@@ -162,7 +216,6 @@ public class UIManager : MonoBehaviour {
         if (isRight && !isRightHanded)
         {
             isRight = false;
-            gm.isRight = false;
             Right.GetComponent<Text>().color = unselected;
             Left.transform.DOScale(0.8f, 0.1f).SetEase(Ease.Linear).SetLoops(2, LoopType.Yoyo);
             Left.GetComponent<Text>().color = Color.white;
@@ -170,7 +223,6 @@ public class UIManager : MonoBehaviour {
         else if (!isRight && isRightHanded)
         {
             isRight = true;
-            gm.isRight = true;
             Right.GetComponent<Text>().color = Color.white;
             Right.transform.DOScale(0.8f, 0.1f).SetEase(Ease.Linear).SetLoops(2, LoopType.Yoyo);
             Left.GetComponent<Text>().color = unselected;
