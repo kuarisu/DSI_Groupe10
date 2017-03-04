@@ -7,9 +7,9 @@ public class LevelManager : MonoBehaviour {
 
     public List<GameObject> chunks = new List<GameObject>();
     public List<GameObject> backgrounds = new List<GameObject>();
+    public List<GameObject> chunksPoint = new List<GameObject>();
     public List<GameObject> currentChunk = new List<GameObject>(2);
     public List<GameObject> currentBackground = new List<GameObject>(2);
-    public GameObject chunkPoint;
     public GameObject bulletDestroyer;
     public int currentbgIndex;
     public float bgSpeedRatio;
@@ -119,7 +119,7 @@ public class LevelManager : MonoBehaviour {
             }
             else
             {
-                GameObject secondChunk = (GameObject)Instantiate(chunkPoint, new Vector3(0, currentChunk[0].transform.position.y - 46f, 1), new Quaternion(0, 0, 0, 0));
+                GameObject secondChunk = (GameObject)Instantiate(chunksPoint[(int)Random.Range(0, chunksPoint.Count - 1)], new Vector3(0, currentChunk[0].transform.position.y - 46f, 1), new Quaternion(0, 0, 0, 0));
                 currentChunk.Add(secondChunk);
                 chunkPassed = 0;
             }
