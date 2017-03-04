@@ -18,6 +18,7 @@ public class PlayerController : MonoBehaviour
     bool doRotate;
     Vector3 startRotation;
     float backforceTimer = 3f;
+    bool isInChunkPoint;
 
     public Camera mainCam;
     public Vector2 targetPosition;
@@ -80,6 +81,7 @@ public class PlayerController : MonoBehaviour
         transform.position = new Vector3(0,-3,0);
         startRotation = transform.rotation.eulerAngles;
         currentBullet = maxBullet;
+        isInChunkPoint = false;
     }
 
     // Update is called once per frame
@@ -176,7 +178,8 @@ public class PlayerController : MonoBehaviour
 
         Camera.main.transform.DOShakePosition(duration, new Vector3(strenght / 2, strenght, 0), 20, 90);
 
-        Bullets(-1);
+        if(!isInChunkPoint)
+            Bullets(-1);
 
         DOTween.Kill("Rotation");
         isRotating = false; 
@@ -186,6 +189,24 @@ public class PlayerController : MonoBehaviour
     {
         SoundManager.Instance.ShotFired.pitch = Random.Range(0.8f, 1.3f);
         SoundManager.Instance.ShotFired.Play();
+    }
+
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.tag == "chunkpoint")
+        {
+            currentBullet = maxBullet;
+            isInChunkPoint = true;
+        }
+    }
+
+    void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.tag == "chunkpoint")
+        {
+            currentBullet = maxBullet;
+            isInChunkPoint = false;
+        }
     }
 
     public void Bullets(int bullet)

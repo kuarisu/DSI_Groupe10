@@ -13,6 +13,7 @@ public class LevelManager : MonoBehaviour {
     public GameObject bulletDestroyer;
     public int currentbgIndex;
     public float bgSpeedRatio;
+    public GameObject DoorHolder;
 
     float speedModifier;
     PlayerController playerController;
@@ -21,6 +22,7 @@ public class LevelManager : MonoBehaviour {
     public List<GameObject> currentChunk = new List<GameObject>(2);
     List<GameObject> currentBackground = new List<GameObject>(2);
     GameManager gm;
+    public int chunkPassed;
 
     void Start()
     {
@@ -32,7 +34,6 @@ public class LevelManager : MonoBehaviour {
 
         playerController = GameObject.Find("Player").GetComponent<PlayerController>();
         maxOffsetY = playerController.maxOffsetY;
-
     }
 
     void Update()
@@ -54,6 +55,7 @@ public class LevelManager : MonoBehaviour {
     {
         GameObject firstChunk = (GameObject)Instantiate(chunks[(int)Random.Range(0, chunks.Count - 1)], new Vector3(0, -46, 1), new Quaternion(0, 0, 0, 0));
         currentChunk.Add(firstChunk);
+        DoorHolder.transform.SetParent(firstChunk.transform);
         GameObject secondChunk = (GameObject)Instantiate(chunks[(int)Random.Range(0, chunks.Count - 1)], new Vector3(0, -92, 1), new Quaternion(0, 0, 0, 0));
         currentChunk.Add(secondChunk);
     }
@@ -71,8 +73,9 @@ public class LevelManager : MonoBehaviour {
         foreach(GameObject chunk in currentChunk)
             chunk.transform.position = chunk.transform.position + Vector3.up * (scrollSpeed + speedModifier * scrollSpeedRange)/100;  
 
-        if(currentChunk[1].transform.position.y >= 0f)
+        if (currentChunk[1].transform.position.y >= 0f)
         {
+            chunkPassed++;
             GameObject oldChunk = currentChunk[0];
             currentChunk.Remove(currentChunk[0]);
             Destroy(oldChunk);
