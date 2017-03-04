@@ -38,6 +38,10 @@ public class GameManager : MonoBehaviour {
             Destroy(gameObject);
         }
 
+        Amplitude amplitude = Amplitude.Instance;
+        amplitude.logging = true;
+        amplitude.init("caaf09e8db5cbc7855e8d33eae1a7f29");
+
         levelManager = GetComponent<LevelManager>();
         uiManager = GetComponent<UIManager>();
         Screen.orientation = ScreenOrientation.Portrait;
@@ -47,6 +51,8 @@ public class GameManager : MonoBehaviour {
         Camera.main.orthographicSize = ((Screen.height * (chunkSize + (0.5f * Screen.height / Screen.width))) / Screen.width) / 2;
 
         InitGame();
+
+        Amplitude.Instance.logEvent("Playing");
     }
 
     public void InitGame()

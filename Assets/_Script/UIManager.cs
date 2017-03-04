@@ -47,7 +47,6 @@ public class UIManager : MonoBehaviour {
     public bool factorySettings;
 
     GameManager gm;
-    LevelManager lm;
     bool menuIsHidden;
     bool clikedButton;
     Text highScoreText;
@@ -56,7 +55,6 @@ public class UIManager : MonoBehaviour {
 	// Use this for initialization
 	void Awake () {
         gm = GameManager.instance;
-        lm = gm.levelManager;
         TitleFeedback();
         StartFeedback();
         highScoreText = highscore.GetComponent<Text>();
