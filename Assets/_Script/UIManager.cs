@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Rendering;
 using DG.Tweening;
+using UnityEngine.SceneManagement;
 
 public class UIManager : MonoBehaviour {
 
@@ -16,6 +17,8 @@ public class UIManager : MonoBehaviour {
     public GameObject leaderboards;
     public GameObject start;
     public GameObject highscore;
+    public GameObject play;
+    public GameObject earlyAccess;
 
     [Header("SETTINGS")]
     public Canvas settingsCanvas;
@@ -27,6 +30,7 @@ public class UIManager : MonoBehaviour {
     public GameObject Left;
     public GameObject Yes;
     public GameObject No;
+    public GameObject Reset;
     public Color unselected;
 
     [Header("PLAYERUI")]
@@ -45,15 +49,17 @@ public class UIManager : MonoBehaviour {
     public bool isRight;
     public bool isRate;
     public bool factorySettings;
+    public Slider slider;
 
     GameManager gm;
     bool menuIsHidden;
     bool clikedButton;
     Text highScoreText;
     bool scoreUpdated;
+    float timePassed;
 
-	// Use this for initialization
-	void Awake () {
+    // Use this for initialization
+    void Awake () {
         gm = GameManager.instance;
         TitleFeedback();
         StartFeedback();
@@ -64,6 +70,12 @@ public class UIManager : MonoBehaviour {
         InitSettings();
 
         SetHighScore();
+
+        slider = playerProgress.GetComponent<Slider>();
+        slider.value = 0;
+        slider.maxValue = gm.levelManager.maxChunk;
+        if (gm.firstTime == false)
+            earlyAccess.SetActive(false);
     }
 
     // Update is called once per frame
@@ -76,28 +88,48 @@ public class UIManager : MonoBehaviour {
             menuIsHidden = true;
         }
 
-        if (gm.hasGameLaunched && !scoreUpdated)
+        if (gm.hasGameLaunched && gm.isPlayerDead == false)
         {
-            scoreUpdated = true;
-            StartCoroutine("ScoreOverDistance");
+            ScoreUpdate();
+            // StartCoroutine("ScoreOverDistance");
         }
-        ScoreUpdate();
+
+
+
+        //The end value needs to be more precise!
+        //if (gm.hasGameLaunched && gm.player.isInChunkPoint == false)
+            //slider.value += (slider.maxValue*Time.deltaTime/26f);
     }
 
     IEnumerator ScoreOverDistance()
     {
-        gm.score += gm.scorePerSecond;
+        gm.score += (int)(gm.scorePerSecond*Time.deltaTime);
         yield return new WaitForSeconds(0.1f);
         scoreUpdated = false;
     }
 
+    public float UIlocalScore;
+
     public void ScoreUpdate()
     {
-        if(scoreToDraw <= gm.score) {
-            score.text = scoreToDraw.ToString();
-            scoreToDraw++;
-        }
-        
+        UIlocalScore += Time.deltaTime * gm.scorePerSecond;
+        gm.score = (int)UIlocalScore;
+        /* if (scoreToDraw <= gm.score) {
+             scoreToDraw++;
+         }    */
+        score.text = gm.score.ToString();
+    }
+
+    public void GameStart()
+    {
+        if (!SplashScreen.isFinished) return;
+        start.SetActive(false);
+        gm.LaunchGame();
+        highscore.transform.DOScale(3, 1f);
+        highScoreText.DOFade(0, 1f);
+        achievements.SetActive(false);
+        settings.SetActive(false);
+        leaderboards.SetActive(false);
     }
 
     public void InitSettings()
@@ -185,18 +217,6 @@ public class UIManager : MonoBehaviour {
         settingsCanvas.gameObject.SetActive(false);
     }
 
-    public void GameStart()
-    {
-        if (!SplashScreen.isFinished) return;
-        start.SetActive(false);
-        gm.LaunchGame();
-        highscore.transform.DOScale(3, 1f);
-        highScoreText.DOFade(0, 1f);
-        achievements.SetActive(false);
-        settings.SetActive(false);
-        leaderboards.SetActive(false);
-    }
-
     public void ToggleSound(bool isOn)
     {
         if (isSound && !isOn)
@@ -255,6 +275,19 @@ public class UIManager : MonoBehaviour {
 
     }
 
+    public void ToggleEA()
+    {
+        earlyAccess.SetActive(false);
+        gm.firstTime = false;
+    }
+
+    public void ResetSave()
+    {
+        gm.ResetSave();
+        gm.ResetSettings();
+        Reset.transform.DOScale(0.8f, 0.1f).SetEase(Ease.Linear).SetLoops(2, LoopType.Yoyo);
+        SceneManager.LoadScene(0);
+    }
 
     // Visual Feedbacks
     void TitleFeedback()

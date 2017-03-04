@@ -14,32 +14,35 @@ public class Bullet_HitEnemy : MonoBehaviour {
 
     private void OnTriggerEnter2D(Collider2D col)
     {
-        if (col.gameObject.tag == "enemy" && col.gameObject.GetComponent<Enemy_Lives>() != null)
+        if (col.gameObject.tag != "Chunkpoint")
         {
-            Enemy_Lives enemyHit;
-            enemyHit = col.gameObject.GetComponent<Enemy_Lives>();
-            //float remainingLives = enemyHit.m_NumberOfLives;
+            if ((col.gameObject.tag == "enemy" || col.gameObject.tag == "enemiesBullet") && col.gameObject.GetComponent<Enemy_Lives>() != null)
+            {
+                Enemy_Lives enemyHit;
+                enemyHit = col.gameObject.GetComponent<Enemy_Lives>();
+                //float remainingLives = enemyHit.m_NumberOfLives;
 
-            enemyHit.Hited();
-            //if (remainingLives != 1)
-                impact = Instantiate(impact,col.transform.position,transform.rotation);
+                enemyHit.Hited();
+                //if (remainingLives != 1)
+                impact = Instantiate(impact, col.transform.position, transform.rotation);
 
-            impact.transform.SetParent(gm.levelManager.currentChunk[1].transform);
-            PlaySound();
-            Destroy(gameObject);
-        }
-        else if(col.gameObject.tag != "BulletDestroyer")
-        {
-            impact = Instantiate(impact, transform.position, transform.rotation);
-            impact.transform.SetParent(gm.levelManager.currentChunk[1].transform);
-            PlaySound();
-            Destroy(gameObject);
-        }
-        else
-        {
-            GetComponent<Collider2D>().enabled = false;
-            PlaySound();
-            Destroy(gameObject, 1f);
+                impact.transform.SetParent(gm.levelManager.currentChunk[1].transform);
+                PlaySound();
+                Destroy(gameObject);
+            }
+            else if (col.gameObject.tag != "BulletDestroyer")
+            {
+                impact = Instantiate(impact, transform.position, transform.rotation);
+                impact.transform.SetParent(gm.levelManager.currentChunk[1].transform);
+                PlaySound();
+                Destroy(gameObject);
+            }
+            else
+            {
+                GetComponent<Collider2D>().enabled = false;
+                PlaySound();
+                Destroy(gameObject, 1f);
+            }
         }
     }
 
