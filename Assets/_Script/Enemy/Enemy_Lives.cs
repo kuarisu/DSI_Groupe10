@@ -1,11 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
+using DG.Tweening;
+
 
 public class Enemy_Lives : MonoBehaviour {
 
     public GameObject explosion;
+    public GameObject bulletReturn;
     public int points;
     GameObject ownChunk;
 
@@ -15,7 +17,18 @@ public class Enemy_Lives : MonoBehaviour {
     [SerializeField]
     float m_TimerBeforeDestroy; //The Game Designers can change the delay before destroying the enemy. If it's 0, it will be instant.
 
+
     // The function called by the bullet each time it hits an enemy with life.
+
+    int bulletGain;
+
+    private void Awake()
+    {
+        bulletGain = m_NumberOfLives;
+        bulletReturn = GameManager.instance.bulletReturn;
+    }
+
+
     public void Hited()
     {
         m_NumberOfLives--;
@@ -30,6 +43,7 @@ public class Enemy_Lives : MonoBehaviour {
     //A seperate function to directly call the death of the enemy, might be useful if the player has some special abilities
     public void EnemyDeath()
     {
+        GameManager.instance.player.Bullets(1);
         StartCoroutine(DeathCoroutine());
     }
 
@@ -39,8 +53,11 @@ public class Enemy_Lives : MonoBehaviour {
         GameManager.instance.Scoring(points);
         this.GetComponent<Collider2D>().enabled = false; // Disable the collider so it won't have any impact on the reste of the game.
         //yield return new WaitForSeconds(m_TimerBeforeDestroy);
-        GameObject clone = Instantiate(explosion, transform.position, transform.rotation);
-        clone.transform.SetParent(transform.root);
+        GameObject expClone = Instantiate(explosion, transform.position, transform.rotation);
+        expClone.transform.SetParent(transform.root);
+
+        GameObject returnClone = Instantiate(bulletReturn, transform.position, transform.rotation);
+
         Destroy(this.gameObject);
         yield break;
     }

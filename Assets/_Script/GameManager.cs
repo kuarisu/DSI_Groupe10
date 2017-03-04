@@ -11,6 +11,8 @@ public class GameManager : MonoBehaviour {
     public UIManager uiManager;
     public PlayerController player;
 
+    public GameObject bulletReturn;
+
     public bool loaded;
     public bool gamestarted;
     public bool hasGameLaunched;

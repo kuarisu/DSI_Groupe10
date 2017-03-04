@@ -66,7 +66,7 @@ public class PlayerController : MonoBehaviour
     public float duration;
     public int vibrato;
 
-    int currentBullet;
+    public int currentBullet;
 
     // Use this for initialization
     void Awake()
@@ -180,10 +180,16 @@ public class PlayerController : MonoBehaviour
 
         Camera.main.transform.DOShakePosition(duration, new Vector3(strenght / 2, strenght, 0), 20, 90);
 
-        currentBullet--;
-        ui.M_ammoCount.SetFloat("_AmmoCurrent", currentBullet);
+        Bullets(-1);
+
         DOTween.Kill("Rotation");
         isRotating = false;
+    }
+
+    public void Bullets(int bullet)
+    {
+        currentBullet += bullet;
+        ui.M_ammoCount.SetFloat("_AmmoCurrent", currentBullet);
     }
 
     void BackForceY()
