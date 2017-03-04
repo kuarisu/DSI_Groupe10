@@ -34,7 +34,8 @@ public class UIManager : MonoBehaviour {
     public GameObject playerProgress;
     public GameObject bulletIndicator;
     public GameObject playerInterface;
-    public Text Score;
+    public Text score;
+    public int scoreToDraw;
     public Image ammoCount;
     public Material M_ammoCount;
     public GameObject leftRight;
@@ -46,13 +47,16 @@ public class UIManager : MonoBehaviour {
     public bool factorySettings;
 
     GameManager gm;
+    LevelManager lm;
     bool menuIsHidden;
     bool clikedButton;
     Text highScoreText;
+    bool scoreUpdated;
 
 	// Use this for initialization
 	void Awake () {
         gm = GameManager.instance;
+        lm = gm.levelManager;
         TitleFeedback();
         StartFeedback();
         highScoreText = highscore.GetComponent<Text>();
@@ -73,6 +77,29 @@ public class UIManager : MonoBehaviour {
             LeaveDown();
             menuIsHidden = true;
         }
+
+        if (gm.hasGameLaunched && !scoreUpdated)
+        {
+            scoreUpdated = true;
+            StartCoroutine("ScoreOverDistance");
+        }
+        ScoreUpdate();
+    }
+
+    IEnumerator ScoreOverDistance()
+    {
+        gm.score += gm.scorePerSecond;
+        yield return new WaitForSeconds(0.1f);
+        scoreUpdated = false;
+    }
+
+    public void ScoreUpdate()
+    {
+        if(scoreToDraw <= gm.score) {
+            score.text = scoreToDraw.ToString();
+            scoreToDraw++;
+        }
+        
     }
 
     public void InitSettings()

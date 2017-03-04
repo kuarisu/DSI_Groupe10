@@ -13,11 +13,13 @@ public class GameManager : MonoBehaviour {
 
     public GameObject bulletReturn;
 
+    public int scorePerSecond;
     public bool loaded;
     public bool gamestarted;
     public bool hasGameLaunched;
     public float chunkSize;
     public int score;
+    public int scoreToDraw;
 
     //Data to save
     public int highScore;
@@ -76,7 +78,7 @@ public class GameManager : MonoBehaviour {
     public void GameLaunched()
     {
         hasGameLaunched = true;
-        uiManager.Score.gameObject.SetActive(true);
+        uiManager.score.gameObject.SetActive(true);
 
         uiManager.playerInterface.transform.parent.GetComponent<RectTransform>().DOScale(1, 0.5f).SetEase(Ease.OutBack);
 
@@ -93,7 +95,7 @@ public class GameManager : MonoBehaviour {
         if (right)
         {
             Camera.main.transform.DOMoveX(-Camera.main.orthographicSize * 0.035f, 2f);
-            uiManager.Score.transform.localPosition = new Vector3(chunkSize, uiManager.Score.transform.localPosition.y, 0);
+            uiManager.score.transform.localPosition = new Vector3(chunkSize, uiManager.score.transform.localPosition.y, 0);
 
             RectTransform rectTransform = uiManager.playerInterface.GetComponent<RectTransform>();
             rectTransform.anchorMin = new Vector2(0, 0.5f);
@@ -106,7 +108,7 @@ public class GameManager : MonoBehaviour {
         else
         {
             Camera.main.transform.DOMoveX(Camera.main.orthographicSize * 0.035f, 2f);
-            uiManager.Score.transform.localPosition = new Vector3(-chunkSize, uiManager.Score.transform.localPosition.y, 0);
+            uiManager.score.transform.localPosition = new Vector3(-chunkSize, uiManager.score.transform.localPosition.y, 0);
 
             RectTransform rectTransform = uiManager.playerInterface.GetComponent<RectTransform>();
             rectTransform.anchorMin = new Vector2(1, 0.5f);
@@ -123,12 +125,12 @@ public class GameManager : MonoBehaviour {
     public void Scoring(int add)
     {
         score += add;
-        uiManager.Score.text = score.ToString();
+        uiManager.scoreToDraw += add;
         DOTween.Restart("ShakeScale");
         DOTween.Kill("ShakeScale");
-        uiManager.Score.transform.DOShakeScale(1, 1, 20, 90, true).SetEase(Ease.InQuad).SetId("ShakeScale");
-        uiManager.Score.transform.DOShakePosition(1, Vector3.up * 10, 20, 0, false, true).SetEase(Ease.InQuad).SetId("ShakeScale");
-        uiManager.Score.transform.DOShakeRotation(0.8f, 5, 20, 90, true).SetEase(Ease.InQuad).SetId("ShakeScale");
+        uiManager.score.transform.DOShakeScale(1, 1, 20, 90, true).SetEase(Ease.InQuad).SetId("ShakeScale");
+        uiManager.score.transform.DOShakePosition(1, Vector3.up * 10, 20, 0, false, true).SetEase(Ease.InQuad).SetId("ShakeScale");
+        uiManager.score.transform.DOShakeRotation(0.8f, 5, 20, 90, true).SetEase(Ease.InQuad).SetId("ShakeScale");
     }
 
     public void PlayerDeath()
