@@ -55,6 +55,10 @@ public class GameManager : MonoBehaviour {
         Screen.orientation = ScreenOrientation.Portrait;
         player = GameObject.Find("Player").GetComponent<PlayerController>();
 
+#if UNITY_STANDALONE
+        Screen.SetResolution(500, 800, false);
+#endif
+
         //Camera Initialization
         Camera.main.orthographicSize = ((Screen.height * (chunkSize + (0.5f * Screen.height / Screen.width))) / Screen.width) / 2;
 
