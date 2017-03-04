@@ -166,7 +166,7 @@ public class GameManager : MonoBehaviour {
 
     IEnumerator DestroyedCoroutine()
     {
-        DeathDictionary.Add("score", score);
+        DeathDictionary.Add("score", (int) uiManager.UIlocalScore);
         yield return new WaitForSeconds(TimeBeforeRespawn);
         Amplitude.Instance.logEvent("Death", DeathDictionary);
         SceneManager.LoadScene(0);
