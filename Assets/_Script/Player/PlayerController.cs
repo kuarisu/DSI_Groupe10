@@ -11,11 +11,9 @@ public class PlayerController : MonoBehaviour
     LevelManager lm;
     UIManager ui;
     Rigidbody2D rb;
-    TrailRenderer trail;
 
     public GameObject bullet;
     GameObject bulletFired;
-    bool fired;
     bool isHoldingDown;
     bool doRotate;
     Vector3 startRotation;
@@ -27,7 +25,7 @@ public class PlayerController : MonoBehaviour
     public float maxOffsetY;
     public float distanceOffsetY;
     public float maxOffsetX;
-    public float distanceOffsetX;
+    public float distanceOffsetX; 
 
     [Header("GAMEPLAY")]
     [Tooltip("Distance minimum needed between top of the screen and player position")]
@@ -75,13 +73,11 @@ public class PlayerController : MonoBehaviour
         lm = gm.levelManager;
         ui = gm.uiManager;
         rb = this.GetComponent<Rigidbody2D>();
-        trail = this.GetComponent<TrailRenderer>();
         startOffset = (startOffset * mainCam.orthographicSize);
         targetPosition = new Vector2(mainCam.transform.position.x, mainCam.transform.position.y + startOffset);
         if (mainCam.transform.position.y - targetPosition.y < minDistTop)
             targetPosition = new Vector2(targetPosition.x, mainCam.orthographicSize - minDistTop);
         transform.position = new Vector3(0,-3,0);
-        fired = false;
         startRotation = transform.rotation.eulerAngles;
         currentBullet = maxBullet;
     }
@@ -160,7 +156,7 @@ public class PlayerController : MonoBehaviour
         direction.Normalize();
 
         rb.AddForce(new Vector2(Mathf.Clamp(-direction.x * sidepunch, -maxsidepunch, maxsidepunch), -direction.y) * firepunch, ForceMode2D.Impulse);
-        SoundManager.Instance.ShotFired.Play();
+        PlaySound();
         bulletFired = Instantiate(bullet, transform.position, transform.rotation);
         bulletFired.transform.SetParent(lm.currentChunk[1].transform);
 
@@ -179,13 +175,19 @@ public class PlayerController : MonoBehaviour
         currentBullet--;
         ui.M_ammoCount.SetFloat("_AmmoCurrent", currentBullet);
         DOTween.Kill("Rotation");
-        isRotating = false;
+        isRotating = false; 
+    }
+
+    void PlaySound()
+    {
+        SoundManager.Instance.ShotFired.pitch = Random.Range(0.8f, 1.3f);
+        SoundManager.Instance.ShotFired.Play();
     }
 
     void BackForceY()
     {
         distanceOffsetY = transform.position.y - targetPosition.y;
-        float distanceToMax = maxOffsetY - distanceOffsetY;
+       // float distanceToMax = maxOffsetY - distanceOffsetY;
 
         if (Mathf.Abs(distanceOffsetY) > 0.1f)
         {
