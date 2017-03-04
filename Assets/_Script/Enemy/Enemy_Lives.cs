@@ -43,7 +43,6 @@ public class Enemy_Lives : MonoBehaviour {
     //A seperate function to directly call the death of the enemy, might be useful if the player has some special abilities
     public void EnemyDeath()
     {
-        GameManager.instance.player.Bullets(1);
         StartCoroutine(DeathCoroutine());
     }
 
@@ -57,6 +56,7 @@ public class Enemy_Lives : MonoBehaviour {
         expClone.transform.SetParent(transform.root);
 
         GameObject returnClone = Instantiate(bulletReturn, transform.position, transform.rotation);
+        returnClone.GetComponent<BulletReturn>().addedBullets = bulletGain;
 
         Destroy(this.gameObject);
         yield break;
