@@ -1,9 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class AI_OnHitPlayerComponent : MonoBehaviour {
+
+    public GameManager gm;
 
 	public bool killThePlayer;
 	public bool stealAmmo;
@@ -15,7 +16,7 @@ public class AI_OnHitPlayerComponent : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		
+        gm = GameManager.instance;
 	}
 	
 	// Update is called once per frame
@@ -26,9 +27,7 @@ public class AI_OnHitPlayerComponent : MonoBehaviour {
 	void OnCollisionEnter2D (Collision2D other){
 		if (other.gameObject.name == "Player"){
 			if (killThePlayer == true){
-				//Destroy (other.gameObject);
-                //Application.LoadLevel(Application.loadedLevel);
-                SceneManager.LoadScene("Prototype");
+                gm.PlayerDeath();
 
                 //If we need to instantiate something after Death, do it here
             }
