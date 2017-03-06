@@ -8,8 +8,6 @@ public class PlayerController : MonoBehaviour
 {
 
     GameManager gm;
-    LevelManager lm;
-    UIManager ui;
     Rigidbody2D rb;
 
     public GameObject bullet;
@@ -18,10 +16,8 @@ public class PlayerController : MonoBehaviour
     bool doRotate;
     Vector3 startRotation;
     float backforceTimer = 3f;
-    public bool isInChunkPoint;
 
     public Camera mainCam;
-    public Vector2 targetPosition;
     public float startOffset;
     public float maxOffsetY;
     public float distanceOffsetY;
@@ -66,14 +62,16 @@ public class PlayerController : MonoBehaviour
     public float duration;
     public int vibrato;
 
+    [HideInInspector]
     public int currentBullet;
+    public bool passedFirstChunkpoint;
+    public bool isInChunkPoint;
+    public Vector2 targetPosition;
 
     // Use this for initialization
     void Awake()
     {
         gm = GameManager.instance;
-        lm = gm.levelManager;
-        ui = gm.uiManager;
         rb = this.GetComponent<Rigidbody2D>();
         startOffset = (startOffset * mainCam.orthographicSize);
         targetPosition = new Vector2(mainCam.transform.position.x, mainCam.transform.position.y + startOffset);
@@ -90,6 +88,7 @@ public class PlayerController : MonoBehaviour
         currentBullet = maxBullet;
         isInChunkPoint = false;
         isRotating = false;
+        passedFirstChunkpoint = false;
     }
 
     // Update is called once per frame
@@ -158,7 +157,7 @@ public class PlayerController : MonoBehaviour
 
         rb.AddForce(new Vector2(Mathf.Clamp(-direction.x * sidepunch, -maxsidepunch, maxsidepunch), -direction.y) * firepunch, ForceMode2D.Impulse);
         bulletFired = Instantiate(bullet, transform.position, transform.rotation);
-        bulletFired.transform.SetParent(lm.currentChunk[1].transform);
+        bulletFired.transform.SetParent(gm.levelManager.currentChunk[1].transform);
 
         // Rotate the bullet and player towards the input
         float rot_z = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
@@ -206,14 +205,16 @@ public class PlayerController : MonoBehaviour
             currentBullet = maxBullet;
             isInChunkPoint = false;
             gm.uiManager.slider.value = 0;
-            gm.uiManager.slider.maxValue = (gm.levelManager.maxChunk * 46f) + targetPosition.y;
+            gm.uiManager.SetSlider();
+            if (passedFirstChunkpoint == false)
+                passedFirstChunkpoint = true;
         }
     }
 
     public void Bullets(int bullet)
     {
         currentBullet += bullet;
-        ui.M_ammoCount.SetFloat("_AmmoCurrent", currentBullet);
+        gm.uiManager.M_ammoCount.SetFloat("_AmmoCurrent", currentBullet);
     }
 
     void BackForceY()

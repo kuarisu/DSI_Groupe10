@@ -39,17 +39,18 @@ public class UIManager : MonoBehaviour {
     public GameObject bulletIndicator;
     public GameObject playerInterface;
     public Text score;
-    public int scoreToDraw;
     public Image ammoCount;
     public Material M_ammoCount;
     public GameObject leftRight;
+    public Slider slider;
 
+    [HideInInspector]
     public bool isSound;
     public bool isNormal;
     public bool isRight;
     public bool isRate;
     public bool factorySettings;
-    public Slider slider;
+    public int scoreToDraw;
 
     GameManager gm;
     bool menuIsHidden;
@@ -82,8 +83,8 @@ public class UIManager : MonoBehaviour {
     {
         slider = playerProgress.GetComponent<Slider>();
         slider.value = 0;
-        slider.maxValue = ((gm.levelManager.maxChunk) * 46f) + 23;
         M_ammoCount.SetFloat("_AmmoCurrent", gm.player.currentBullet);
+        slider.maxValue = ((gm.levelManager.currentMaxChunk) * 46f) + 23;
     }
 
     // Update is called once per frame
@@ -118,6 +119,17 @@ public class UIManager : MonoBehaviour {
             slider.value += (gm.levelManager.scrollSpeed + gm.levelManager.speedModifier * gm.levelManager.scrollSpeedRange / 100f) * Time.deltaTime;
         else
             slider.value -= (gm.levelManager.scrollSpeed + gm.levelManager.speedModifier * gm.levelManager.scrollSpeedRange / 100f) * Time.deltaTime;
+    }
+
+    public void SetSlider()
+    {
+        if (gm.player.isInChunkPoint == false)
+        {
+            if (gm.player.passedFirstChunkpoint == false)
+                slider.maxValue = ((gm.levelManager.currentMaxChunk) * 46f) + 23;
+            else
+                slider.maxValue = ((gm.levelManager.currentMaxChunk) * 46f) + (23 - (gm.player.targetPosition.y * 2));
+        }
     }
 
     public void GameStart()
