@@ -27,6 +27,10 @@ public class AI_OnHitPlayerComponent : MonoBehaviour {
 	void OnCollisionEnter2D (Collision2D other){
 		if (other.gameObject.name == "Player"){
 			if (killThePlayer == true){
+                gm.enemyKiller = gameObject;
+                gm.enemyKiller_ID = GetComponent<ElementID>().e_ID;
+                //Call Amplitude event function
+
                 gm.PlayerDeath();
 
                 //If we need to instantiate something after Death, do it here

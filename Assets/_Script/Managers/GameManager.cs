@@ -10,29 +10,41 @@ public class GameManager : MonoBehaviour {
     public LevelManager levelManager;
     public UIManager uiManager;
     public PlayerController player;
-
+    public GameObject PlayerVisual;
+    public ParticleSystem PlayerDestruction;
     public GameObject bulletReturn;
 
-    public int scorePerSecond;
-    public bool loaded;
-    public bool gamestarted;
-    public bool hasGameLaunched;
-    public float chunkSize;
-    public int score;
+    [HideInInspector]
     public int scoreToDraw;
     public bool isUiInPos;
     public bool isPlayerDead;
+    public bool hasGameLaunched;
+    public bool loaded;
+    public bool gamestarted;
 
+    [Header("GAMEPLAY")]
+    public int scorePerSecond;
+    public float chunkSize;
+    public int distanceScore;
+    public int enemyScore;
+    public int bonusScore;
+    public int totalScore;
     //Data to save
     public int highScore;
     public int playerXP;
     public int playerLvl;
     public bool firstTime;
-
     public float TimeBeforeRespawn;
     public float TimeForEffect;
-    public GameObject PlayerVisual;
-    public ParticleSystem PlayerDestruction;
+
+    [Header("ANALYTICS")]
+    public GameObject currentChunk;
+    public int currentChunk_ID;
+    public GameObject enemyKiller;
+    public int enemyKiller_ID;
+    public int enemyChunkPassed;
+    public int bonusChunkPassed;
+    public int totalChunkPassed;
 
 
     void Awake()
@@ -73,7 +85,9 @@ public class GameManager : MonoBehaviour {
         isUiInPos = false;
         isPlayerDead = false;
         firstTime = true;
-        score = 0;
+        enemyScore = 0;
+        distanceScore = 0;
+        totalScore = 0;
         GetSave();
     }
 
@@ -148,9 +162,17 @@ public class GameManager : MonoBehaviour {
         
     }
 
-    public void Scoring(int add)
+    public void Scoring(int add,string tag)
     {
-        uiManager.UIlocalScore += add/2;
+        switch (tag)
+        {
+            case "enemy":
+                enemyScore += add;
+                break;
+            case "bonuses":
+                bonusScore += add;
+                break;
+        }
         DOTween.Restart("ShakeScale");
         DOTween.Kill("ShakeScale");
         uiManager.score.transform.DOShakeScale(1, 1, 20, 90, true).SetEase(Ease.InQuad).SetId("ShakeScale");
@@ -162,10 +184,10 @@ public class GameManager : MonoBehaviour {
     {
         isPlayerDead = true;
 
-        if (score > highScore)
-            highScore = score;
+        if (totalScore > highScore)
+            highScore = totalScore;
 
-        score = 0;
+        totalScore = 0;
         SetSave();
         StartCoroutine(DestroyedCoroutine());
         StartCoroutine(DeathEffect());

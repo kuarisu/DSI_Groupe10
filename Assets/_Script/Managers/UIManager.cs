@@ -109,8 +109,9 @@ public class UIManager : MonoBehaviour {
     public void ScoreUpdate()
     {
         UIlocalScore += Time.deltaTime * gm.scorePerSecond;
-        gm.score = (int)UIlocalScore;
-        score.text = gm.score.ToString();
+        gm.distanceScore = (int)UIlocalScore;
+        gm.totalScore = gm.distanceScore + gm.enemyScore + gm.bonusScore; 
+        score.text = gm.totalScore.ToString();
     }
 
     public void SliderUpdate()
