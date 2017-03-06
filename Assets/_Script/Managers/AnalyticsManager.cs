@@ -14,6 +14,7 @@ public class AnalyticsManager : MonoBehaviour
 
     public static AnalyticsManager instance;
     Dictionary<string, object> DeathDictionary = new Dictionary<string, object>();
+    GameManager gm;
 
     private void Awake()
     {
@@ -25,17 +26,36 @@ public class AnalyticsManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        gm = GameManager.instance;
     }
 
 
     void Update()
     {
-        runDuration += Time.deltaTime; 
+        if (gm.hasGameLaunched)
+            runDuration += Time.deltaTime; 
     }
 
     public void DeathAnalyticsRegistration()
     {
-       // DeathDictionary.Add("score", (int)uiManager.UIlocalScore);
+        DeathDictionary.Add("runDuration", runDuration);
+
+        DeathDictionary.Add("totalScore", gm.totalScore);
+        DeathDictionary.Add("enemyScore", gm.enemyScore);
+        DeathDictionary.Add("distanceScore", gm.distanceScore);
+        DeathDictionary.Add("bonusScore", gm.bonusScore);
+
+        DeathDictionary.Add("totalChunkPassed", gm.totalChunkPassed);
+        DeathDictionary.Add("enemyChunkPassed", gm.enemyChunkPassed);
+        DeathDictionary.Add("bonusChunkPassed", gm.bonusChunkPassed);
+
+        DeathDictionary.Add("killerChunk", gm.currentChunk_ID);
+        DeathDictionary.Add("killerTag", gm.enemyKiller.tag);
+        DeathDictionary.Add("killerID", gm.enemyKiller_ID);
+
+        DeathDictionary.Add("remainingAmmo", gm.player.currentBullet);
+
         Amplitude.Instance.logEvent("Death", DeathDictionary);
     }
 }
