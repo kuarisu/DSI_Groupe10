@@ -58,7 +58,12 @@ public class GameManager : MonoBehaviour {
         Screen.orientation = ScreenOrientation.Portrait;
         Camera.main.orthographicSize = ((Screen.height * (chunkSize + (0.5f * Screen.height / Screen.width))) / Screen.width) / 2;
 
-        InitGame();
+        if (Debug.isDebugBuild)
+        {
+            QualitySettings.vSyncCount = 0;
+            Application.targetFrameRate = 60;
+        }
+            InitGame();
     }
 
     public void InitGame()

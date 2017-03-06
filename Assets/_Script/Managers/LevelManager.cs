@@ -5,14 +5,20 @@ using DG.Tweening;
 
 public class LevelManager : MonoBehaviour {
 
-    public List<GameObject> chunks = new List<GameObject>();
     public List<GameObject> backgrounds = new List<GameObject>();
-    public List<GameObject> chunksPoint = new List<GameObject>();
     public List<GameObject> currentChunk = new List<GameObject>(2);
     public List<GameObject> currentBackground = new List<GameObject>(2);
     public GameObject bulletDestroyer;
     public int currentbgIndex;
     public GameObject DoorHolder;
+
+    [Header("LEVEL DESIGN")]
+    public List<GameObject> easyChunks = new List<GameObject>();
+    public List<GameObject> normalChunks = new List<GameObject>();
+    public List<GameObject> hardChunks = new List<GameObject>();
+    public List<GameObject> chunksPoint = new List<GameObject>();
+    [Tooltip("Score needed to increase the difficulty")]
+    public List<int> difficultyLevels = new List<int>();
 
     [Header("GAMEPLAY")]
     public int chunkPassed;
@@ -30,6 +36,8 @@ public class LevelManager : MonoBehaviour {
     bool startTimer;
     float timeT;
     bool hasPassedChunk;
+    GameObject firstChunk;
+    GameObject secondChunk;
 
     void Awake()
     {
@@ -92,10 +100,10 @@ public class LevelManager : MonoBehaviour {
 
     public void InstantiateChunks()
     {
-        GameObject firstChunk = (GameObject)Instantiate(chunks[(int)Random.Range(0, chunks.Count - 1)], new Vector3(0, -46, 1), new Quaternion(0, 0, 0, 0));
+        firstChunk = (GameObject)Instantiate(easyChunks[(int)Random.Range(0, easyChunks.Count - 1)], new Vector3(0, -46, 1), new Quaternion(0, 0, 0, 0));
         currentChunk.Add(firstChunk);
         DoorHolder.transform.SetParent(firstChunk.transform);
-        GameObject secondChunk = (GameObject)Instantiate(chunks[(int)Random.Range(0, chunks.Count - 1)], new Vector3(0, -92, 1), new Quaternion(0, 0, 0, 0));
+        secondChunk = (GameObject)Instantiate(easyChunks[(int)Random.Range(0, easyChunks.Count - 1)], new Vector3(0, -92, 1), new Quaternion(0, 0, 0, 0));
         currentChunk.Add(secondChunk);
     }
 
@@ -117,12 +125,48 @@ public class LevelManager : MonoBehaviour {
 
             if (chunkPassed != maxChunk-1)
             {
-                GameObject secondChunk = (GameObject)Instantiate(chunks[(int)Random.Range(0, chunks.Count - 1)], new Vector3(0, currentChunk[0].transform.position.y - 46f, 1), new Quaternion(0, 0, 0, 0));
-                currentChunk.Add(secondChunk);
+                if (gm.score < difficultyLevels[0])
+                {
+                     secondChunk = (GameObject)Instantiate(easyChunks[(int)Random.Range(0, easyChunks.Count - 1)], new Vector3(0, currentChunk[0].transform.position.y - 46f, 1), new Quaternion(0, 0, 0, 0));
+                }
+                else if(gm.score > difficultyLevels[0] && gm.score < difficultyLevels[1])
+                {
+                    int random = Mathf.RoundToInt(Random.Range(0.0f, 1.0f));
+                    switch (random)
+                    {
+                        case 0:
+                            secondChunk = (GameObject)Instantiate(easyChunks[(int)Random.Range(0, easyChunks.Count - 1)], new Vector3(0, currentChunk[0].transform.position.y - 46f, 1), new Quaternion(0, 0, 0, 0));
+                            break;
+                        case 1:
+                            secondChunk = (GameObject)Instantiate(normalChunks[(int)Random.Range(0, normalChunks.Count - 1)], new Vector3(0, currentChunk[0].transform.position.y - 46f, 1), new Quaternion(0, 0, 0, 0));
+                            break;
+                    }
+                }
+                else if(gm.score > difficultyLevels[1] && gm.score < difficultyLevels[2])
+                {
+                    secondChunk = (GameObject)Instantiate(normalChunks[(int)Random.Range(0, normalChunks.Count - 1)], new Vector3(0, currentChunk[0].transform.position.y - 46f, 1), new Quaternion(0, 0, 0, 0));
+                }
+                else if (gm.score > difficultyLevels[2] && gm.score < difficultyLevels[3])
+                {
+                    int random = Mathf.RoundToInt(Random.Range(0.0f, 1.0f));
+                    switch (random)
+                    {
+                        case 0:
+                            secondChunk = (GameObject)Instantiate(normalChunks[(int)Random.Range(0, normalChunks.Count - 1)], new Vector3(0, currentChunk[0].transform.position.y - 46f, 1), new Quaternion(0, 0, 0, 0));
+                            break;
+                        case 1:
+                            secondChunk = (GameObject)Instantiate(hardChunks[(int)Random.Range(0, hardChunks.Count - 1)], new Vector3(0, currentChunk[0].transform.position.y - 46f, 1), new Quaternion(0, 0, 0, 0));
+                            break;
+                    }
+                }else if(gm.score > difficultyLevels[3])
+                {
+                    secondChunk = (GameObject)Instantiate(hardChunks[(int)Random.Range(0, hardChunks.Count - 1)], new Vector3(0, currentChunk[0].transform.position.y - 46f, 1), new Quaternion(0, 0, 0, 0));
+                }
+               currentChunk.Add(secondChunk);
             }
             else
             {
-                GameObject secondChunk = (GameObject)Instantiate(chunksPoint[(int)Random.Range(0, chunksPoint.Count - 1)], new Vector3(0, currentChunk[0].transform.position.y - 46f, 1), new Quaternion(0, 0, 0, 0));
+                secondChunk = (GameObject)Instantiate(chunksPoint[(int)Random.Range(0, chunksPoint.Count - 1)], new Vector3(0, currentChunk[0].transform.position.y - 46f, 1), new Quaternion(0, 0, 0, 0));
                 currentChunk.Add(secondChunk);
             }
             hasPassedChunk = false;
