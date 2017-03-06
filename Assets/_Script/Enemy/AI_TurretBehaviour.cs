@@ -42,7 +42,6 @@ public class AI_TurretBehaviour : MonoBehaviour {
 				if (timer > cadence)
                 {
 					timer = 0;
-					Debug.Log ("ShootMissile");
 					GameObject clone;
 					clone = Instantiate (prefabAIMissile, transform.position, Quaternion.identity) as GameObject;
 					Vector2 direction = targetedPlayer.transform.position - transform.position;
