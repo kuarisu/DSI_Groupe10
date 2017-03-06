@@ -60,22 +60,30 @@ public class UIManager : MonoBehaviour {
 
     // Use this for initialization
     void Awake () {
+
         gm = GameManager.instance;
-        TitleFeedback();
-        StartFeedback();
         highScoreText = highscore.GetComponent<Text>();
-        menuIsHidden = false;
+
         M_ammoCount = ammoCount.material;
+        menuIsHidden = false;
 
         InitSettings();
-
         SetHighScore();
-
-        slider = playerProgress.GetComponent<Slider>();
-        slider.value = 0;
-        slider.maxValue = gm.levelManager.maxChunk;
+        TitleFeedback();
+        StartFeedback();
+  
         if (gm.firstTime == false)
             earlyAccess.SetActive(false);
+
+        InitUI();
+    }
+
+    public void InitUI()
+    {
+        slider = playerProgress.GetComponent<Slider>();
+        slider.value = 0;
+        slider.maxValue = ((gm.levelManager.maxChunk) * 46f) + 23;
+        M_ammoCount.SetFloat("_AmmoCurrent", gm.player.currentBullet);
     }
 
     // Update is called once per frame
@@ -91,21 +99,8 @@ public class UIManager : MonoBehaviour {
         if (gm.hasGameLaunched && gm.isPlayerDead == false)
         {
             ScoreUpdate();
-            // StartCoroutine("ScoreOverDistance");
+            SliderUpdate();
         }
-
-
-
-        //The end value needs to be more precise!
-        //if (gm.hasGameLaunched && gm.player.isInChunkPoint == false)
-            //slider.value += (slider.maxValue*Time.deltaTime/26f);
-    }
-
-    IEnumerator ScoreOverDistance()
-    {
-        gm.score += (int)(gm.scorePerSecond*Time.deltaTime);
-        yield return new WaitForSeconds(0.1f);
-        scoreUpdated = false;
     }
 
     public float UIlocalScore;
@@ -114,27 +109,37 @@ public class UIManager : MonoBehaviour {
     {
         UIlocalScore += Time.deltaTime * gm.scorePerSecond;
         gm.score = (int)UIlocalScore;
-        /* if (scoreToDraw <= gm.score) {
-             scoreToDraw++;
-         }    */
         score.text = gm.score.ToString();
+    }
+
+    public void SliderUpdate()
+    {
+        if (gm.player.isInChunkPoint == false)
+            slider.value += (gm.levelManager.scrollSpeed + gm.levelManager.speedModifier * gm.levelManager.scrollSpeedRange / 100f) * Time.deltaTime;
+        else
+            slider.value -= (gm.levelManager.scrollSpeed + gm.levelManager.speedModifier * gm.levelManager.scrollSpeedRange / 100f) * Time.deltaTime;
     }
 
     public void GameStart()
     {
         if (!SplashScreen.isFinished) return;
+
+        //Hide menu
         start.SetActive(false);
-        gm.LaunchGame();
-        highscore.transform.DOScale(3, 1f);
-        highScoreText.DOFade(0, 1f);
         achievements.SetActive(false);
         settings.SetActive(false);
         leaderboards.SetActive(false);
+
+        //Highscore Feedback
+        highscore.transform.DOScale(3, 1f);
+        highScoreText.DOFade(0, 1f);
+
+        gm.LaunchGame();
     }
 
     public void InitSettings()
     {
-        if (PlayerPrefs.HasKey("isSound"))
+        if (gm.firstTime == false)
             gm.GetSave();
         else
         {

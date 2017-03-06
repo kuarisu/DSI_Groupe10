@@ -52,10 +52,10 @@ public class GameManager : MonoBehaviour {
 
         levelManager = GetComponent<LevelManager>();
         uiManager = GetComponent<UIManager>();
-        Screen.orientation = ScreenOrientation.Portrait;
         player = GameObject.Find("Player").GetComponent<PlayerController>();
 
         //Camera Initialization
+        Screen.orientation = ScreenOrientation.Portrait;
         Camera.main.orthographicSize = ((Screen.height * (chunkSize + (0.5f * Screen.height / Screen.width))) / Screen.width) / 2;
 
         InitGame();
@@ -68,9 +68,16 @@ public class GameManager : MonoBehaviour {
         isUiInPos = false;
         isPlayerDead = false;
         firstTime = true;
-        GetSave();
-        //highScore = score;
         score = 0;
+        GetSave();
+    }
+
+    public void ReinitializeGame()
+    {
+        InitGame();
+        levelManager.InitLevel();
+        uiManager.InitUI();
+        player.InitPlayer();
     }
 
     //When player tap for first time to launch a game
@@ -105,14 +112,15 @@ public class GameManager : MonoBehaviour {
 
     public void CameraPos(bool right)
     {
-        
+        RectTransform rectTransform = uiManager.playerInterface.GetComponent<RectTransform>();
+
         //For a right-handed player: UI is on the left
         if (right)
         {
             Camera.main.transform.DOMoveX(-Camera.main.orthographicSize * 0.035f, 2f).OnComplete(UiInPos);
             uiManager.score.transform.localPosition = new Vector3(chunkSize, uiManager.score.transform.localPosition.y, 0);
 
-            RectTransform rectTransform = uiManager.playerInterface.GetComponent<RectTransform>();
+
             rectTransform.anchorMin = new Vector2(0, 0.5f);
             rectTransform.anchorMax = new Vector2(0, 0.5f);
             rectTransform.pivot = new Vector2(0, 0.5f);
@@ -122,10 +130,9 @@ public class GameManager : MonoBehaviour {
         }
         else
         {
-            Camera.main.transform.DOMoveX(Camera.main.orthographicSize * 0.035f, 2f);
+            Camera.main.transform.DOMoveX(Camera.main.orthographicSize * 0.035f, 2f).OnComplete(UiInPos);
             uiManager.score.transform.localPosition = new Vector3(-chunkSize, uiManager.score.transform.localPosition.y, 0);
 
-            RectTransform rectTransform = uiManager.playerInterface.GetComponent<RectTransform>();
             rectTransform.anchorMin = new Vector2(1, 0.5f);
             rectTransform.anchorMax = new Vector2(1, 0.5f);
             rectTransform.pivot = new Vector2(1, 0.5f);
@@ -139,7 +146,6 @@ public class GameManager : MonoBehaviour {
     public void Scoring(int add)
     {
         uiManager.UIlocalScore += add/2;
-        //uiManager.scoreToDraw += score;
         DOTween.Restart("ShakeScale");
         DOTween.Kill("ShakeScale");
         uiManager.score.transform.DOShakeScale(1, 1, 20, 90, true).SetEase(Ease.InQuad).SetId("ShakeScale");
@@ -153,6 +159,7 @@ public class GameManager : MonoBehaviour {
 
         if (score > highScore)
             highScore = score;
+
         score = 0;
         SetSave();
         StartCoroutine(DestroyedCoroutine());
@@ -192,6 +199,8 @@ public class GameManager : MonoBehaviour {
 
     public void SetSave()
     {
+        PlayerPrefs.SetString("firstTime", firstTime.ToString());
+
         //Player Stats
         PlayerPrefs.SetInt("Highscore", highScore);
         PlayerPrefs.SetInt("Experience", playerXP);
@@ -201,8 +210,6 @@ public class GameManager : MonoBehaviour {
         PlayerPrefs.SetString("isSound", uiManager.isSound.ToString());
         PlayerPrefs.SetString("isRight", uiManager.isRight.ToString());
         PlayerPrefs.SetString("isNormal", uiManager.isSound.ToString());
-
-        PlayerPrefs.SetString("firstTime", firstTime.ToString());
 
         PlayerPrefs.Save();
     }

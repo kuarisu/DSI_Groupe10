@@ -49,6 +49,7 @@ public class PlayerController : MonoBehaviour
     public int maxBullet;
     public float rateOfFire;
     float lastShot;
+    bool isRotating;
 
     [Header("ROTATION")]
     [Tooltip("Rotation Force applied to player at the beginning")]
@@ -78,10 +79,17 @@ public class PlayerController : MonoBehaviour
         targetPosition = new Vector2(mainCam.transform.position.x, mainCam.transform.position.y + startOffset);
         if (mainCam.transform.position.y - targetPosition.y < minDistTop)
             targetPosition = new Vector2(targetPosition.x, mainCam.orthographicSize - minDistTop);
-        transform.position = new Vector3(0,-3,0);
+
+        InitPlayer();        
+    }
+
+    public void InitPlayer()
+    {
+        transform.position = new Vector3(0, -3, 0);
         startRotation = transform.rotation.eulerAngles;
         currentBullet = maxBullet;
         isInChunkPoint = false;
+        isRotating = false;
     }
 
     // Update is called once per frame
@@ -94,18 +102,7 @@ public class PlayerController : MonoBehaviour
 
             BackForceY();
             BackForceX();
-        }
-
-        if (Vector3.Dot(-transform.up, Vector3.down) < 1f)
-        {
-            if (backforceTimer > 1f && !isRotating)
-            {
-                BackForceRotation();
-            }
-            else
-            {
-                backforceTimer += Time.deltaTime;
-            }
+            PlayerRotation();
         }
     }
 
@@ -154,11 +151,12 @@ public class PlayerController : MonoBehaviour
 
     void Fire()
     {
+        PlaySound();
+
         Vector2 direction = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position;
         direction.Normalize();
 
         rb.AddForce(new Vector2(Mathf.Clamp(-direction.x * sidepunch, -maxsidepunch, maxsidepunch), -direction.y) * firepunch, ForceMode2D.Impulse);
-        PlaySound();
         bulletFired = Instantiate(bullet, transform.position, transform.rotation);
         bulletFired.transform.SetParent(lm.currentChunk[1].transform);
 
@@ -175,7 +173,6 @@ public class PlayerController : MonoBehaviour
             Camera.main.transform.DOMoveX(-Camera.main.orthographicSize * 0.035f, 2f);
         else if(gm.uiManager.isRight == false)
             Camera.main.transform.DOMoveX(Camera.main.orthographicSize * 0.035f, 2f);
-
         Camera.main.transform.DOShakePosition(duration, new Vector3(strenght / 2, strenght, 0), 20, 90);
 
         if(!isInChunkPoint)
@@ -197,7 +194,7 @@ public class PlayerController : MonoBehaviour
         {
             Bullets(maxBullet - currentBullet);
             isInChunkPoint = true;
-            Debug.Log("Entrée");
+            gm.uiManager.slider.maxValue = 35;
         }
     }
 
@@ -209,6 +206,7 @@ public class PlayerController : MonoBehaviour
             currentBullet = maxBullet;
             isInChunkPoint = false;
             gm.uiManager.slider.value = 0;
+            gm.uiManager.slider.maxValue = (gm.levelManager.maxChunk * 46f) + targetPosition.y;
         }
     }
 
@@ -245,16 +243,26 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    bool isRotating = false;
+    void PlayerRotation()
+    {
+        if (Vector3.Dot(-transform.up, Vector3.down) < 1f)
+        {
+            if (backforceTimer > 1f && !isRotating)
+                BackForceRotation();
+            else
+                backforceTimer += Time.deltaTime;
+        }
+    }
 
     void BackForceRotation()
     {
         isRotating = true;
-        transform.DORotate(startRotation, 0.3f + backForceRot * (1 - Vector3.Dot(-transform.up, Vector3.down))).SetEase(Ease.OutSine).SetId("Rotation").OnComplete(ResetBool);
+        transform.DORotate(startRotation, 0.3f + backForceRot * (1 - Vector3.Dot(-transform.up, Vector3.down))).SetEase(Ease.OutSine).SetId("Rotation").OnComplete(ResetRotation);
     }
 
-    void ResetBool()
+    void ResetRotation()
     {
         isRotating = false;
     }
+
 } 
