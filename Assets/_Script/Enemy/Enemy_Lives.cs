@@ -49,14 +49,17 @@ public class Enemy_Lives : MonoBehaviour {
     //Coroutine so we can add some daly before destroying the enemy and maybe add animation and visual effects here
     IEnumerator DeathCoroutine()
     {
-        GameManager.instance.Scoring(points);
+        GameManager.instance.Scoring(points,gameObject.tag);
         this.GetComponent<Collider2D>().enabled = false; // Disable the collider so it won't have any impact on the reste of the game.
         //yield return new WaitForSeconds(m_TimerBeforeDestroy);
         GameObject expClone = Instantiate(explosion, transform.position, transform.rotation);
         expClone.transform.SetParent(transform.root);
 
-        GameObject returnClone = Instantiate(bulletReturn, transform.position, transform.rotation);
-        returnClone.GetComponent<BulletReturn>().addedBullets = bulletGain;
+        if (GameManager.instance.player.canBulletReturn == true)
+        {
+            GameObject returnClone = Instantiate(bulletReturn, transform.position, transform.rotation);
+            returnClone.GetComponent<BulletReturn>().addedBullets = bulletGain;
+        }
 
         Destroy(this.gameObject);
         yield break;

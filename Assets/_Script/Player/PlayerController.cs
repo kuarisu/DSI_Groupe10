@@ -8,20 +8,17 @@ public class PlayerController : MonoBehaviour
 {
 
     GameManager gm;
-    LevelManager lm;
-    UIManager ui;
     Rigidbody2D rb;
 
     public GameObject bullet;
+    public GameObject noBullet;
     GameObject bulletFired;
     bool isHoldingDown;
     bool doRotate;
     Vector3 startRotation;
     float backforceTimer = 3f;
-    public bool isInChunkPoint;
 
     public Camera mainCam;
-    public Vector2 targetPosition;
     public float startOffset;
     public float maxOffsetY;
     public float distanceOffsetY;
@@ -48,6 +45,7 @@ public class PlayerController : MonoBehaviour
     public int bulletSpeed;
     public int maxBullet;
     public float rateOfFire;
+    public bool canBulletReturn;
     float lastShot;
     bool isRotating;
 
@@ -66,14 +64,17 @@ public class PlayerController : MonoBehaviour
     public float duration;
     public int vibrato;
 
+    [HideInInspector]
     public int currentBullet;
+    public bool passedFirstChunkpoint;
+    public bool isInChunkPoint;
+    public Vector2 targetPosition;
+    float rot_z;
 
     // Use this for initialization
     void Awake()
     {
         gm = GameManager.instance;
-        lm = gm.levelManager;
-        ui = gm.uiManager;
         rb = this.GetComponent<Rigidbody2D>();
         startOffset = (startOffset * mainCam.orthographicSize);
         targetPosition = new Vector2(mainCam.transform.position.x, mainCam.transform.position.y + startOffset);
@@ -90,6 +91,8 @@ public class PlayerController : MonoBehaviour
         currentBullet = maxBullet;
         isInChunkPoint = false;
         isRotating = false;
+        passedFirstChunkpoint = false;
+        canBulletReturn = false;
     }
 
     // Update is called once per frame
@@ -112,7 +115,7 @@ public class PlayerController : MonoBehaviour
 
         //INPUTS FOR EDITOR AND STANDALONE
 #if UNITY_EDITOR || UNITY_STANDALONE
-        if (Input.GetMouseButton(0) && Camera.main.ScreenToWorldPoint(Input.mousePosition).y < transform.position.y && Time.time > rateOfFire + lastShot && currentBullet > 0)
+        if (Input.GetMouseButton(0) && Camera.main.ScreenToWorldPoint(Input.mousePosition).y < transform.position.y && Time.time > rateOfFire + lastShot)
         {
             Fire();
             lastShot = Time.time;
@@ -157,26 +160,35 @@ public class PlayerController : MonoBehaviour
         direction.Normalize();
 
         rb.AddForce(new Vector2(Mathf.Clamp(-direction.x * sidepunch, -maxsidepunch, maxsidepunch), -direction.y) * firepunch, ForceMode2D.Impulse);
-        bulletFired = Instantiate(bullet, transform.position, transform.rotation);
-        bulletFired.transform.SetParent(lm.currentChunk[1].transform);
+        rot_z = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.Euler(0f, 0f, rot_z + 90);
+
+        if (currentBullet > 0)
+        {
+            bulletFired = Instantiate(bullet, transform.position, transform.rotation);
+            bulletFired.transform.SetParent(gm.levelManager.currentChunk[1].transform);
+
+            if (!isInChunkPoint)
+                Bullets(-1);
+
+            bulletFired.GetComponent<Rigidbody2D>().velocity = direction * bulletSpeed;
+        }else
+        {
+            bulletFired = Instantiate(noBullet, transform.position, transform.rotation);
+            bulletFired.transform.SetParent(gm.levelManager.currentChunk[1].transform);
+        }
 
         // Rotate the bullet and player towards the input
-        float rot_z = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        rot_z = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         bulletFired.transform.rotation = Quaternion.Euler(0f, 0f, rot_z + 90);
-        transform.rotation = Quaternion.Euler(0f, 0f, rot_z + 90);
         backforceTimer = 0f;
 
-        bulletFired.GetComponent<Rigidbody2D>().velocity = direction * bulletSpeed;
-
         // Screen Shake
-        if(gm.uiManager.isRight == true)
+        if (gm.uiManager.isRight == true)
             Camera.main.transform.DOMoveX(-Camera.main.orthographicSize * 0.035f, 2f);
         else if(gm.uiManager.isRight == false)
             Camera.main.transform.DOMoveX(Camera.main.orthographicSize * 0.035f, 2f);
         Camera.main.transform.DOShakePosition(duration, new Vector3(strenght / 2, strenght, 0), 20, 90);
-
-        if(!isInChunkPoint)
-            Bullets(-1);
 
         DOTween.Kill("Rotation");
         isRotating = false; 
@@ -206,14 +218,16 @@ public class PlayerController : MonoBehaviour
             currentBullet = maxBullet;
             isInChunkPoint = false;
             gm.uiManager.slider.value = 0;
-            gm.uiManager.slider.maxValue = (gm.levelManager.maxChunk * 46f) + targetPosition.y;
+            gm.uiManager.SetSlider();
+            if (passedFirstChunkpoint == false)
+                passedFirstChunkpoint = true;
         }
     }
 
     public void Bullets(int bullet)
     {
         currentBullet += bullet;
-        ui.M_ammoCount.SetFloat("_AmmoCurrent", currentBullet);
+        gm.uiManager.M_ammoCount.SetFloat("_AmmoCurrent", currentBullet);
     }
 
     void BackForceY()
