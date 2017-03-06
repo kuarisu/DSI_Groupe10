@@ -183,10 +183,11 @@ public class GameManager : MonoBehaviour {
     public void PlayerDeath()
     {
         isPlayerDead = true;
+        
 
         if (totalScore > highScore)
             highScore = totalScore;
-
+        AnalyticsManager.instance.DeathAnalyticsRegistration();
         totalScore = 0;
         SetSave();
         StartCoroutine(DestroyedCoroutine());
@@ -196,13 +197,10 @@ public class GameManager : MonoBehaviour {
         PlayerVisual.GetComponent<Collider2D>().enabled = false;
     }
 
-    Dictionary<string, object> DeathDictionary = new Dictionary <string, object>();
 
     IEnumerator DestroyedCoroutine()
     {
-        DeathDictionary.Add("score", (int) uiManager.UIlocalScore);
         yield return new WaitForSeconds(TimeBeforeRespawn);
-        Amplitude.Instance.logEvent("Death", DeathDictionary);
         SceneManager.LoadScene(0);
     }
 
