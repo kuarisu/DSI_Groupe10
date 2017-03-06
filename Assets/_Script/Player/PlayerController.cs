@@ -45,6 +45,7 @@ public class PlayerController : MonoBehaviour
     public int bulletSpeed;
     public int maxBullet;
     public float rateOfFire;
+    public bool canBulletReturn;
     float lastShot;
     bool isRotating;
 
@@ -91,6 +92,7 @@ public class PlayerController : MonoBehaviour
         isInChunkPoint = false;
         isRotating = false;
         passedFirstChunkpoint = false;
+        canBulletReturn = false;
     }
 
     // Update is called once per frame

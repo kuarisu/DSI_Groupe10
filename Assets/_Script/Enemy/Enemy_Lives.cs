@@ -55,8 +55,11 @@ public class Enemy_Lives : MonoBehaviour {
         GameObject expClone = Instantiate(explosion, transform.position, transform.rotation);
         expClone.transform.SetParent(transform.root);
 
-        GameObject returnClone = Instantiate(bulletReturn, transform.position, transform.rotation);
-        returnClone.GetComponent<BulletReturn>().addedBullets = bulletGain;
+        if (GameManager.instance.player.canBulletReturn == true)
+        {
+            GameObject returnClone = Instantiate(bulletReturn, transform.position, transform.rotation);
+            returnClone.GetComponent<BulletReturn>().addedBullets = bulletGain;
+        }
 
         Destroy(this.gameObject);
         yield break;
