@@ -43,6 +43,7 @@ public class UIManager : MonoBehaviour {
     public Material M_ammoCount;
     public GameObject leftRight;
     public Slider slider;
+    public Gradient grd;
 
     [HideInInspector]
     public bool isSound;
@@ -305,6 +306,12 @@ public class UIManager : MonoBehaviour {
         gm.ResetSettings();
         Reset.transform.DOScale(0.8f, 0.1f).SetEase(Ease.Linear).SetLoops(2, LoopType.Yoyo);
         SceneManager.LoadScene(0);
+    }
+
+    public void QuitGame()
+    {
+        gm.SetSave();
+        Application.Quit();
     }
 
     // Visual Feedbacks
