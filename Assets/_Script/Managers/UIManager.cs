@@ -14,6 +14,7 @@ public class UIManager : MonoBehaviour {
     public GameObject startText;
     public GameObject achievements;
     public GameObject settings;
+    public GameObject quit;
     public GameObject leaderboards;
     public GameObject start;
     public GameObject highscore;
@@ -143,6 +144,7 @@ public class UIManager : MonoBehaviour {
         achievements.SetActive(false);
         settings.SetActive(false);
         leaderboards.SetActive(false);
+        quit.SetActive(false);
 
         //Highscore Feedback
         highscore.transform.DOScale(3, 1f);
