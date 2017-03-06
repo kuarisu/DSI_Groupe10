@@ -6,6 +6,7 @@ public class SoundManager : MonoBehaviour {
 
     public AudioSource BulletDestroyed;
     public AudioSource ShotFired;
+    public AudioSource PLayerTrailSound;
 
     public static SoundManager Instance;
     private void Awake()

@@ -27,28 +27,34 @@ public class Bullet_HitEnemy : MonoBehaviour {
                 impact = Instantiate(impact, col.transform.position, transform.rotation);
 
                 impact.transform.SetParent(gm.levelManager.currentChunk[1].transform);
-                PlaySound();
+                if (col.gameObject.tag == "enemy")
+                    PlaySound();
+                else
+                    PlaySecondSound();
                 Destroy(gameObject);
             }
             else if (col.gameObject.tag != "BulletDestroyer")
             {
                 impact = Instantiate(impact, transform.position, transform.rotation);
                 impact.transform.SetParent(gm.levelManager.currentChunk[1].transform);
-                PlaySound();
                 Destroy(gameObject);
             }
             else
             {
                 GetComponent<Collider2D>().enabled = false;
-                PlaySound();
                 Destroy(gameObject, 1f);
             }
         }
     }
-
     void PlaySound()
     {
         SoundManager.Instance.BulletDestroyed.pitch = Random.Range(0.9f, 1.1f);
         SoundManager.Instance.BulletDestroyed.Play();
+    }
+
+    void PlaySecondSound()
+    {
+        //SoundManager.Instance.BulletDestroyed.pitch = Random.Range(0.9f, 1.1f);
+        //SoundManager.Instance.BulletDestroyed.Play();
     }
 }
