@@ -45,6 +45,8 @@ public class GameManager : MonoBehaviour {
     public int enemyChunkPassed;
     public int bonusChunkPassed;
     public int totalChunkPassed;
+    public int tapShots;
+    public int sprayShots;
 
 
     void Awake()

@@ -11,6 +11,8 @@ public class PlayerController : MonoBehaviour
     Rigidbody2D rb;
 
     public GameObject bullet;
+    public GameObject muzzleFlash;
+    public GameObject muzzlepos;
     public GameObject noBullet;
     GameObject bulletFired;
     bool isHoldingDown;
@@ -23,7 +25,7 @@ public class PlayerController : MonoBehaviour
     public float maxOffsetY;
     public float distanceOffsetY;
     public float maxOffsetX;
-    public float distanceOffsetX; 
+    public float distanceOffsetX;
 
     [Header("GAMEPLAY")]
     [Tooltip("Distance minimum needed between top of the screen and player position")]
@@ -122,7 +124,10 @@ public class PlayerController : MonoBehaviour
         }
 
         if (Input.GetMouseButtonUp(0))
+        {
             lastShot = 0;
+        }
+
 #endif
 
 
@@ -167,7 +172,11 @@ public class PlayerController : MonoBehaviour
         {
             bulletFired = Instantiate(bullet, transform.position, transform.rotation);
             bulletFired.transform.SetParent(gm.levelManager.currentChunk[1].transform);
+            /*GameObject muzzleflash = Instantiate(muzzleFlash, muzzlepos.transform.position, transform.rotation);
+            muzzleflash.transform.SetParent(gm.levelManager.currentChunk[1].transform);
 
+            rot_z = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            muzzleflash.transform.rotation = Quaternion.Euler(0f, 0f, rot_z + 90);*/
             if (!isInChunkPoint)
                 Bullets(-1);
 
