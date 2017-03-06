@@ -21,12 +21,13 @@ public class AI_TurretBehaviour : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		targetedPlayer = GameObject.Find ("Player");
+		targetedPlayer =GameManager.instance.PlayerVisual;
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		if ( targetedPlayer != null && Vector3.Distance (transform.position, targetedPlayer.transform.position) < minimumActivationLength && this.transform.parent.transform.position.y < targetedPlayer.transform.position.y)
+		
+		if ( targetedPlayer != null && this.transform.transform.position.y < targetedPlayer.transform.position.y && Vector3.Distance (transform.position, targetedPlayer.transform.position) < minimumActivationLength)
         {
             if (targetPlayer == true)
             {
