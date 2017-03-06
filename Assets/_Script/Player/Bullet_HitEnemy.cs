@@ -16,7 +16,7 @@ public class Bullet_HitEnemy : MonoBehaviour {
     {
         if (col.gameObject.tag != "Chunkpoint")
         {
-            if ((col.gameObject.tag == "enemy" || col.gameObject.tag == "enemiesBullet") && col.gameObject.GetComponent<Enemy_Lives>() != null)
+            if ((col.gameObject.tag == "enemy" || col.gameObject.tag == "bonuses") && col.gameObject.GetComponent<Enemy_Lives>() != null)
             {
                 Enemy_Lives enemyHit;
                 enemyHit = col.gameObject.GetComponent<Enemy_Lives>();
