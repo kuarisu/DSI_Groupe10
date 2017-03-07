@@ -89,7 +89,7 @@ public class LevelManager : MonoBehaviour {
     void MoveBackground()
     {
         foreach (GameObject background in currentBackground)
-            background.transform.position = (background.transform.position + (Vector3.up * (scrollSpeed + speedModifier * scrollSpeedRange * bgSpeedRatio / 100f) * Time.deltaTime));
+            background.transform.position = (background.transform.position + (Vector3.up * (scrollSpeed + speedModifier * scrollSpeedRange/ 100f) * Time.deltaTime) * bgSpeedRatio);
 
         if (currentBackground[1].transform.position.y >= 0f)
         {

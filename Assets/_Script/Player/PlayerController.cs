@@ -72,6 +72,7 @@ public class PlayerController : MonoBehaviour
     public bool isInChunkPoint;
     public Vector2 targetPosition;
     float rot_z;
+    int lastSpray;
 
     // Use this for initialization
     void Awake()
@@ -95,6 +96,7 @@ public class PlayerController : MonoBehaviour
         isRotating = false;
         passedFirstChunkpoint = false;
         canBulletReturn = false;
+        lastSpray = 0;
     }
 
     // Update is called once per frame
@@ -117,15 +119,25 @@ public class PlayerController : MonoBehaviour
 
         //INPUTS FOR EDITOR AND STANDALONE
 #if UNITY_EDITOR || UNITY_STANDALONE
+
         if (Input.GetMouseButton(0) && Camera.main.ScreenToWorldPoint(Input.mousePosition).y < transform.position.y && Time.time > rateOfFire + lastShot)
         {
             Fire();
             lastShot = Time.time;
+            gm.sprayShots++;
         }
 
         if (Input.GetMouseButtonUp(0))
         {
+            gm.sprayShots -= 1;
             lastShot = 0;
+            if (lastSpray < gm.sprayShots)
+            {
+                gm.sprayShots++;
+                lastSpray = gm.sprayShots;
+            }
+            else
+                gm.tapShots++;
         }
 
 #endif
@@ -140,12 +152,21 @@ public class PlayerController : MonoBehaviour
                 isHoldingDown = true;
                 lastShot = Time.time;
                 Fire();
+                gm.sprayShots++;
             }
 
             if (Input.GetTouch(0).phase == TouchPhase.Ended)
             {
+                gm.sprayShots -= 1;
                 lastShot = 0;
                 isHoldingDown = false;
+                if (lastSpray < gm.sprayShots)
+                {
+                    gm.sprayShots++;
+                    lastSpray = gm.sprayShots;
+                }
+                else
+                    gm.tapShots++;
             }
         }
 
