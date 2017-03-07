@@ -6,11 +6,10 @@ public class AnalyticsManager : MonoBehaviour
 {
 
 
-    public float runDuration;
-    public float totalScore;
-    public float highscore;
-    public int enemyKilled;
-
+    float runDuration;
+    float totalScore;
+    float highscore;
+    int enemyKilled;
 
     public static AnalyticsManager instance;
     Dictionary<string, object> DeathDictionary = new Dictionary<string, object>();
