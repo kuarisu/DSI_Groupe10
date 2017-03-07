@@ -39,6 +39,8 @@ public class GameManager : MonoBehaviour {
     public int playerXP;
     public int playerLvl;
     public bool firstTime;
+    public string gameversion;
+    public bool reseted;
 
 
     [Header("ANALYTICS")]
@@ -76,10 +78,13 @@ public class GameManager : MonoBehaviour {
         Screen.orientation = ScreenOrientation.Portrait;
         Camera.main.orthographicSize = ((Screen.height * (chunkSize + (0.5f * Screen.height / Screen.width))) / Screen.width) / 2;
 
-        if (Application.version != "3.0")
-            ResetSave();
-
         InitGame();
+
+        if (PlayerPrefs.HasKey("GameVersion") == false || PlayerPrefs.GetString("GameVersion") != gameversion)
+        {
+            ResetSave();
+            PlayerPrefs.SetString("GameVersion", Application.version);
+        }
     }
 
     public void InitGame()
@@ -253,6 +258,7 @@ public class GameManager : MonoBehaviour {
     public void SetSave()
     {
         PlayerPrefs.SetString("firstTime", firstTime.ToString());
+        PlayerPrefs.SetString("GameVersion", Application.version);
 
         //Player Stats
         PlayerPrefs.SetInt("Highscore", highScore);
@@ -269,6 +275,7 @@ public class GameManager : MonoBehaviour {
 
     public void GetSave()
     {
+        gameversion = PlayerPrefs.GetString("GameVersion");
         highScore = PlayerPrefs.GetInt("Highscore");
         playerXP = PlayerPrefs.GetInt("Experience");
         playerLvl = PlayerPrefs.GetInt("Level");
