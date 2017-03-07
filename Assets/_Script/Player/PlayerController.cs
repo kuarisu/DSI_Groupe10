@@ -180,7 +180,7 @@ public class PlayerController : MonoBehaviour
 
     void Fire()
     {
-        PlaySound();
+
 
         Vector2 direction = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position;
         direction.Normalize();
@@ -191,6 +191,7 @@ public class PlayerController : MonoBehaviour
 
         if (currentBullet > 0)
         {
+            PlaySound();
             bulletFired = Instantiate(bullet, new Vector3(transform.position.x, transform.position.y, -2), transform.rotation);
             bulletFired.transform.SetParent(gm.levelManager.currentChunk[1].transform);
 
@@ -203,6 +204,7 @@ public class PlayerController : MonoBehaviour
             bulletFired.GetComponent<Rigidbody2D>().velocity = direction * bulletSpeed;
         }else
         {
+            PlaySoundNoBulett();
             bulletFired = Instantiate(noBullet, transform.position, transform.rotation);
             bulletFired.transform.SetParent(transform);
         }
@@ -227,6 +229,12 @@ public class PlayerController : MonoBehaviour
     {
         SoundManager.Instance.ShotFired.pitch = Random.Range(0.8f, 1.3f);
         SoundManager.Instance.ShotFired.Play();
+    }
+
+    void PlaySoundNoBulett()
+    {
+        SoundManager.Instance.Player_NoBulletFiring.pitch = Random.Range(0.9f, 1.1f);
+        SoundManager.Instance.Player_NoBulletFiring.Play();
     }
 
     void OnTriggerEnter2D(Collider2D collision)
