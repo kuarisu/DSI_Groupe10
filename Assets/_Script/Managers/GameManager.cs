@@ -115,8 +115,6 @@ public class GameManager : MonoBehaviour {
         uiManager.M_ammoCount.SetVector("_ColorFull", Color.yellow);
         uiManager.M_ammoCount.SetVector("_ColorEmpty", Color.red);
 
-        SoundManager.Instance.PLayerTrailSound.Play();
-
     }
 
     //When player character is at target position (after introduction animation)
@@ -192,7 +190,7 @@ public class GameManager : MonoBehaviour {
 
         if (totalScore > highScore)
             highScore = totalScore;
-        //AnalyticsManager.instance.DeathAnalyticsRegistration();
+        AnalyticsManager.instance.DeathAnalyticsRegistration();
         totalScore = 0;
         SetSave();
         StartCoroutine(DestroyedCoroutine());
