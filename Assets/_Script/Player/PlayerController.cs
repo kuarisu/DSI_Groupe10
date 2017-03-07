@@ -89,7 +89,7 @@ public class PlayerController : MonoBehaviour
 
     public void InitPlayer()
     {
-        transform.position = new Vector3(0, -3, 0);
+        transform.position = new Vector3(0, -2, 0);
         startRotation = transform.rotation.eulerAngles;
         currentBullet = maxBullet;
         isInChunkPoint = false;
@@ -147,7 +147,7 @@ public class PlayerController : MonoBehaviour
 #if UNITY_ANDROID
         for (int i = 0; i < Input.touchCount; ++i)
         {
-            if (Input.GetTouch(0).phase == TouchPhase.Began && Camera.main.ScreenToWorldPoint(Input.GetTouch(0).position).y < transform.position.y && currentBullet > 0)
+            if (Input.GetTouch(0).phase == TouchPhase.Began && Camera.main.ScreenToWorldPoint(Input.GetTouch(0).position).y < transform.position.y)
             {
                 isHoldingDown = true;
                 lastShot = Time.time;
@@ -193,9 +193,9 @@ public class PlayerController : MonoBehaviour
         {
             bulletFired = Instantiate(bullet, transform.position, transform.rotation);
             bulletFired.transform.SetParent(gm.levelManager.currentChunk[1].transform);
+
             /*GameObject muzzleflash = Instantiate(muzzleFlash, muzzlepos.transform.position, transform.rotation);
             muzzleflash.transform.SetParent(gm.levelManager.currentChunk[1].transform);
-
             rot_z = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             muzzleflash.transform.rotation = Quaternion.Euler(0f, 0f, rot_z + 90);*/
             if (!isInChunkPoint)

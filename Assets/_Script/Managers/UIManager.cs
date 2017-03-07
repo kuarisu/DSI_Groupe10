@@ -20,6 +20,8 @@ public class UIManager : MonoBehaviour {
     public GameObject highscore;
     public GameObject play;
     public GameObject earlyAccess;
+    public Text playerLvl;
+    public Slider playerExp;
 
     [Header("SETTINGS")]
     public Canvas settingsCanvas;
@@ -87,6 +89,7 @@ public class UIManager : MonoBehaviour {
         slider.value = 0;
         M_ammoCount.SetFloat("_AmmoCurrent", gm.player.currentBullet);
         slider.maxValue = ((gm.levelManager.currentMaxChunk) * 46f) + 23;
+        SetExperience();
     }
 
     // Update is called once per frame
@@ -124,6 +127,12 @@ public class UIManager : MonoBehaviour {
             slider.value -= (gm.levelManager.scrollSpeed + gm.levelManager.speedModifier * gm.levelManager.scrollSpeedRange / 100f) * Time.deltaTime;
     }
 
+    public void SetExperience()
+    {
+        playerExp.value = gm.playerXP;
+        playerLvl.text = gm.playerLvl.ToString();
+    }
+
     public void SetSlider()
     {
         if (gm.player.isInChunkPoint == false)
@@ -145,6 +154,8 @@ public class UIManager : MonoBehaviour {
         settings.SetActive(false);
         leaderboards.SetActive(false);
         quit.SetActive(false);
+        playerExp.gameObject.SetActive(false);
+        playerLvl.gameObject.SetActive(false);
 
         //Highscore Feedback
         highscore.transform.DOScale(3, 1f);

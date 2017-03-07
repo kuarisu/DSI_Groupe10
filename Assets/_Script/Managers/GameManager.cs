@@ -21,6 +21,7 @@ public class GameManager : MonoBehaviour {
     public bool hasGameLaunched;
     public bool loaded;
     public bool gamestarted;
+    public int experience;
 
     [Header("GAMEPLAY")]
     public int scorePerSecond;
@@ -29,13 +30,16 @@ public class GameManager : MonoBehaviour {
     public int enemyScore;
     public int bonusScore;
     public int totalScore;
+    public float xpMultiplier;
+    public float TimeBeforeRespawn;
+    public float TimeForEffect;
+    public List<int> toNextLevel = new List<int>();
     //Data to save
     public int highScore;
     public int playerXP;
     public int playerLvl;
     public bool firstTime;
-    public float TimeBeforeRespawn;
-    public float TimeForEffect;
+
 
     [Header("ANALYTICS")]
     public GameObject currentChunk;
@@ -72,12 +76,10 @@ public class GameManager : MonoBehaviour {
         Screen.orientation = ScreenOrientation.Portrait;
         Camera.main.orthographicSize = ((Screen.height * (chunkSize + (0.5f * Screen.height / Screen.width))) / Screen.width) / 2;
 
-        if (Debug.isDebugBuild)
-        {
-            QualitySettings.vSyncCount = 0;
-            Application.targetFrameRate = 60;
-        }
-            InitGame();
+        if (Application.version != "3.0")
+            ResetSave();
+
+        InitGame();
     }
 
     public void InitGame()
@@ -91,6 +93,13 @@ public class GameManager : MonoBehaviour {
         distanceScore = 0;
         totalScore = 0;
         GetSave();
+
+        if(uiManager.isSound == true)
+            AudioListener.volume = 1;
+        else
+            AudioListener.volume = 0;
+
+        PlayerExperience();
     }
 
     public void ReinitializeGame()
@@ -186,10 +195,10 @@ public class GameManager : MonoBehaviour {
     public void PlayerDeath()
     {
         isPlayerDead = true;
-        
-
+       
         if (totalScore > highScore)
             highScore = totalScore;
+        PlayerExperience();
         AnalyticsManager.instance.DeathAnalyticsRegistration();
         totalScore = 0;
         SetSave();
@@ -201,6 +210,21 @@ public class GameManager : MonoBehaviour {
         SoundManager.Instance.PLayerTrailSound.Stop();
     }
 
+    public void PlayerExperience()
+    {
+        experience = 0;
+        playerXP += Mathf.RoundToInt(totalScore * xpMultiplier);
+
+        for (int i = 0; i < playerLvl+1; i++)
+        {
+            experience += toNextLevel[i];
+            if (playerXP >= experience)
+            {
+                playerLvl++;
+            }
+        }
+        uiManager.playerExp.maxValue = experience;
+    }
 
     IEnumerator DestroyedCoroutine()
     {
@@ -246,6 +270,8 @@ public class GameManager : MonoBehaviour {
     public void GetSave()
     {
         highScore = PlayerPrefs.GetInt("Highscore");
+        playerXP = PlayerPrefs.GetInt("Experience");
+        playerLvl = PlayerPrefs.GetInt("Level");
 
         if (PlayerPrefs.GetString("isSound") == "True")
             uiManager.isSound = true;

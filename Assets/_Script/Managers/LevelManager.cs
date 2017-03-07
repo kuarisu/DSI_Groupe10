@@ -185,7 +185,7 @@ public class LevelManager : MonoBehaviour {
 
     void ChunkPassed()
     {
-        if (currentChunk[0].transform.position.y >= 46f - (gm.player.targetPosition.y*2) && !hasPassedChunk)
+        if (currentChunk[0].transform.position.y >= 46f - (23-gm.player.targetPosition.y) && !hasPassedChunk)
         {
             if (currentChunk[0].tag != "Chunkpoint")
             {
