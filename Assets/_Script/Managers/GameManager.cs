@@ -117,6 +117,7 @@ public class GameManager : MonoBehaviour {
         player.gameObject.transform.DOMoveY(player.targetPosition.y, 1.75f).SetEase(Ease.InOutBack).OnComplete(GameLaunched);
         levelManager.InstantiateChunks();
         CameraPos(uiManager.isRight);
+        levelManager.M_background.DOFloat(30, "_Speed", 2f);
 
         //Initialize Player UI
         uiManager.M_ammoCount.SetFloat("_AmmoMax", player.maxBullet);
@@ -129,7 +130,6 @@ public class GameManager : MonoBehaviour {
     //When player character is at target position (after introduction animation)
     public void GameLaunched()
     {
-
         hasGameLaunched = true;
         uiManager.score.gameObject.SetActive(true);
 

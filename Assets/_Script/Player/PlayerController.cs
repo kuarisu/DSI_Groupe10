@@ -191,13 +191,12 @@ public class PlayerController : MonoBehaviour
 
         if (currentBullet > 0)
         {
-            bulletFired = Instantiate(bullet, transform.position, transform.rotation);
+            bulletFired = Instantiate(bullet, new Vector3(transform.position.x, transform.position.y, -2), transform.rotation);
             bulletFired.transform.SetParent(gm.levelManager.currentChunk[1].transform);
 
-            /*GameObject muzzleflash = Instantiate(muzzleFlash, muzzlepos.transform.position, transform.rotation);
-            muzzleflash.transform.SetParent(gm.levelManager.currentChunk[1].transform);
-            rot_z = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-            muzzleflash.transform.rotation = Quaternion.Euler(0f, 0f, rot_z + 90);*/
+            GameObject muzzleflash = Instantiate(muzzleFlash, muzzlepos.transform.position, Quaternion.Euler(0f, 0f, rot_z + 90));
+            muzzleflash.transform.SetParent(transform);
+
             if (!isInChunkPoint)
                 Bullets(-1);
 
@@ -205,7 +204,7 @@ public class PlayerController : MonoBehaviour
         }else
         {
             bulletFired = Instantiate(noBullet, transform.position, transform.rotation);
-            bulletFired.transform.SetParent(gm.levelManager.currentChunk[1].transform);
+            bulletFired.transform.SetParent(transform);
         }
 
         // Rotate the bullet and player towards the input

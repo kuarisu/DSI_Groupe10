@@ -5,9 +5,9 @@ using DG.Tweening;
 
 public class LevelManager : MonoBehaviour {
 
-    public List<GameObject> backgrounds = new List<GameObject>();
     public List<GameObject> currentChunk = new List<GameObject>(2);
-    public List<GameObject> currentBackground = new List<GameObject>(2);
+    public GameObject background;
+    public Material M_background;
     public GameObject bulletDestroyer;
     public int currentbgIndex;
     public GameObject DoorHolder;
@@ -44,8 +44,8 @@ public class LevelManager : MonoBehaviour {
     void Awake()
     {
         gm = GameManager.instance;
+        //M_background = background.GetComponent<Material>();
 
-        InstantiateBackground();
         bulletDestroyer.transform.position = new Vector3(0, -(Camera.main.orthographicSize + 5), 0);
 
         playerController = gm.player.GetComponent<PlayerController>();
@@ -58,6 +58,7 @@ public class LevelManager : MonoBehaviour {
     {
         currentChunk.Clear();
         currentMaxChunk = maxChunk[0];
+        M_background.SetFloat("_Speed",100f);
     }
 
     void Update()
@@ -70,34 +71,10 @@ public class LevelManager : MonoBehaviour {
         else
             speedModifier = Mathf.Lerp(0, 1, playerOffsetY / maxOffsetY);
 
-        MoveBackground();
         if (gm.gamestarted)
         {
             MoveChunks();
             ChunkPassed();
-        }
-    }
-
-    void InstantiateBackground()
-    {
-        GameObject firstBackground = (GameObject)Instantiate(backgrounds[currentbgIndex], new Vector3(0, 0, 1), new Quaternion(0, 0, 0, 0));
-        currentBackground.Add(firstBackground);
-        GameObject secondBackground = (GameObject)Instantiate(backgrounds[currentbgIndex], new Vector3(0, -46, 1), new Quaternion(0, 0, 0, 0));
-        currentBackground.Add(secondBackground);
-    }
-
-    void MoveBackground()
-    {
-        foreach (GameObject background in currentBackground)
-            background.transform.position = (background.transform.position + (Vector3.up * (scrollSpeed + speedModifier * scrollSpeedRange/ 100f) * Time.deltaTime) * bgSpeedRatio);
-
-        if (currentBackground[1].transform.position.y >= 0f)
-        {
-            GameObject oldBackground = currentBackground[0];
-            currentBackground.Remove(currentBackground[0]);
-            GameObject secondBackground = oldBackground;
-            oldBackground.transform.position = new Vector3(0, currentBackground[0].transform.position.y - 46f, 1);
-            currentBackground.Add(secondBackground);
         }
     }
 
