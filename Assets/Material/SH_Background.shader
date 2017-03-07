@@ -85,9 +85,9 @@ Shader "Shader Forge/SH_Background" {
                 float4 node_1873 = _Time + _TimeEditor;
                 float _Time = (node_1873.g/_Speed);
                 float _Invert_V_var = lerp( sceneUVs.g, (1.0 - sceneUVs.g), _Invert_V );
-                float4 node_5337 = _Time + _TimeEditor;
+                float4 node_7220 = _Time + _TimeEditor;
                 float2 node_1954 = float2(sceneUVs.r,(sceneUVs.g+(_Time/_Distort_Speed))).rg;
-                float2 node_1090 = (float2(node_1954.r,(node_1954.g*(((_ScreenParams.g/_ScreenParams.r)/1.6)/2.0)))+node_5337.g*float2(0.2,1));
+                float2 node_1090 = (float2(node_1954.r,(node_1954.g*(((_ScreenParams.g/_ScreenParams.r)/1.6)/2.0)))+node_7220.g*float2(0.2,1));
                 float4 node_6746 = tex2D(_Layers,TRANSFORM_TEX(node_1090, _Layers));
                 float2 __Scrn_UV = float2(sceneUVs.r,lerp(lerp(_Invert_V_var,node_6746.b,_Distort_Int),node_6746.r,_Distort02_Int));
                 float2 node_8232 = (__Scrn_UV/1.2).rg;

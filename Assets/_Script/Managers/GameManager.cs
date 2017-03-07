@@ -99,7 +99,7 @@ public class GameManager : MonoBehaviour {
         totalScore = 0;
         GetSave();
 
-        if(uiManager.isSound == true)
+        if(uiManager.isSound != false)
             AudioListener.volume = 1;
         else
             AudioListener.volume = 0;
@@ -122,7 +122,9 @@ public class GameManager : MonoBehaviour {
         player.gameObject.transform.DOMoveY(player.targetPosition.y, 1.75f).SetEase(Ease.InOutBack).OnComplete(GameLaunched);
         levelManager.InstantiateChunks();
         CameraPos(uiManager.isRight);
-        levelManager.M_background.DOFloat(30, "_Speed", 2f);
+        levelManager.M_background.DOFloat(-50, "_Speed", 2f);
+
+        SoundManager.Instance.StartCoroutine("PlayMainTheme");
 
         //Initialize Player UI
         uiManager.M_ammoCount.SetFloat("_AmmoMax", player.maxBullet);
@@ -200,7 +202,7 @@ public class GameManager : MonoBehaviour {
     public void PlayerDeath()
     {
         isPlayerDead = true;
-       
+        SoundManager.Instance.PlayerDeath.Play();  
         if (totalScore > highScore)
             highScore = totalScore;
         PlayerExperience();
@@ -217,7 +219,7 @@ public class GameManager : MonoBehaviour {
 
     public void PlayerExperience()
     {
-        experience = 0;
+       /* experience = 0;
         playerXP += Mathf.RoundToInt(totalScore * xpMultiplier);
 
         for (int i = 0; i < playerLvl+1; i++)
@@ -228,7 +230,7 @@ public class GameManager : MonoBehaviour {
                 playerLvl++;
             }
         }
-        uiManager.playerExp.maxValue = experience;
+        uiManager.playerExp.maxValue = experience;*/
     }
 
     IEnumerator DestroyedCoroutine()
@@ -280,24 +282,24 @@ public class GameManager : MonoBehaviour {
         playerXP = PlayerPrefs.GetInt("Experience");
         playerLvl = PlayerPrefs.GetInt("Level");
 
-        if (PlayerPrefs.GetString("isSound") == "True")
+        if (PlayerPrefs.GetString("isSound") != "False")
             uiManager.isSound = true;
         else
             uiManager.isSound = false;
 
-        if (PlayerPrefs.GetString("isRight") == "True")
+        if (PlayerPrefs.GetString("isRight") != "False")
             uiManager.isRight = true;
         else
             uiManager.isRight = false;
 
-        if (PlayerPrefs.GetString("isNormal") == "True")
+        if (PlayerPrefs.GetString("isNormal") != "False")
             uiManager.isNormal = true;
         else
             uiManager.isNormal = false;
 
         if (PlayerPrefs.HasKey("firstTime"))
         {
-            if (PlayerPrefs.GetString("firstTime") == "False")
+            if (PlayerPrefs.GetString("firstTime") != "False")
                 firstTime = false;
         }
     }

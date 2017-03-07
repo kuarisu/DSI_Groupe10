@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 
 public class SoundManager : MonoBehaviour {
@@ -9,8 +10,9 @@ public class SoundManager : MonoBehaviour {
     public AudioSource PLayerTrailSound;
     public AudioSource PlayerDeath;
     public AudioSource Player_NoBulletFiring;
-
-    public AudioSource SoundTrack;
+    public AudioSource MenuTheme;
+    public AudioSource IntroTheme;
+    public AudioSource MainTheme;
 
     public static SoundManager Instance;
     private void Awake()
@@ -23,5 +25,16 @@ public class SoundManager : MonoBehaviour {
 
         SoundManager.Instance = this;
         
+    }
+
+    public IEnumerator PlayMainTheme()
+    {
+        MainTheme.Play();
+        MenuTheme.DOFade(0, 8f);
+        MainTheme.DOFade(0.85f, 12f);
+
+        yield return new WaitForSeconds(10f);
+
+        MenuTheme.Stop();
     }
 }
