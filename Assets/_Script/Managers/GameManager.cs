@@ -212,6 +212,8 @@ public class GameManager : MonoBehaviour {
         PlayerDestruction.Play();
 
         PlayerVisual.GetComponent<Collider2D>().enabled = false;
+        SoundManager.Instance.SoundTrack.Stop();
+        SoundManager.Instance.PlayerDeath.Play();
         SoundManager.Instance.PLayerTrailSound.Stop();
     }
 
