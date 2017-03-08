@@ -59,7 +59,7 @@ public class LevelManager : MonoBehaviour {
     {
         currentChunk.Clear();
         currentMaxChunk = maxChunk[0];
-        M_background.SetFloat("_Speed",-100f);
+        M_background.SetFloat("_Speed",3);
     }
 
     void Update()

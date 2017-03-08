@@ -44,6 +44,7 @@ public class AI_TurretBehaviour : MonoBehaviour {
                 {
 					timer = 0;
 					GameObject clone;
+                    GetComponent<AudioSource>().Play();
 					clone = Instantiate (prefabAIMissile, transform.position, Quaternion.identity) as GameObject;
 					Vector2 direction = targetedPlayer.transform.position - transform.position;
 					float rot_z = Mathf.Atan2 (direction.y, direction.x) * Mathf.Rad2Deg;
