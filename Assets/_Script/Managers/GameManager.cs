@@ -80,11 +80,12 @@ public class GameManager : MonoBehaviour {
 
         InitGame();
 
-        if (PlayerPrefs.HasKey("GameVersion") == false || PlayerPrefs.GetString("GameVersion") != gameversion)
+        //Comment or Uncomment this code to Reset saves for new version
+        /*if (PlayerPrefs.HasKey("GameVersion") == false || PlayerPrefs.GetString("GameVersion") != gameversion)
         {
             ResetSave();
             PlayerPrefs.SetString("GameVersion", Application.version);
-        }
+        }*/
     }
 
     public void InitGame()
