@@ -40,6 +40,7 @@ public class AnalyticsManager : MonoBehaviour
     {
         DeathDictionary.Add("runDuration", runDuration);
 
+        DeathDictionary.Add("highscore", gm.highScore);
         DeathDictionary.Add("totalScore", gm.totalScore);
         DeathDictionary.Add("enemyScore", gm.enemyScore);
         DeathDictionary.Add("distanceScore", gm.distanceScore);
@@ -55,6 +56,7 @@ public class AnalyticsManager : MonoBehaviour
 
         DeathDictionary.Add("remainingAmmo", gm.player.currentBullet);
 
+        Amplitude.Instance.logEvent("Death_0803", DeathDictionary);
         Amplitude.Instance.logEvent("Death", DeathDictionary);
     }
 }
