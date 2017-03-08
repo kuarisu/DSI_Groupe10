@@ -78,10 +78,19 @@ public class Enemy_Lives : MonoBehaviour {
         }
 
         if (transform.tag == "bonuses")
+        {
             yield return new WaitForSeconds(0.6f);
+            Destroy(this.gameObject);
+            yield break;
+        }
 
-        Destroy(this.gameObject);
-        yield break;
+        else
+        {
+            Destroy(this.gameObject);
+            yield break;
+        }
+
+
     }
 
 }
