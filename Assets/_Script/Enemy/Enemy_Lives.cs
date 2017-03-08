@@ -67,9 +67,10 @@ public class Enemy_Lives : MonoBehaviour {
         GameObject expClone = Instantiate(explosion, transform.position, transform.rotation);
         expClone.transform.SetParent(transform.root);
 
-        /*GameObject scoreFdbk = Instantiate(gm.levelManager.scoreFeedback, Camera.main.WorldToScreenPoint(transform.position), transform.rotation);
-        scoreFdbk.GetComponent<Text>().text = "" + points;
-        scoreFdbk.transform.parent = gm.uiManager.playerUI.transform;*/
+        GameObject scoreFdbk = Instantiate(gm.levelManager.scoreFeedback, Camera.main.WorldToScreenPoint(transform.position), transform.rotation);
+        scoreFdbk.GetComponent<Text>().text = "+" + points;
+        scoreFdbk.transform.SetParent(gm.uiManager.playerUI.transform);
+
 
         if (GameManager.instance.player.canBulletReturn == true)
         {
