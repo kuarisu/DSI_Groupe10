@@ -11,6 +11,7 @@ public class LevelManager : MonoBehaviour {
     public GameObject bulletDestroyer;
     public int currentbgIndex;
     public GameObject DoorHolder;
+    public GameObject scoreFeedback;
 
     [Header("LEVEL DESIGN")]
     public List<GameObject> easyChunks = new List<GameObject>();

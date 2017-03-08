@@ -219,18 +219,18 @@ public class GameManager : MonoBehaviour {
 
     public void PlayerExperience()
     {
-       /* experience = 0;
         playerXP += Mathf.RoundToInt(totalScore * xpMultiplier);
 
         for (int i = 0; i < playerLvl+1; i++)
         {
-            experience += toNextLevel[i];
-            if (playerXP >= experience)
+            if (playerXP >= toNextLevel[i])
             {
                 playerLvl++;
+                PlayerPrefs.SetInt("Level", playerLvl);
+                playerXP -= toNextLevel[i];
             }
         }
-        uiManager.playerExp.maxValue = experience;*/
+        uiManager.playerExp.maxValue = toNextLevel[playerLvl];
     }
 
     IEnumerator DestroyedCoroutine()

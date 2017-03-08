@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: 4d2f4ce68f0d23a46b4226aae9fd8ce0
+timeCreated: 1488979882
+licenseType: Pro
+ShaderImporter:
+  defaultTextures:
+  - _Gradient_BG: {fileID: 2800000, guid: ec5050f93c0ffbf4d81144a37189f32f, type: 3}
+  - _Planets: {fileID: 2800000, guid: bd3c4b252a79fbb4280b94ef42d4f294, type: 3}
+  - _Gradient_Planet_01: {fileID: 2800000, guid: e6c654b403877bc4db17c4e35e07fc5d,
+      type: 3}
+  - _Gradient_Planet_02: {fileID: 2800000, guid: 75813878781319f4c81b5bb2cc61d2ae,
+      type: 3}
+  - _Layers: {fileID: 2800000, guid: 41c961b80b2c9d24f97e39367354a093, type: 3}
+  - _Distort03: {fileID: 2800000, guid: 28c7aad1372ff114b90d330f8a2dd938, type: 3}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
