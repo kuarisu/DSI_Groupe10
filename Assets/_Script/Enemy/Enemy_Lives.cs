@@ -1,11 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using DG.Tweening;
 
 
 public class Enemy_Lives : MonoBehaviour {
 
+    GameManager gm;
     public GameObject explosion;
     public GameObject bulletReturn;
     public int points;
@@ -24,6 +26,7 @@ public class Enemy_Lives : MonoBehaviour {
 
     private void Awake()
     {
+        gm = GameManager.instance;
         bulletGain = m_NumberOfLives;
         bulletReturn = GameManager.instance.bulletReturn;
     }
@@ -55,11 +58,18 @@ public class Enemy_Lives : MonoBehaviour {
             GetComponent<SpriteRenderer>().enabled = false;
             GetComponent<Collider2D>().enabled = false;
         }
-        GameManager.instance.Scoring(points,gameObject.tag);
+
+        gm.Scoring(points,gameObject.tag);
+
         this.GetComponent<Collider2D>().enabled = false; // Disable the collider so it won't have any impact on the reste of the game.
+
         //yield return new WaitForSeconds(m_TimerBeforeDestroy);
         GameObject expClone = Instantiate(explosion, transform.position, transform.rotation);
         expClone.transform.SetParent(transform.root);
+
+        /*GameObject scoreFdbk = Instantiate(gm.levelManager.scoreFeedback, Camera.main.WorldToScreenPoint(transform.position), transform.rotation);
+        scoreFdbk.GetComponent<Text>().text = "" + points;
+        scoreFdbk.transform.parent = gm.uiManager.playerUI.transform;*/
 
         if (GameManager.instance.player.canBulletReturn == true)
         {
@@ -68,10 +78,19 @@ public class Enemy_Lives : MonoBehaviour {
         }
 
         if (transform.tag == "bonuses")
+        {
             yield return new WaitForSeconds(0.6f);
+            Destroy(this.gameObject);
+            yield break;
+        }
 
-        Destroy(this.gameObject);
-        yield break;
+        else
+        {
+            Destroy(this.gameObject);
+            yield break;
+        }
+
+
     }
 
 }
