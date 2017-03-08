@@ -251,7 +251,7 @@ public class GameManager : MonoBehaviour {
         float _CurrentTime = 0;
         while (_CurrentTime <= TimeForEffect)
         {
-            _Value = Mathf.Lerp(0, 1, _CurrentTime);
+            _Value = Mathf.Lerp(0, 1, _CurrentTime*2.5f);
             PlayerVisual.GetComponent<SpriteRenderer>().material.SetFloat("_Destroy", _Value);
             player.transform.FindChild("FX_AvatarTrail").gameObject.SetActive(false);
             _CurrentTime += Time.deltaTime;
