@@ -310,6 +310,7 @@ public class UIManager : MonoBehaviour {
 
     public void ToggleQuality(bool isGood)
     {
+        /*
         if (isNormal && !isGood)
         {
             isNormal = false;
@@ -326,6 +327,7 @@ public class UIManager : MonoBehaviour {
             High.GetComponent<Text>().color = unselected;
             QualitySettings.SetQualityLevel(2);
         }
+        */
     }
 
     public void ToggleHand(bool isRightHanded)

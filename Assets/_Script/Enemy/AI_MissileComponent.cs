@@ -14,7 +14,7 @@ public class AI_MissileComponent : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		transform.Translate (transform.up * speedAIMissile, Space.World);
+		transform.Translate (transform.up * speedAIMissile * Time.deltaTime * 60f, Space.World);
 	}
 
     IEnumerator DelayBeforeDestroy()
