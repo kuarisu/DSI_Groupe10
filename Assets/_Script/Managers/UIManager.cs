@@ -23,6 +23,7 @@ public class UIManager : MonoBehaviour {
     public Text playerLvl;
     public Slider playerExp;
     public Text toNextLvl;
+    public List<Sprite> playerSkinks = new List<Sprite>();
 
     [Header("SETTINGS")]
     public Canvas settingsCanvas;
@@ -49,6 +50,14 @@ public class UIManager : MonoBehaviour {
     public Slider slider;
     public Gradient grd;
 
+    [Header("SKINKS")]
+    public GameObject SkinSelector;
+    public GameObject Middle;
+    public GameObject SkinPlus1;
+    public GameObject SkinPlus2;
+    public GameObject SkinMoins1;
+    public GameObject SkinMoins2;
+
     [HideInInspector]
     public bool isSound;
     public bool isNormal;
@@ -56,6 +65,8 @@ public class UIManager : MonoBehaviour {
     public bool isRate;
     public bool factorySettings;
     public int scoreToDraw;
+    public int actualSkin;
+    public bool isOnStartButton;
 
     GameManager gm;
     bool menuIsHidden;
@@ -63,6 +74,7 @@ public class UIManager : MonoBehaviour {
     Text highScoreText;
     bool scoreUpdated;
     float timePassed;
+    bool isSwiping;
 
     // Use this for initialization
     void Awake () {
@@ -72,6 +84,8 @@ public class UIManager : MonoBehaviour {
 
         M_ammoCount = ammoCount.material;
         menuIsHidden = false;
+        isSwiping = false;
+        isOnStartButton = false;
 
         InitSettings();
         SetHighScore();
@@ -91,11 +105,23 @@ public class UIManager : MonoBehaviour {
         M_ammoCount.SetFloat("_AmmoCurrent", gm.player.currentBullet);
         slider.maxValue = ((gm.levelManager.currentMaxChunk) * 46f) + 23;
         SetExperience();
+        SetSkins();
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (gm.gamestarted == false)
+        {
+#if UNITY_EDITOR || UNITY_STANDALONE
+            SwipeMouse();
+#endif
+
+#if UNITY_ANDROID
+            SwipeTouch();
+#endif
+        }
+
         if (gm.gamestarted && !menuIsHidden)
         {
             LeaveUp();
@@ -161,6 +187,13 @@ public class UIManager : MonoBehaviour {
         quit.SetActive(false);
         playerExp.gameObject.SetActive(false);
         playerLvl.gameObject.SetActive(false);
+        SkinSelector.SetActive(false);
+        DOTween.Kill("MoveToRight");
+        DOTween.Kill("MoveToLeft");
+        PlayerPrefs.SetInt("actualSkin", actualSkin);
+        gm.SetSave();
+
+        gm.player.GetComponent<SpriteRenderer>().enabled = true;
 
         //Highscore Feedback
         highscore.transform.DOScale(3, 1f);
@@ -235,6 +268,7 @@ public class UIManager : MonoBehaviour {
 
     public void ShowSettings()
     {
+        isOnStartButton = false;
         if (!SplashScreen.isFinished) return;
         settingsCanvas.gameObject.SetActive(true);
         settings.transform.DOPunchScale(new Vector3(0.2f, 0.2f, 1), 1f, 4, 1);
@@ -251,6 +285,7 @@ public class UIManager : MonoBehaviour {
 
     public void HideSettings()
     {
+        isOnStartButton = false;
         settingsCanvas.gameObject.SetActive(false);
     }
 
@@ -314,6 +349,7 @@ public class UIManager : MonoBehaviour {
 
     public void ToggleEA()
     {
+        isOnStartButton = false;
         earlyAccess.SetActive(false);
         gm.firstTime = false;
     }
@@ -351,6 +387,190 @@ public class UIManager : MonoBehaviour {
     void LeaveDown()
     {
         startText.transform.DOMoveY(0 - 150, 1f).SetEase(Ease.InBack);
+    }
+
+    Vector2 firstPressPos;
+    Vector2 secondPressPos;
+    Vector2 currentSwipe;
+
+    public void SwipeTouch()
+    {
+        if (Input.touches.Length > 0)
+        {
+            Touch t = Input.GetTouch(0);
+            if (t.phase == TouchPhase.Began)
+            {
+                //save began touch 2d point
+                firstPressPos = new Vector2(t.position.x, t.position.y);
+            }
+            if (t.phase == TouchPhase.Ended)
+            {
+                //save ended touch 2d point
+                secondPressPos = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+
+                //create vector from the two points
+                currentSwipe = new Vector2(secondPressPos.x - firstPressPos.x, secondPressPos.y - firstPressPos.y);
+
+                //normalize the 2d vector
+                currentSwipe.Normalize();
+
+                Debug.Log(currentSwipe.x);
+
+                //swipe left
+                if (currentSwipe.x < 0)
+                {
+                    if (actualSkin != 5)
+                        actualSkin++;
+                    else
+                        actualSkin = 0;
+
+                    Middle.GetComponent<SpriteRenderer>().sprite = playerSkinks[actualSkin];
+
+                    if (actualSkin != 5)
+                        SkinPlus1.GetComponent<SpriteRenderer>().sprite = playerSkinks[actualSkin + 1];
+                    else
+                        SkinPlus1.GetComponent<SpriteRenderer>().sprite = playerSkinks[0];
+
+                    if (actualSkin != 0)
+                        SkinMoins1.GetComponent<SpriteRenderer>().sprite = playerSkinks[actualSkin - 1];
+                    else
+                        SkinMoins1.GetComponent<SpriteRenderer>().sprite = playerSkinks[5];
+
+                    gm.player.GetComponent<SpriteRenderer>().sprite = playerSkinks[actualSkin];
+
+                    /*gm.player.transform.DOMoveX(-0.5f, 0.5f).SetEase(Ease.InOutBack).SetLoops(2, LoopType.Yoyo);
+                    Middle.transform.DOMoveX(-0.5f, 0.5f).SetEase(Ease.InOutBack).SetLoops(2, LoopType.Yoyo);
+                    SkinPlus1.transform.DOMoveX(4f, 0.5f).SetEase(Ease.InOutBack).SetLoops(2, LoopType.Yoyo);
+                    SkinMoins1.transform.DOMoveX(-5f, 0.5f).SetEase(Ease.InOutBack).SetLoops(2, LoopType.Yoyo);*/
+                }
+                else if (currentSwipe.x > 0)
+                {
+                    if (actualSkin != 0)
+                        actualSkin--;
+                    else
+                        actualSkin = 5;
+
+                    Middle.GetComponent<SpriteRenderer>().sprite = playerSkinks[actualSkin];
+
+                    if (actualSkin != 5)
+                        SkinPlus1.GetComponent<SpriteRenderer>().sprite = playerSkinks[actualSkin + 1];
+                    else
+                        SkinPlus1.GetComponent<SpriteRenderer>().sprite = playerSkinks[0];
+
+                    if (actualSkin != 0)
+                        SkinMoins1.GetComponent<SpriteRenderer>().sprite = playerSkinks[actualSkin - 1];
+                    else
+                        SkinMoins1.GetComponent<SpriteRenderer>().sprite = playerSkinks[5];
+
+                    gm.player.GetComponent<SpriteRenderer>().sprite = playerSkinks[actualSkin];
+
+
+                    /*gm.player.transform.DOMoveX(0.5f, 0.5f).SetEase(Ease.InOutBack).SetLoops(2, LoopType.Yoyo);
+                    Middle.transform.DOMoveX(0.5f, 0.5f).SetEase(Ease.InOutBack).SetLoops(2, LoopType.Yoyo);
+                    SkinPlus1.transform.DOMoveX(5f, 0.5f).SetEase(Ease.InOutBack).SetLoops(2, LoopType.Yoyo);
+                    SkinMoins1.transform.DOMoveX(-4f, 0.5f).SetEase(Ease.InOutBack).SetLoops(2, LoopType.Yoyo);*/
+
+                }
+                else
+                {
+                    if (isOnStartButton)
+                        GameStart();
+                }
+            }
+        }
+    }
+
+    public void SwipeMouse()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            //save began touch 2d point
+            firstPressPos = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+        }
+
+        if (Input.GetMouseButtonUp(0))
+        {
+            //save ended touch 2d point
+            secondPressPos = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+
+            //create vector from the two points
+            currentSwipe = new Vector2(secondPressPos.x - firstPressPos.x, secondPressPos.y - firstPressPos.y);
+
+            //normalize the 2d vector
+            currentSwipe.Normalize();
+
+            Debug.Log(currentSwipe.x);
+
+            //swipe left
+            if (currentSwipe.x < 0)
+            {
+                if (actualSkin != 5)
+                    actualSkin++;
+                else
+                    actualSkin = 0;
+
+                Middle.GetComponent<SpriteRenderer>().sprite = playerSkinks[actualSkin];
+
+                if(actualSkin != 5)
+                    SkinPlus1.GetComponent<SpriteRenderer>().sprite = playerSkinks[actualSkin+1];
+                else
+                    SkinPlus1.GetComponent<SpriteRenderer>().sprite = playerSkinks[0];
+
+                if(actualSkin != 0)
+                    SkinMoins1.GetComponent<SpriteRenderer>().sprite = playerSkinks[actualSkin - 1];
+                else
+                    SkinMoins1.GetComponent<SpriteRenderer>().sprite = playerSkinks[5];
+
+                gm.player.GetComponent<SpriteRenderer>().sprite = playerSkinks[actualSkin];
+
+                /*gm.player.transform.DOMoveX(-0.5f, 0.5f).SetEase(Ease.InOutBack).SetLoops(2, LoopType.Yoyo);
+                Middle.transform.DOMoveX(-0.5f, 0.5f).SetEase(Ease.InOutBack).SetLoops(2, LoopType.Yoyo);
+                SkinPlus1.transform.DOMoveX(4f, 0.5f).SetEase(Ease.InOutBack).SetLoops(2, LoopType.Yoyo);
+                SkinMoins1.transform.DOMoveX(-5f, 0.5f).SetEase(Ease.InOutBack).SetLoops(2, LoopType.Yoyo);*/
+            }
+            else if (currentSwipe.x > 0)
+            {
+                if (actualSkin != 0)
+                    actualSkin--;
+                else
+                    actualSkin = 5;
+
+                Middle.GetComponent<SpriteRenderer>().sprite = playerSkinks[actualSkin];
+
+                if (actualSkin != 5)
+                    SkinPlus1.GetComponent<SpriteRenderer>().sprite = playerSkinks[actualSkin + 1];
+                else
+                    SkinPlus1.GetComponent<SpriteRenderer>().sprite = playerSkinks[0];
+
+                if (actualSkin != 0)
+                    SkinMoins1.GetComponent<SpriteRenderer>().sprite = playerSkinks[actualSkin - 1];
+                else
+                    SkinMoins1.GetComponent<SpriteRenderer>().sprite = playerSkinks[5];
+
+                gm.player.GetComponent<SpriteRenderer>().sprite = playerSkinks[actualSkin];
+
+
+                /*gm.player.transform.DOMoveX(0.5f, 0.5f).SetEase(Ease.InOutBack).SetLoops(2, LoopType.Yoyo);
+                Middle.transform.DOMoveX(0.5f, 0.5f).SetEase(Ease.InOutBack).SetLoops(2, LoopType.Yoyo);
+                SkinPlus1.transform.DOMoveX(5f, 0.5f).SetEase(Ease.InOutBack).SetLoops(2, LoopType.Yoyo);
+                SkinMoins1.transform.DOMoveX(-4f, 0.5f).SetEase(Ease.InOutBack).SetLoops(2, LoopType.Yoyo);*/
+
+            }
+            else{
+                if(isOnStartButton)
+                    GameStart();
+            }
+        }
+    }
+
+    public void SetSkins()
+    {
+
+    }
+
+    public void CheckStrtButton()
+    {
+        isOnStartButton = true;
     }
 
 }

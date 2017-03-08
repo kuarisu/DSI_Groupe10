@@ -34,6 +34,7 @@ public class GameManager : MonoBehaviour {
     public float TimeBeforeRespawn;
     public float TimeForEffect;
     public List<int> toNextLevel = new List<int>();
+
     //Data to save
     public int highScore;
     public int playerXP;
@@ -231,12 +232,18 @@ public class GameManager : MonoBehaviour {
                 {
                     playerXP -= toNextLevel[playerLvl];
                     playerLvl++;
+                    NewLevel(playerLvl);
                     PlayerPrefs.SetInt("PlayerLevel", playerLvl);
                 }
             }
         }
         if (playerLvl < toNextLevel.Count)
             uiManager.playerExp.maxValue = toNextLevel[playerLvl];
+    }
+
+    public void NewLevel(int level)
+    {
+
     }
 
     IEnumerator DestroyedCoroutine()
@@ -277,6 +284,7 @@ public class GameManager : MonoBehaviour {
         PlayerPrefs.SetString("isSound", uiManager.isSound.ToString());
         PlayerPrefs.SetString("isRight", uiManager.isRight.ToString());
         PlayerPrefs.SetString("isNormal", uiManager.isSound.ToString());
+        PlayerPrefs.SetInt("ActualSkin", uiManager.actualSkin);
 
         PlayerPrefs.Save();
     }
@@ -287,6 +295,7 @@ public class GameManager : MonoBehaviour {
         highScore = PlayerPrefs.GetInt("Highscore");
         playerXP = PlayerPrefs.GetInt("Experience");
         playerLvl = PlayerPrefs.GetInt("PlayerLevel");
+        uiManager.actualSkin = PlayerPrefs.GetInt("ActualSkin");
 
         if (PlayerPrefs.GetString("isSound") != "False")
             uiManager.isSound = true;
@@ -324,6 +333,7 @@ public class GameManager : MonoBehaviour {
         PlayerPrefs.DeleteKey("isRight");
         PlayerPrefs.DeleteKey("isNormal");
         PlayerPrefs.DeleteKey("firstTime");
+        PlayerPrefs.DeleteKey("ActualSkin");
         InitGame();
     }
 

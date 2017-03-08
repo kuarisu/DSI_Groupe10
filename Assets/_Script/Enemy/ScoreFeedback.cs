@@ -20,7 +20,7 @@ public class ScoreFeedback : MonoBehaviour {
 
     private void Update()
     {
-        transform.position += transform.up * 500 * Time.deltaTime;
+        transform.position += transform.up * 400 * Time.deltaTime;
     }
 
     void Destruction()
