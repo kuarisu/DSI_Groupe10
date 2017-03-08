@@ -267,6 +267,7 @@ public class PlayerController : MonoBehaviour
         gm.uiManager.M_ammoCount.SetFloat("_AmmoCurrent", currentBullet);
     }
 
+    //Player's movements
     void BackForceY()
     {
         distanceOffsetY = transform.position.y - targetPosition.y;

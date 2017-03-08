@@ -22,6 +22,7 @@ public class UIManager : MonoBehaviour {
     public GameObject earlyAccess;
     public Text playerLvl;
     public Slider playerExp;
+    public Text toNextLvl;
 
     [Header("SETTINGS")]
     public Canvas settingsCanvas;
@@ -131,6 +132,7 @@ public class UIManager : MonoBehaviour {
     {
         playerExp.value = gm.playerXP;
         playerLvl.text = gm.playerLvl.ToString();
+        toNextLvl.text = "" + gm.playerXP + "/" + gm.toNextLevel[gm.playerLvl];
     }
 
     public void SetSlider()
@@ -330,7 +332,7 @@ public class UIManager : MonoBehaviour {
     // Visual Feedbacks
     void TitleFeedback()
     {
-        title.transform.DORotate(new Vector3(0, 0, -2f), 1.5f).SetEase(Ease.Linear).SetLoops(-1, LoopType.Yoyo);
+        title.transform.DORotate(new Vector3(0, 0, -2f), 1.5f).SetEase(Ease.InOutQuad).SetLoops(-1, LoopType.Yoyo);
     }
 
     void StartFeedback()
