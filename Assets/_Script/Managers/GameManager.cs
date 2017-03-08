@@ -85,6 +85,7 @@ public class GameManager : MonoBehaviour {
         /*if (PlayerPrefs.HasKey("GameVersion") == false || PlayerPrefs.GetString("GameVersion") != gameversion)
         {
             ResetSave();
+            ResetSettings();
             PlayerPrefs.SetString("GameVersion", Application.version);
         }*/
     }

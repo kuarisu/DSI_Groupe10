@@ -24,6 +24,7 @@ public class UIManager : MonoBehaviour {
     public Slider playerExp;
     public Text toNextLvl;
     public List<Sprite> playerSkinks = new List<Sprite>();
+    public List<Sprite> unlockedSkins = new List<Sprite>();
 
     [Header("SETTINGS")]
     public Canvas settingsCanvas;
@@ -419,14 +420,14 @@ public class UIManager : MonoBehaviour {
                 //swipe left
                 if (currentSwipe.x < 0)
                 {
-                    if (actualSkin != 5)
+                    if (actualSkin != playerSkinks.Count-1)
                         actualSkin++;
                     else
                         actualSkin = 0;
 
                     Middle.GetComponent<SpriteRenderer>().sprite = playerSkinks[actualSkin];
 
-                    if (actualSkin != 5)
+                    if (actualSkin != playerSkinks.Count - 1)
                         SkinPlus1.GetComponent<SpriteRenderer>().sprite = playerSkinks[actualSkin + 1];
                     else
                         SkinPlus1.GetComponent<SpriteRenderer>().sprite = playerSkinks[0];
@@ -434,7 +435,7 @@ public class UIManager : MonoBehaviour {
                     if (actualSkin != 0)
                         SkinMoins1.GetComponent<SpriteRenderer>().sprite = playerSkinks[actualSkin - 1];
                     else
-                        SkinMoins1.GetComponent<SpriteRenderer>().sprite = playerSkinks[5];
+                        SkinMoins1.GetComponent<SpriteRenderer>().sprite = playerSkinks[playerSkinks.Count - 1];
 
                     gm.player.GetComponent<SpriteRenderer>().sprite = playerSkinks[actualSkin];
 
@@ -448,11 +449,11 @@ public class UIManager : MonoBehaviour {
                     if (actualSkin != 0)
                         actualSkin--;
                     else
-                        actualSkin = 5;
+                        actualSkin = playerSkinks.Count - 1;
 
                     Middle.GetComponent<SpriteRenderer>().sprite = playerSkinks[actualSkin];
 
-                    if (actualSkin != 5)
+                    if (actualSkin != playerSkinks.Count - 1)
                         SkinPlus1.GetComponent<SpriteRenderer>().sprite = playerSkinks[actualSkin + 1];
                     else
                         SkinPlus1.GetComponent<SpriteRenderer>().sprite = playerSkinks[0];
@@ -460,10 +461,9 @@ public class UIManager : MonoBehaviour {
                     if (actualSkin != 0)
                         SkinMoins1.GetComponent<SpriteRenderer>().sprite = playerSkinks[actualSkin - 1];
                     else
-                        SkinMoins1.GetComponent<SpriteRenderer>().sprite = playerSkinks[5];
+                        SkinMoins1.GetComponent<SpriteRenderer>().sprite = playerSkinks[playerSkinks.Count - 1];
 
                     gm.player.GetComponent<SpriteRenderer>().sprite = playerSkinks[actualSkin];
-
 
                     /*gm.player.transform.DOMoveX(0.5f, 0.5f).SetEase(Ease.InOutBack).SetLoops(2, LoopType.Yoyo);
                     Middle.transform.DOMoveX(0.5f, 0.5f).SetEase(Ease.InOutBack).SetLoops(2, LoopType.Yoyo);
@@ -504,22 +504,22 @@ public class UIManager : MonoBehaviour {
             //swipe left
             if (currentSwipe.x < 0)
             {
-                if (actualSkin != 5)
+                if (actualSkin != playerSkinks.Count - 1)
                     actualSkin++;
                 else
                     actualSkin = 0;
 
                 Middle.GetComponent<SpriteRenderer>().sprite = playerSkinks[actualSkin];
 
-                if(actualSkin != 5)
-                    SkinPlus1.GetComponent<SpriteRenderer>().sprite = playerSkinks[actualSkin+1];
+                if (actualSkin != playerSkinks.Count - 1)
+                    SkinPlus1.GetComponent<SpriteRenderer>().sprite = playerSkinks[actualSkin + 1];
                 else
                     SkinPlus1.GetComponent<SpriteRenderer>().sprite = playerSkinks[0];
 
-                if(actualSkin != 0)
+                if (actualSkin != 0)
                     SkinMoins1.GetComponent<SpriteRenderer>().sprite = playerSkinks[actualSkin - 1];
                 else
-                    SkinMoins1.GetComponent<SpriteRenderer>().sprite = playerSkinks[5];
+                    SkinMoins1.GetComponent<SpriteRenderer>().sprite = playerSkinks[playerSkinks.Count - 1];
 
                 gm.player.GetComponent<SpriteRenderer>().sprite = playerSkinks[actualSkin];
 
@@ -533,11 +533,11 @@ public class UIManager : MonoBehaviour {
                 if (actualSkin != 0)
                     actualSkin--;
                 else
-                    actualSkin = 5;
+                    actualSkin = playerSkinks.Count - 1;
 
                 Middle.GetComponent<SpriteRenderer>().sprite = playerSkinks[actualSkin];
 
-                if (actualSkin != 5)
+                if (actualSkin != playerSkinks.Count - 1)
                     SkinPlus1.GetComponent<SpriteRenderer>().sprite = playerSkinks[actualSkin + 1];
                 else
                     SkinPlus1.GetComponent<SpriteRenderer>().sprite = playerSkinks[0];
@@ -545,10 +545,9 @@ public class UIManager : MonoBehaviour {
                 if (actualSkin != 0)
                     SkinMoins1.GetComponent<SpriteRenderer>().sprite = playerSkinks[actualSkin - 1];
                 else
-                    SkinMoins1.GetComponent<SpriteRenderer>().sprite = playerSkinks[5];
+                    SkinMoins1.GetComponent<SpriteRenderer>().sprite = playerSkinks[playerSkinks.Count - 1];
 
                 gm.player.GetComponent<SpriteRenderer>().sprite = playerSkinks[actualSkin];
-
 
                 /*gm.player.transform.DOMoveX(0.5f, 0.5f).SetEase(Ease.InOutBack).SetLoops(2, LoopType.Yoyo);
                 Middle.transform.DOMoveX(0.5f, 0.5f).SetEase(Ease.InOutBack).SetLoops(2, LoopType.Yoyo);
@@ -556,8 +555,9 @@ public class UIManager : MonoBehaviour {
                 SkinMoins1.transform.DOMoveX(-4f, 0.5f).SetEase(Ease.InOutBack).SetLoops(2, LoopType.Yoyo);*/
 
             }
-            else{
-                if(isOnStartButton)
+            else
+            {
+                if (isOnStartButton)
                     GameStart();
             }
         }
