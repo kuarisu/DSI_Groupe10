@@ -125,7 +125,7 @@ public class GameManager : MonoBehaviour {
         player.gameObject.transform.DOMoveY(player.targetPosition.y, 1.75f).SetEase(Ease.InOutBack).OnComplete(GameLaunched);
         levelManager.InstantiateChunks();
         CameraPos(uiManager.isRight);
-        levelManager.M_background.DOFloat(-50, "_Speed", 2f);
+        levelManager.M_background.DOFloat(3, "_Speed", 0.05f);
 
         SoundManager.Instance.StartCoroutine("PlayMainTheme");
 
