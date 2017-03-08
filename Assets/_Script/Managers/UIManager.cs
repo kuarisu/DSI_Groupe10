@@ -132,7 +132,10 @@ public class UIManager : MonoBehaviour {
     {
         playerExp.value = gm.playerXP;
         playerLvl.text = gm.playerLvl.ToString();
-        toNextLvl.text = "" + gm.playerXP + "/" + gm.toNextLevel[gm.playerLvl];
+        if (gm.playerLvl < gm.toNextLevel.Count)
+            toNextLvl.text = "" + gm.playerXP + "/" + gm.toNextLevel[gm.playerLvl];
+        else
+            toNextLvl.text = "LEVEL MAX";
     }
 
     public void SetSlider()

@@ -277,7 +277,7 @@ public class PlayerController : MonoBehaviour
         {
             Vector2 vectorToNormalize = new Vector2(0f, targetPosition.y - transform.position.y);
             vectorToNormalize.Normalize();
-            rb.AddForce(vectorToNormalize * backForceY * Mathf.Abs(distanceOffsetY * 1.2f / maxOffsetY), ForceMode2D.Force);
+            rb.AddForce(vectorToNormalize * backForceY * Mathf.Abs(distanceOffsetY * 1.2f / maxOffsetY) * Time.deltaTime * 60f, ForceMode2D.Force);
             transform.position = new Vector3(transform.position.x, Mathf.Clamp(transform.position.y, startOffset - maxOffsetY, startOffset + maxOffsetY + 1), transform.position.z);
         }
     }
@@ -290,7 +290,7 @@ public class PlayerController : MonoBehaviour
         {
             Vector2 vectorToNormalize = new Vector2(transform.position.x, 0f);
             vectorToNormalize.Normalize();
-            rb.AddForce(vectorToNormalize * -backForceX * Mathf.Abs(distanceOffsetX * 1.2f / maxOffsetX), ForceMode2D.Force);
+            rb.AddForce(vectorToNormalize * -backForceX * Mathf.Abs(distanceOffsetX * 1.2f / maxOffsetX) * Time.deltaTime * 60f, ForceMode2D.Force);
             transform.position = new Vector3(Mathf.Clamp(transform.position.x, -maxOffsetX, maxOffsetX), transform.position.y, transform.position.z);
         }
     }

@@ -80,11 +80,12 @@ public class GameManager : MonoBehaviour {
 
         InitGame();
 
-        if (PlayerPrefs.HasKey("GameVersion") == false || PlayerPrefs.GetString("GameVersion") != gameversion)
+        //Comment or Uncomment this code to Reset saves for new version
+        /*if (PlayerPrefs.HasKey("GameVersion") == false || PlayerPrefs.GetString("GameVersion") != gameversion)
         {
             ResetSave();
             PlayerPrefs.SetString("GameVersion", Application.version);
-        }
+        }*/
     }
 
     public void InitGame()
@@ -97,6 +98,7 @@ public class GameManager : MonoBehaviour {
         enemyScore = 0;
         distanceScore = 0;
         totalScore = 0;
+        playerLvl = 0;
         GetSave();
 
         if(uiManager.isSound != false)
@@ -221,16 +223,20 @@ public class GameManager : MonoBehaviour {
     {
         playerXP += Mathf.RoundToInt(totalScore * xpMultiplier);
 
-        for (int i = 0; i < playerLvl+1; i++)
+        for (int i = 0; i < (playerLvl + 1); i++)
         {
-            if (playerXP >= toNextLevel[i])
+            if (playerLvl < toNextLevel.Count)
             {
-                playerLvl++;
-                PlayerPrefs.SetInt("Level", playerLvl);
-                playerXP -= toNextLevel[i];
+                if (playerXP >= toNextLevel[playerLvl])
+                {
+                    playerXP -= toNextLevel[playerLvl];
+                    playerLvl++;
+                    PlayerPrefs.SetInt("PlayerLevel", playerLvl);
+                }
             }
         }
-        uiManager.playerExp.maxValue = toNextLevel[playerLvl];
+        if (playerLvl < toNextLevel.Count)
+            uiManager.playerExp.maxValue = toNextLevel[playerLvl];
     }
 
     IEnumerator DestroyedCoroutine()
@@ -246,7 +252,7 @@ public class GameManager : MonoBehaviour {
         float _CurrentTime = 0;
         while (_CurrentTime <= TimeForEffect)
         {
-            _Value = Mathf.Lerp(0, 1, _CurrentTime);
+            _Value = Mathf.Lerp(0, 1, _CurrentTime*2.5f);
             PlayerVisual.GetComponent<SpriteRenderer>().material.SetFloat("_Destroy", _Value);
             player.transform.FindChild("FX_AvatarTrail").gameObject.SetActive(false);
             _CurrentTime += Time.deltaTime;
@@ -280,7 +286,7 @@ public class GameManager : MonoBehaviour {
         gameversion = PlayerPrefs.GetString("GameVersion");
         highScore = PlayerPrefs.GetInt("Highscore");
         playerXP = PlayerPrefs.GetInt("Experience");
-        playerLvl = PlayerPrefs.GetInt("Level");
+        playerLvl = PlayerPrefs.GetInt("PlayerLevel");
 
         if (PlayerPrefs.GetString("isSound") != "False")
             uiManager.isSound = true;
