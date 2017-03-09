@@ -1,12 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class AI_OnHitPlayerComponent : MonoBehaviour {
 
     public GameManager gm;
+    public GameObject explosion;
 
-	public bool killThePlayer;
+    public bool killThePlayer;
 	public bool stealAmmo;
 	public float numberAmmoSteal;
 
@@ -34,6 +36,16 @@ public class AI_OnHitPlayerComponent : MonoBehaviour {
                 gm.PlayerDeath();
 
                 //If we need to instantiate something after Death, do it here
+            }
+
+            if(gameObject.tag == "bonuses")
+            {
+                GameObject expClone = Instantiate(explosion, transform.position, transform.rotation);
+                expClone.transform.SetParent(transform.root);
+
+                GameObject scoreFdbk = Instantiate(gm.levelManager.scoreFeedback, Camera.main.WorldToScreenPoint(transform.position), gm.uiManager.playerUI.transform.rotation);
+                scoreFdbk.GetComponent<Text>().text = "+" + 100;
+                scoreFdbk.transform.SetParent(gm.uiManager.playerUI.transform);
             }
 
 			if (stealAmmo == true){

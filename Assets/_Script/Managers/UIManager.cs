@@ -70,6 +70,7 @@ public class UIManager : MonoBehaviour {
     public GameObject SkinPlus1;
     public GameObject SkinMoins1;
     public float swipeLength;
+    public int chosenSkin;
 
     [HideInInspector]
     public bool isSound;
@@ -241,28 +242,32 @@ public class UIManager : MonoBehaviour {
 
     public void GameStart()
     {
-        if (!SplashScreen.isFinished || gm.player.spriteRender.sprite.name.Contains("Locked")) return;
+        if (SplashScreen.isFinished)
+        {
+            if (gm.player.spriteRender.sprite.name.Contains("Locked"))
+                gm.player.spriteRender.sprite = playerSkins[chosenSkin];
 
-        //Hide menu
-        start.SetActive(false);
-        achievements.SetActive(false);
-        settings.SetActive(false);
-        leaderboards.SetActive(false);
-        quit.SetActive(false);
-        playerExp.gameObject.SetActive(false);
-        playerLvl.gameObject.SetActive(false);
-        SkinSelector.SetActive(false);
-        shipName.SetActive(false);
-        PlayerPrefs.SetInt("ActualSkin", actualSkin);
-        gm.SetSave();
+            //Hide menu
+            start.SetActive(false);
+            achievements.SetActive(false);
+            settings.SetActive(false);
+            leaderboards.SetActive(false);
+            quit.SetActive(false);
+            playerExp.gameObject.SetActive(false);
+            playerLvl.gameObject.SetActive(false);
+            SkinSelector.SetActive(false);
+            shipName.SetActive(false);
+            PlayerPrefs.SetInt("ActualSkin", actualSkin);
+            gm.SetSave();
 
-        gm.player.GetComponent<SpriteRenderer>().enabled = true;
+            gm.player.GetComponent<SpriteRenderer>().enabled = true;
 
-        //Highscore Feedback
-        highscore.transform.DOScale(3, 1f);
-        highScoreText.DOFade(0, 1f);
+            //Highscore Feedback
+            highscore.transform.DOScale(3, 1f);
+            highScoreText.DOFade(0, 1f);
 
-        gm.LaunchGame();
+            gm.LaunchGame();
+        }
     }
 
     public void SetHighScore()
@@ -372,6 +377,10 @@ public class UIManager : MonoBehaviour {
             SkinMoins1.GetComponent<SpriteRenderer>().sprite = playerSkins[playerSkins.Count - 1];
 
         gm.player.spriteRender.sprite = playerSkins[actualSkin];
+
+        if (!playerSkins[actualSkin].name.Contains("Locked"))
+            chosenSkin = actualSkin;
+
     }
 
     public void CheckStrtButton(bool start)

@@ -82,11 +82,11 @@ public class GameManager : MonoBehaviour {
         InitGame();
 
         //Comment or Uncomment this code to Reset saves for new version
-        /*if (PlayerPrefs.HasKey("GameVersion") == false || PlayerPrefs.GetString("GameVersion") != gameversion)
+        if (PlayerPrefs.HasKey("GameVersion") == false || PlayerPrefs.GetString("GameVersion") != gameversion)
         {
             ResetSave();
             PlayerPrefs.SetString("GameVersion", Application.version);
-        }*/
+        }
     }
 
     public void InitGame()
@@ -334,7 +334,7 @@ public class GameManager : MonoBehaviour {
         //Player Settings
         PlayerPrefs.SetString("isSound", uiManager.isSound.ToString());
         PlayerPrefs.SetString("isRight", uiManager.isRight.ToString());
-        PlayerPrefs.SetInt("ActualSkin", uiManager.actualSkin);
+        PlayerPrefs.SetInt("ChosenSkin", uiManager.chosenSkin);
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         PlayerPrefs.SetString("achieve_Achievement_1", uiManager.achievement_1_achieved);
@@ -349,7 +349,8 @@ public class GameManager : MonoBehaviour {
         highScore = PlayerPrefs.GetInt("Highscore");
         playerXP = PlayerPrefs.GetInt("Experience");
         playerLvl = PlayerPrefs.GetInt("PlayerLevel");
-        uiManager.actualSkin = PlayerPrefs.GetInt("ActualSkin");
+        uiManager.actualSkin = PlayerPrefs.GetInt("ChosenSkin");
+        uiManager.chosenSkin = PlayerPrefs.GetInt("ChosenSkin");
 
         if (PlayerPrefs.GetString("isSound") != "False")
             uiManager.isSound = true;
@@ -387,7 +388,7 @@ public class GameManager : MonoBehaviour {
         PlayerPrefs.DeleteKey("isSound");
         PlayerPrefs.DeleteKey("isRight");
         PlayerPrefs.DeleteKey("firstTime");
-        PlayerPrefs.DeleteKey("ActualSkin");
+        PlayerPrefs.DeleteKey("chosenSkin");
         InitGame();
     }
 
