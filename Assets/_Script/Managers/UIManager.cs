@@ -245,8 +245,10 @@ public class UIManager : MonoBehaviour {
         if (SplashScreen.isFinished)
         {
             if (gm.player.spriteRender.sprite.name.Contains("Locked"))
+            {
                 gm.player.spriteRender.sprite = playerSkins[chosenSkin];
-
+                cursor.sprite = playerSkins[chosenSkin];
+            }
             //Hide menu
             start.SetActive(false);
             achievements.SetActive(false);
@@ -296,6 +298,8 @@ public class UIManager : MonoBehaviour {
                     else
                         actualSkin = 0;
                     ChangeSkins();
+                    direction = -50;
+                    ShipName();
                 }
                 else if (currentSwipe.x > swipeLength)
                 {
@@ -305,6 +309,8 @@ public class UIManager : MonoBehaviour {
                         actualSkin = playerSkins.Count - 1;
 
                     ChangeSkins();
+                    direction = 50;
+                    ShipName();
                 }
                 else
                 {
