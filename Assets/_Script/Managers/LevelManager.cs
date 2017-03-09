@@ -31,6 +31,8 @@ public class LevelManager : MonoBehaviour {
     public float tileSizeZ;
     public float speedModifier;
     public float bgSpeedRatio;
+    public float speedIncreaseFactor;
+    public GameObject bulletReturn;
 
     PlayerController playerController;
     float playerOffsetY;
@@ -45,7 +47,6 @@ public class LevelManager : MonoBehaviour {
     void Awake()
     {
         gm = GameManager.instance;
-        //M_background = background.GetComponent<Material>();
 
         bulletDestroyer.transform.position = new Vector3(0, -(Camera.main.orthographicSize + 5), 0);
 
@@ -60,6 +61,7 @@ public class LevelManager : MonoBehaviour {
         currentChunk.Clear();
         currentMaxChunk = maxChunk[0];
         M_background.SetFloat("_Speed",3);
+        scrollSpeed = 9;
     }
 
     void Update()
@@ -144,10 +146,25 @@ public class LevelManager : MonoBehaviour {
                             secondChunk = (GameObject)Instantiate(hardChunks[(int)Random.Range(0, hardChunks.Count - 1)], new Vector3(0, currentChunk[0].transform.position.y - 46f, 1), new Quaternion(0, 0, 0, 0));
                             break;
                     }
-                }else if(gm.totalScore > difficultyLevels[3])
+                }else if(gm.totalScore > difficultyLevels[3] && gm.totalScore < difficultyLevels[3] * (1f + speedIncreaseFactor))
                 {
                     currentMaxChunk = maxChunk[4];
                     secondChunk = (GameObject)Instantiate(hardChunks[(int)Random.Range(0, hardChunks.Count - 1)], new Vector3(0, currentChunk[0].transform.position.y - 46f, 1), new Quaternion(0, 0, 0, 0));
+                }else if(gm.totalScore > difficultyLevels[3] * (1f + speedIncreaseFactor))
+                {
+                    scrollSpeed = (9f + speedIncreaseFactor);
+                    currentMaxChunk = maxChunk[3];
+                    int random = Mathf.RoundToInt(Random.Range(0.0f, 1.0f));
+                    switch (random)
+                    {
+                        case 0:
+                            secondChunk = (GameObject)Instantiate(normalChunks[(int)Random.Range(0, normalChunks.Count - 1)], new Vector3(0, currentChunk[0].transform.position.y - 46f, 1), new Quaternion(0, 0, 0, 0));
+                            break;
+                        case 1:
+                            secondChunk = (GameObject)Instantiate(hardChunks[(int)Random.Range(0, hardChunks.Count - 1)], new Vector3(0, currentChunk[0].transform.position.y - 46f, 1), new Quaternion(0, 0, 0, 0));
+                            break;
+                    }
+                    speedIncreaseFactor += 0.5f;
                 }
                currentChunk.Add(secondChunk);
             }

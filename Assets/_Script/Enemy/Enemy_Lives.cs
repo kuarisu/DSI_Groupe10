@@ -74,8 +74,12 @@ public class Enemy_Lives : MonoBehaviour {
 
         if (GameManager.instance.player.canBulletReturn == true)
         {
-            GameObject returnClone = Instantiate(bulletReturn, transform.position, transform.rotation);
-            returnClone.GetComponent<BulletReturn>().addedBullets = bulletGain;
+            float random = Random.Range(0.0f, 1.0f);
+            if(random >= 0.5f)
+            {
+                GameObject returnClone = Instantiate(bulletReturn, transform.position, transform.rotation);
+                returnClone.GetComponent<BulletReturn>().addedBullets = bulletGain;
+            }
         }
 
         if (transform.tag == "bonuses")
