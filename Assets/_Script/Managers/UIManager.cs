@@ -40,6 +40,18 @@ public class UIManager : MonoBehaviour {
     public GameObject Credits;
     public Color unselected;
 
+    /////////////////////////////////////////////////////////////////////////////////////////////
+    [Header("LEADBOARD")]
+    public Canvas leadboardCanvas;
+    public Canvas YournameCanvas;
+
+    [Header("ACHIEVEMENT")]
+    public Canvas achievementCanvas;
+    public Image achievement_1;
+    [HideInInspector]
+    public string achievement_1_achieved;
+    /////////////////////////////////////////////////////////////////////////////////////////////
+
     [Header("PLAYERUI")]
     public Canvas playerUI;
     public GameObject playerProgress;
@@ -89,6 +101,8 @@ public class UIManager : MonoBehaviour {
         gm = GameManager.instance;
         highScoreText = highscore.GetComponent<Text>();
         shipNameText = shipName.GetComponent<Text>();
+        achievements.SetActive(true);
+        leaderboards.SetActive(true);
 
         M_ammoCount = ammoCount.material;
         menuIsHidden = false;
@@ -193,6 +207,8 @@ public class UIManager : MonoBehaviour {
             ScoreUpdate();
             SliderUpdate();
         }
+        
+        CheckAchievement();   // Check if player has achieve an achievement
     }
 
     //In game
@@ -413,13 +429,6 @@ public class UIManager : MonoBehaviour {
     }
 
     //Button Scripts
-    public void ShowAchievements()
-    {
-        if (!SplashScreen.isFinished) return;
-        settingsCanvas.gameObject.SetActive(true);
-        achievements.transform.DOPunchScale(new Vector3(0.2f, 0.2f, 1), 1f, 4, 1);
-    }
-
     public void ShowSettings()
     {
         isOnStartButton = false;
@@ -430,12 +439,56 @@ public class UIManager : MonoBehaviour {
         CheckSettings();
     }
 
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    public void ShowAchievements()
+    {
+        if (!SplashScreen.isFinished) return;
+        achievementCanvas.gameObject.SetActive(true);
+    }
+
+
     public void ShowLeaderboards()
     {
         if (!SplashScreen.isFinished) return;
-        settingsCanvas.gameObject.SetActive(true);
-        leaderboards.transform.DOPunchScale(new Vector3(0.2f, 0.2f, 1), 1f, 4, 1);
+        leadboardCanvas.gameObject.SetActive(true);
+
+        achievement_1_achieved = "true";  // for test, should be change*****************
     }
+
+
+    public void CheckAchievement()           //should be used in Update() after game start.
+    {
+        if (achievement_1_achieved == "true")    //condition 1 to meet
+        {
+            achievement_1.color = Color.green;   // just for test**************************
+        }
+        /*
+        if (true) //condition 2 to meet
+        {
+            Social.ReportProgress(ApeyronOnlineID.achievement_test_2, 100.0f, (bool success) => {
+                // handle success or failure
+            });
+           
+        }
+        if (true) //condition 3 to meet
+        {
+            Social.ReportProgress(ApeyronOnlineID.achievement_test_3, 100.0f, (bool success) => {
+                // handle success or failure
+            });
+        }
+        */
+    }
+
+    public void HideAchievement()
+    {
+        achievementCanvas.gameObject.SetActive(false);
+    }
+
+    public void HideLeadboard()
+    {
+        leadboardCanvas.gameObject.SetActive(false);
+    }
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public void HideSettings()
     {

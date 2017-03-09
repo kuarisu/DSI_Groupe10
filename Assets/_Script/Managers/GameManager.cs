@@ -56,6 +56,8 @@ public class GameManager : MonoBehaviour {
 
     void Awake()
     {
+        //ResetSave();
+        //ResetAchievement();
         if (instance == null)
         {
             instance = this;
@@ -205,7 +207,15 @@ public class GameManager : MonoBehaviour {
         isPlayerDead = true;
         SoundManager.Instance.PlayerDeath.Play();  
         if (totalScore > highScore)
+        {
             highScore = totalScore;
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            uiManager.YournameCanvas.gameObject.SetActive(true);
+            LeaderboardManager.leaderboardInstance.stillTyping = true;
+            
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        }
+
         PlayerExperience();
         AnalyticsManager.instance.DeathAnalyticsRegistration();
         totalScore = 0;
@@ -283,6 +293,12 @@ public class GameManager : MonoBehaviour {
 
     IEnumerator DestroyedCoroutine()
     {
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        while (LeaderboardManager.leaderboardInstance.stillTyping == true)
+        {
+            yield return new WaitForEndOfFrame();
+        }
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////
         yield return new WaitForSeconds(TimeBeforeRespawn);
         SceneManager.LoadScene(0);
     }
@@ -320,6 +336,10 @@ public class GameManager : MonoBehaviour {
         PlayerPrefs.SetString("isRight", uiManager.isRight.ToString());
         PlayerPrefs.SetInt("ActualSkin", uiManager.actualSkin);
 
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        PlayerPrefs.SetString("achieve_Achievement_1", uiManager.achievement_1_achieved);
+        /////////////////////////////////////////////////////////////////////////////////////////////////
+
         PlayerPrefs.Save();
     }
 
@@ -346,6 +366,12 @@ public class GameManager : MonoBehaviour {
             if (PlayerPrefs.GetString("firstTime") != "False")
                 firstTime = false;
         }
+        //////////////////////////////////////////////////////////////////////////////////////
+        if (PlayerPrefs.GetString("achieve_Achievement_1") == "true")
+        {
+            uiManager.achievement_1_achieved = "true";
+        }
+        ///////////////////////////////////////////////////////////////////////////////////////
     }
 
     public void ResetSave()
@@ -364,6 +390,13 @@ public class GameManager : MonoBehaviour {
         PlayerPrefs.DeleteKey("ActualSkin");
         InitGame();
     }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////
+    public void ResetAchievement()
+    {
+        PlayerPrefs.DeleteKey("achieve_Achievement_1");
+    }
+    ///////////////////////////////////////////////////////////////////////////////////////////
 
     public void OnApplicationQuit()
     {
