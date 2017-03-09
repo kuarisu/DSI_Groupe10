@@ -409,6 +409,8 @@ public class UIManager : MonoBehaviour {
         startText.transform.DOMoveY(0 - 150, 1f).SetEase(Ease.InBack);
     }
 
+    public Color shipNameColor;
+
     void SetShipName()
     {
         shipNameText.text = playerSkins[actualSkin].name.ToUpper(); //Replace("_Locked"," [Locked]").Trim().ToUpper();
@@ -419,7 +421,7 @@ public class UIManager : MonoBehaviour {
         }
         else
         {
-            shipNameText.color = Color.white;
+            shipNameText.color = shipNameColor;
         }
     }
 
