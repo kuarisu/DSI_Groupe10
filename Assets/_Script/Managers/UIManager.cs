@@ -265,7 +265,7 @@ public class UIManager : MonoBehaviour {
 
             if (t.phase == TouchPhase.Ended)
             {
-                secondPressPos = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+                secondPressPos = new Vector2(t.position.x, t.position.y);
                 currentSwipe = new Vector2(secondPressPos.x - firstPressPos.x, secondPressPos.y - firstPressPos.y);
                 currentSwipe.Normalize();
                 if (currentSwipe.x < -swipeLength)
@@ -358,9 +358,9 @@ public class UIManager : MonoBehaviour {
         gm.player.spriteRender.sprite = playerSkins[actualSkin];
     }
 
-    public void CheckStrtButton()
+    public void CheckStrtButton(bool start)
     {
-        isOnStartButton = true;
+        isOnStartButton = start;
     }
 
     // Visual Feedbacks
