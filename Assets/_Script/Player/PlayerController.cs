@@ -181,8 +181,6 @@ public class PlayerController : MonoBehaviour
 
     void Fire()
     {
-
-
         Vector2 direction = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position;
         direction.Normalize();
 
@@ -206,7 +204,7 @@ public class PlayerController : MonoBehaviour
         }else
         {
             PlaySoundNoBulett();
-            bulletFired = Instantiate(noBullet, transform.position, transform.rotation);
+            bulletFired = Instantiate(noBullet, muzzlepos.transform.position, muzzlepos.transform.rotation);
             bulletFired.transform.SetParent(transform);
         }
 
@@ -242,7 +240,9 @@ public class PlayerController : MonoBehaviour
     {
         if (collision.tag == "Chunkpoint")
         {
-            Bullets(maxBullet - currentBullet);
+            currentBullet = maxBullet;
+            gm.uiManager.M_ammoCount.DOFloat(maxBullet, "_AmmoCurrent", 1.5f);
+            gm.uiManager.M_ammoCount.SetFloat("_Refill", 1f);
             isInChunkPoint = true;
             gm.uiManager.slider.maxValue = 37;
         }
@@ -252,8 +252,8 @@ public class PlayerController : MonoBehaviour
     {
         if (collision.tag == "Chunkpoint")
         {
-            Bullets(maxBullet - currentBullet);
             currentBullet = maxBullet;
+            gm.uiManager.M_ammoCount.SetFloat("_Refill", 0f);
             isInChunkPoint = false;
             gm.uiManager.slider.value = 0;
             gm.uiManager.SetSlider();

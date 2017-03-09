@@ -59,7 +59,7 @@ public class Enemy_Lives : MonoBehaviour {
             GetComponent<Collider2D>().enabled = false;
         }
 
-        gm.Scoring(points,gameObject.tag);
+        gm.Scoring(points, gameObject.tag);
 
         this.GetComponent<Collider2D>().enabled = false; // Disable the collider so it won't have any impact on the reste of the game.
 
@@ -72,13 +72,15 @@ public class Enemy_Lives : MonoBehaviour {
         scoreFdbk.transform.SetParent(gm.uiManager.playerUI.transform);
 
 
-        if (GameManager.instance.player.canBulletReturn == true)
+        if (gm.player.canBulletReturn == true && transform.tag != "bonuses")
         {
             float random = Random.Range(0.0f, 1.0f);
-            if(random >= 0.5f)
+            Debug.Log(random);
+            if (random >= 0.5f)
             {
-                GameObject returnClone = Instantiate(bulletReturn, transform.position, transform.rotation);
+                GameObject returnClone = Instantiate(gm.bulletReturn, new Vector3(transform.position.x, transform.position.y, -5), transform.rotation);
                 returnClone.GetComponent<BulletReturn>().addedBullets = bulletGain;
+                Debug.Log(returnClone.transform.position);
             }
         }
 
@@ -97,5 +99,4 @@ public class Enemy_Lives : MonoBehaviour {
 
 
     }
-
 }
