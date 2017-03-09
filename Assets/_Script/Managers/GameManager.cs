@@ -43,7 +43,6 @@ public class GameManager : MonoBehaviour {
     public string gameversion;
     public bool reseted;
 
-
     [Header("ANALYTICS")]
     public GameObject currentChunk;
     public int currentChunk_ID;
@@ -54,7 +53,6 @@ public class GameManager : MonoBehaviour {
     public int totalChunkPassed;
     public int tapShots;
     public int sprayShots;
-
 
     void Awake()
     {
@@ -232,18 +230,56 @@ public class GameManager : MonoBehaviour {
                 {
                     playerXP -= toNextLevel[playerLvl];
                     playerLvl++;
-                    NewLevel(playerLvl);
                     PlayerPrefs.SetInt("PlayerLevel", playerLvl);
                 }
             }
         }
+        PlayerLevel();
         if (playerLvl < toNextLevel.Count)
             uiManager.playerExp.maxValue = toNextLevel[playerLvl];
     }
 
-    public void NewLevel(int level)
+    public void PlayerLevel()
     {
+        for (int i = 0; i <= playerLvl; i++)
+        {
+            UnlockBonus(i);
+        }
+    }
 
+    //Use this function to choose what the player unlocks when he reaches a new level
+    public void UnlockBonus(int level)
+    {
+        Debug.Log("Level");
+        switch (level)
+        {
+            case 0:
+                break;
+
+            case 1:
+                uiManager.playerSkins[1] = uiManager.unlockedSkins[0];
+                break;
+
+            case 2:
+                uiManager.playerSkins[2] = uiManager.unlockedSkins[1];
+                break;
+
+            case 3:
+                uiManager.playerSkins[3] = uiManager.unlockedSkins[2];
+                break;
+
+            case 4:
+                uiManager.playerSkins[4] = uiManager.unlockedSkins[3];
+                break;
+
+            case 5:
+                uiManager.playerSkins[5] = uiManager.unlockedSkins[4];
+                break;
+
+            case 6:
+                uiManager.playerSkins[6] = uiManager.unlockedSkins[5];
+                break;
+        }
     }
 
     IEnumerator DestroyedCoroutine()
@@ -283,7 +319,6 @@ public class GameManager : MonoBehaviour {
         //Player Settings
         PlayerPrefs.SetString("isSound", uiManager.isSound.ToString());
         PlayerPrefs.SetString("isRight", uiManager.isRight.ToString());
-        PlayerPrefs.SetString("isNormal", uiManager.isSound.ToString());
         PlayerPrefs.SetInt("ActualSkin", uiManager.actualSkin);
 
         PlayerPrefs.Save();
@@ -307,11 +342,6 @@ public class GameManager : MonoBehaviour {
         else
             uiManager.isRight = false;
 
-        if (PlayerPrefs.GetString("isNormal") != "False")
-            uiManager.isNormal = true;
-        else
-            uiManager.isNormal = false;
-
         if (PlayerPrefs.HasKey("firstTime"))
         {
             if (PlayerPrefs.GetString("firstTime") != "False")
@@ -331,7 +361,6 @@ public class GameManager : MonoBehaviour {
     {
         PlayerPrefs.DeleteKey("isSound");
         PlayerPrefs.DeleteKey("isRight");
-        PlayerPrefs.DeleteKey("isNormal");
         PlayerPrefs.DeleteKey("firstTime");
         PlayerPrefs.DeleteKey("ActualSkin");
         InitGame();

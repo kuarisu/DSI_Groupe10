@@ -23,19 +23,21 @@ public class UIManager : MonoBehaviour {
     public Text playerLvl;
     public Slider playerExp;
     public Text toNextLvl;
-    public List<Sprite> playerSkinks = new List<Sprite>();
+    public List<Sprite> playerSkins = new List<Sprite>();
+    public List<Sprite> unlockedSkins = new List<Sprite>();
+    public GameObject shipName;
 
     [Header("SETTINGS")]
     public Canvas settingsCanvas;
     public GameObject On;
     public GameObject Off;
-    public GameObject Normal;
-    public GameObject High;
     public GameObject Right;
     public GameObject Left;
     public GameObject Yes;
     public GameObject No;
     public GameObject Reset;
+    public GameObject ResetConfirmation;
+    public GameObject Credits;
     public Color unselected;
 
     [Header("PLAYERUI")]
@@ -48,15 +50,14 @@ public class UIManager : MonoBehaviour {
     public Material M_ammoCount;
     public GameObject leftRight;
     public Slider slider;
-    public Gradient grd;
+    public Image cursor;
 
     [Header("SKINKS")]
     public GameObject SkinSelector;
     public GameObject Middle;
     public GameObject SkinPlus1;
-    public GameObject SkinPlus2;
     public GameObject SkinMoins1;
-    public GameObject SkinMoins2;
+    public float swipeLength;
 
     [HideInInspector]
     public bool isSound;
@@ -67,6 +68,8 @@ public class UIManager : MonoBehaviour {
     public int scoreToDraw;
     public int actualSkin;
     public bool isOnStartButton;
+    public float UIlocalScore;
+    public float direction;
 
     GameManager gm;
     bool menuIsHidden;
@@ -75,12 +78,17 @@ public class UIManager : MonoBehaviour {
     bool scoreUpdated;
     float timePassed;
     bool isSwiping;
+    Vector2 firstPressPos;
+    Vector2 secondPressPos;
+    Vector2 currentSwipe;
+    Text shipNameText;
 
-    // Use this for initialization
+    // Use all of these for initialization
     void Awake () {
 
         gm = GameManager.instance;
         highScoreText = highscore.GetComponent<Text>();
+        shipNameText = shipName.GetComponent<Text>();
 
         M_ammoCount = ammoCount.material;
         menuIsHidden = false;
@@ -105,10 +113,61 @@ public class UIManager : MonoBehaviour {
         M_ammoCount.SetFloat("_AmmoCurrent", gm.player.currentBullet);
         slider.maxValue = ((gm.levelManager.currentMaxChunk) * 46f) + 23;
         SetExperience();
-        SetSkins();
+        ChangeSkins();
+        SetShipName();
     }
 
-    // Update is called once per frame
+    public void InitSettings()
+    {
+        if (gm.firstTime == false)
+            gm.GetSave();
+        else
+        {
+            isSound = true;
+            isNormal = true;
+            isRight = true;
+            isRate = false;
+        }
+    }
+
+    public void CheckSettings()
+    {
+        //Sound On or Off?
+        if (isSound)
+        {
+            On.GetComponent<Text>().color = Color.white;
+            Off.GetComponent<Text>().color = unselected;
+        }
+        else if (!isSound)
+        {
+            On.GetComponent<Text>().color = unselected;
+            Off.GetComponent<Text>().color = Color.white;
+        }
+
+        //Is Right or Left-Handed?
+        if (isRight)
+        {
+            Right.GetComponent<Text>().color = Color.white;
+            Left.GetComponent<Text>().color = unselected;
+        }
+        else if (!isRight)
+        {
+            Right.GetComponent<Text>().color = unselected;
+            Left.GetComponent<Text>().color = Color.white;
+        }
+    }
+
+    public void SetExperience()
+    {
+        playerExp.value = gm.playerXP;
+        playerLvl.text = gm.playerLvl.ToString();
+        if (gm.playerLvl < gm.toNextLevel.Count)
+            toNextLvl.text = "" + gm.playerXP + "/" + gm.toNextLevel[gm.playerLvl];
+        else
+            toNextLvl.text = "LEVEL MAX";
+    }
+
+    //Update
     void Update()
     {
         if (gm.gamestarted == false)
@@ -136,8 +195,7 @@ public class UIManager : MonoBehaviour {
         }
     }
 
-    public float UIlocalScore;
-
+    //In game
     public void ScoreUpdate()
     {
         UIlocalScore += Time.deltaTime * gm.scorePerSecond;
@@ -154,16 +212,6 @@ public class UIManager : MonoBehaviour {
             slider.value -= (gm.levelManager.scrollSpeed + gm.levelManager.speedModifier * gm.levelManager.scrollSpeedRange / 100f) * Time.deltaTime;
     }
 
-    public void SetExperience()
-    {
-        playerExp.value = gm.playerXP;
-        playerLvl.text = gm.playerLvl.ToString();
-        if (gm.playerLvl < gm.toNextLevel.Count)
-            toNextLvl.text = "" + gm.playerXP + "/" + gm.toNextLevel[gm.playerLvl];
-        else
-            toNextLvl.text = "LEVEL MAX";
-    }
-
     public void SetSlider()
     {
         if (gm.player.isInChunkPoint == false)
@@ -177,7 +225,7 @@ public class UIManager : MonoBehaviour {
 
     public void GameStart()
     {
-        if (!SplashScreen.isFinished) return;
+        if (!SplashScreen.isFinished || gm.player.spriteRender.sprite.name.Contains("Locked")) return;
 
         //Hide menu
         start.SetActive(false);
@@ -188,9 +236,8 @@ public class UIManager : MonoBehaviour {
         playerExp.gameObject.SetActive(false);
         playerLvl.gameObject.SetActive(false);
         SkinSelector.SetActive(false);
-        DOTween.Kill("MoveToRight");
-        DOTween.Kill("MoveToLeft");
-        PlayerPrefs.SetInt("actualSkin", actualSkin);
+        shipName.SetActive(false);
+        PlayerPrefs.SetInt("ActualSkin", actualSkin);
         gm.SetSave();
 
         gm.player.GetComponent<SpriteRenderer>().enabled = true;
@@ -202,63 +249,170 @@ public class UIManager : MonoBehaviour {
         gm.LaunchGame();
     }
 
-    public void InitSettings()
-    {
-        if (gm.firstTime == false)
-            gm.GetSave();
-        else
-        {
-            isSound = true;
-            isNormal = true;
-            isRight = true;
-            isRate = false;
-        }
-    }
-
-    public void CheckSettings()
-    {
-        //Sound On or Off?
-        if (isSound)
-        {
-            On.GetComponent<Text>().color = Color.white;
-            Off.GetComponent<Text>().color = unselected;
-        }
-        else if(!isSound)
-        {
-            On.GetComponent<Text>().color = unselected;
-            Off.GetComponent<Text>().color = Color.white;
-        }
-
-        //Normal or Fantastic?
-        if (isNormal)
-        {
-            Normal.GetComponent<Text>().color = Color.white;
-            High.GetComponent<Text>().color = unselected;
-        }
-        else if (!isNormal)
-        {
-            High.GetComponent<Text>().color = unselected;
-            Normal.GetComponent<Text>().color = Color.white;
-        }
-
-        //Is Right or Left-Handed?
-        if (isRight)
-        {
-            Right.GetComponent<Text>().color = Color.white;
-            Left.GetComponent<Text>().color = unselected;
-        }
-        else if (!isRight)
-        {
-            Right.GetComponent<Text>().color = unselected;
-            Left.GetComponent<Text>().color = Color.white;
-        }
-    }
-
     public void SetHighScore()
     {
         highScoreText.text = "" + gm.highScore;
     }
 
+    //Controls
+    public void SwipeTouch()
+    {
+        if (Input.touches.Length > 0)
+        {
+            Touch t = Input.GetTouch(0);
+            if (t.phase == TouchPhase.Began)
+                firstPressPos = new Vector2(t.position.x, t.position.y);
+
+            if (t.phase == TouchPhase.Ended)
+            {
+                secondPressPos = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+                currentSwipe = new Vector2(secondPressPos.x - firstPressPos.x, secondPressPos.y - firstPressPos.y);
+                currentSwipe.Normalize();
+                if (currentSwipe.x < -swipeLength)
+                {
+                    if (actualSkin != playerSkins.Count - 1)
+                        actualSkin++;
+                    else
+                        actualSkin = 0;
+                    ChangeSkins();
+                }
+                else if (currentSwipe.x > swipeLength)
+                {
+                    if (actualSkin != 0)
+                        actualSkin--;
+                    else
+                        actualSkin = playerSkins.Count - 1;
+
+                    ChangeSkins();
+                }
+                else
+                {
+                    if (isOnStartButton)
+                        GameStart();
+                }
+                firstPressPos = Vector2.zero;
+                secondPressPos = Vector2.zero;
+            }
+        }
+    }
+
+    public void SwipeMouse()
+    {
+        if (Input.GetMouseButtonDown(0))
+            firstPressPos = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+
+        if (Input.GetMouseButtonUp(0))
+        {
+            secondPressPos = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+            currentSwipe = new Vector2(secondPressPos.x - firstPressPos.x, secondPressPos.y - firstPressPos.y);
+            currentSwipe.Normalize();
+
+            if (currentSwipe.x < -swipeLength)
+            {
+                if (actualSkin != playerSkins.Count - 1)
+                    actualSkin++;
+                else
+                    actualSkin = 0;
+
+                ChangeSkins();
+                direction = -50;
+                ShipName();
+            }
+            else if (currentSwipe.x > swipeLength)
+            {
+                if (actualSkin != 0)
+                    actualSkin--;
+                else
+                    actualSkin = playerSkins.Count - 1;
+
+                ChangeSkins();
+                direction = 50;
+                ShipName();
+            }
+            else
+            {
+                if (isOnStartButton)
+                    GameStart();
+            }
+            firstPressPos = Vector2.zero;
+            secondPressPos = Vector2.zero;
+
+        }
+    }
+
+    public void ChangeSkins()
+    {
+        Middle.GetComponent<SpriteRenderer>().sprite = playerSkins[actualSkin];
+        cursor.sprite = playerSkins[actualSkin];
+
+        if (actualSkin != playerSkins.Count - 1)
+            SkinPlus1.GetComponent<SpriteRenderer>().sprite = playerSkins[actualSkin + 1];
+        else
+            SkinPlus1.GetComponent<SpriteRenderer>().sprite = playerSkins[0];
+
+        if (actualSkin != 0)
+            SkinMoins1.GetComponent<SpriteRenderer>().sprite = playerSkins[actualSkin - 1];
+        else
+            SkinMoins1.GetComponent<SpriteRenderer>().sprite = playerSkins[playerSkins.Count - 1];
+
+        gm.player.spriteRender.sprite = playerSkins[actualSkin];
+    }
+
+    public void CheckStrtButton()
+    {
+        isOnStartButton = true;
+    }
+
+    // Visual Feedbacks
+    void TitleFeedback()
+    {
+        title.transform.DORotate(new Vector3(0, 0, -2f), 1.5f).SetEase(Ease.InOutQuad).SetLoops(-1, LoopType.Yoyo);
+    }
+
+    void StartFeedback()
+    {
+        startText.transform.DOScale(0.4f, 0.2f).SetEase(Ease.Linear).SetLoops(-1,LoopType.Yoyo);
+    }
+
+    void LeaveUp()
+    {
+        title.transform.DOMoveY(Screen.height + 150, 1f).SetEase(Ease.InBack);
+    }
+
+    void LeaveDown()
+    {
+        startText.transform.DOMoveY(0 - 150, 1f).SetEase(Ease.InBack);
+    }
+
+    void SetShipName()
+    {
+        shipNameText.text = playerSkins[actualSkin].name.ToUpper(); //Replace("_Locked"," [Locked]").Trim().ToUpper();
+        if (shipNameText.text.Contains("_LOCKED"))
+        {
+            shipNameText.text = "[LOCKED]";
+            shipNameText.color = Color.grey;
+        }
+        else
+        {
+            shipNameText.color = Color.white;
+        }
+    }
+
+    void ShipName()
+    {
+        shipName.transform.DOLocalMoveX(direction, 0.1f).OnComplete(ShipName_Next);
+        shipNameText.DOFade(0, 0.1f);
+    }
+
+    public void ShipName_Next()
+    {
+        SetShipName();
+        shipName.transform.localPosition = new Vector2(-direction, shipName.transform.localPosition.y);
+        shipName.transform.DOLocalMoveX(0, 0.1f);
+        shipNameText.DOFade(1, 0.1f);
+    }
+
+    //Button Scripts
     public void ShowAchievements()
     {
         if (!SplashScreen.isFinished) return;
@@ -298,7 +452,8 @@ public class UIManager : MonoBehaviour {
             Off.transform.DOScale(0.8f, 0.1f).SetEase(Ease.Linear).SetLoops(2, LoopType.Yoyo);
             Off.GetComponent<Text>().color = Color.white;
             AudioListener.volume = 0;
-        }else if(!isSound && isOn)
+        }
+        else if (!isSound && isOn)
         {
             isSound = true;
             On.GetComponent<Text>().color = Color.white;
@@ -306,28 +461,6 @@ public class UIManager : MonoBehaviour {
             Off.GetComponent<Text>().color = unselected;
             AudioListener.volume = 1;
         }
-    }
-
-    public void ToggleQuality(bool isGood)
-    {
-        /*
-        if (isNormal && !isGood)
-        {
-            isNormal = false;
-            Normal.GetComponent<Text>().color = unselected;
-            High.transform.DOScale(0.8f, 0.1f).SetEase(Ease.Linear).SetLoops(2, LoopType.Yoyo);
-            High.GetComponent<Text>().color = Color.white;
-            QualitySettings.SetQualityLevel(5);
-        }
-        else if (!isNormal && isGood)
-        {
-            isNormal = true;
-            Normal.GetComponent<Text>().color = Color.white;
-            Normal.transform.DOScale(0.8f, 0.1f).SetEase(Ease.Linear).SetLoops(2, LoopType.Yoyo);
-            High.GetComponent<Text>().color = unselected;
-            QualitySettings.SetQualityLevel(2);
-        }
-        */
     }
 
     public void ToggleHand(bool isRightHanded)
@@ -349,6 +482,16 @@ public class UIManager : MonoBehaviour {
 
     }
 
+    public void ToggleCredits(bool toggle)
+    {
+        Credits.SetActive(toggle);
+    }
+
+    public void ShowConfirmation()
+    {
+        ResetConfirmation.SetActive(true);
+    }
+
     public void ToggleEA()
     {
         isOnStartButton = false;
@@ -356,227 +499,25 @@ public class UIManager : MonoBehaviour {
         gm.firstTime = false;
     }
 
-    public void ResetSave()
+    public void ResetSave(bool yesno)
     {
-        gm.ResetSave();
-        gm.ResetSettings();
-        Reset.transform.DOScale(0.8f, 0.1f).SetEase(Ease.Linear).SetLoops(2, LoopType.Yoyo);
-        SceneManager.LoadScene(0);
+        if (yesno)
+        {
+            gm.ResetSave();
+            gm.ResetSettings();
+            Reset.transform.DOScale(0.8f, 0.1f).SetEase(Ease.Linear).SetLoops(2, LoopType.Yoyo);
+            SceneManager.LoadScene(0);
+        }
+        else
+        {
+            ResetConfirmation.SetActive(false);
+        }
     }
 
     public void QuitGame()
     {
         gm.SetSave();
         Application.Quit();
-    }
-
-    // Visual Feedbacks
-    void TitleFeedback()
-    {
-        title.transform.DORotate(new Vector3(0, 0, -2f), 1.5f).SetEase(Ease.InOutQuad).SetLoops(-1, LoopType.Yoyo);
-    }
-
-    void StartFeedback()
-    {
-        startText.transform.DOScale(0.4f, 0.2f).SetEase(Ease.Linear).SetLoops(-1,LoopType.Yoyo);
-    }
-
-    void LeaveUp()
-    {
-        title.transform.DOMoveY(Screen.height + 150, 1f).SetEase(Ease.InBack);
-    }
-
-    void LeaveDown()
-    {
-        startText.transform.DOMoveY(0 - 150, 1f).SetEase(Ease.InBack);
-    }
-
-    Vector2 firstPressPos;
-    Vector2 secondPressPos;
-    Vector2 currentSwipe;
-    public float swipeLength;
-
-    public void SwipeTouch()
-    {
-        if (Input.touches.Length > 0)
-        {
-            Touch t = Input.GetTouch(0);
-            if (t.phase == TouchPhase.Began)
-            {
-                //save began touch 2d point
-                firstPressPos = new Vector2(t.position.x, t.position.y);
-            }
-            if (t.phase == TouchPhase.Ended)
-            {
-                //save ended touch 2d point
-                secondPressPos = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
-
-                //create vector from the two points
-                currentSwipe = new Vector2(secondPressPos.x - firstPressPos.x, secondPressPos.y - firstPressPos.y);
-
-                //normalize the 2d vector
-                currentSwipe.Normalize();
-
-                Debug.Log(currentSwipe.x);
-
-                //swipe left
-                if (currentSwipe.x < -swipeLength)
-                {
-                    if (actualSkin != playerSkinks.Count-1)
-                        actualSkin++;
-                    else
-                        actualSkin = 0;
-
-                    Middle.GetComponent<SpriteRenderer>().sprite = playerSkinks[actualSkin];
-
-                    if (actualSkin != playerSkinks.Count - 1)
-                        SkinPlus1.GetComponent<SpriteRenderer>().sprite = playerSkinks[actualSkin + 1];
-                    else
-                        SkinPlus1.GetComponent<SpriteRenderer>().sprite = playerSkinks[0];
-
-                    if (actualSkin != 0)
-                        SkinMoins1.GetComponent<SpriteRenderer>().sprite = playerSkinks[actualSkin - 1];
-                    else
-                        SkinMoins1.GetComponent<SpriteRenderer>().sprite = playerSkinks[playerSkinks.Count - 1];
-
-                    gm.player.GetComponent<SpriteRenderer>().sprite = playerSkinks[actualSkin];
-
-                    /*gm.player.transform.DOMoveX(-0.5f, 0.5f).SetEase(Ease.InOutBack).SetLoops(2, LoopType.Yoyo);
-                    Middle.transform.DOMoveX(-0.5f, 0.5f).SetEase(Ease.InOutBack).SetLoops(2, LoopType.Yoyo);
-                    SkinPlus1.transform.DOMoveX(4f, 0.5f).SetEase(Ease.InOutBack).SetLoops(2, LoopType.Yoyo);
-                    SkinMoins1.transform.DOMoveX(-5f, 0.5f).SetEase(Ease.InOutBack).SetLoops(2, LoopType.Yoyo);*/
-                }
-                else if (currentSwipe.x > swipeLength)
-                {
-                    if (actualSkin != 0)
-                        actualSkin--;
-                    else
-                        actualSkin = playerSkinks.Count - 1;
-
-                    Middle.GetComponent<SpriteRenderer>().sprite = playerSkinks[actualSkin];
-
-                    if (actualSkin != playerSkinks.Count - 1)
-                        SkinPlus1.GetComponent<SpriteRenderer>().sprite = playerSkinks[actualSkin + 1];
-                    else
-                        SkinPlus1.GetComponent<SpriteRenderer>().sprite = playerSkinks[0];
-
-                    if (actualSkin != 0)
-                        SkinMoins1.GetComponent<SpriteRenderer>().sprite = playerSkinks[actualSkin - 1];
-                    else
-                        SkinMoins1.GetComponent<SpriteRenderer>().sprite = playerSkinks[playerSkinks.Count - 1];
-
-                    gm.player.GetComponent<SpriteRenderer>().sprite = playerSkinks[actualSkin];
-
-                    /*gm.player.transform.DOMoveX(0.5f, 0.5f).SetEase(Ease.InOutBack).SetLoops(2, LoopType.Yoyo);
-                    Middle.transform.DOMoveX(0.5f, 0.5f).SetEase(Ease.InOutBack).SetLoops(2, LoopType.Yoyo);
-                    SkinPlus1.transform.DOMoveX(5f, 0.5f).SetEase(Ease.InOutBack).SetLoops(2, LoopType.Yoyo);
-                    SkinMoins1.transform.DOMoveX(-4f, 0.5f).SetEase(Ease.InOutBack).SetLoops(2, LoopType.Yoyo);*/
-
-                }
-                else
-                {
-                    if (isOnStartButton)
-                        GameStart();
-                }
-
-                firstPressPos = Vector2.zero;
-                secondPressPos = Vector2.zero;
-            }
-        }
-    }
-
-    public void SwipeMouse()
-    {
-        if (Input.GetMouseButtonDown(0))
-        {
-            //save began touch 2d point
-            firstPressPos = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
-        }
-
-        if (Input.GetMouseButtonUp(0))
-        {
-            //save ended touch 2d point
-            secondPressPos = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
-
-            //create vector from the two points
-            currentSwipe = new Vector2(secondPressPos.x - firstPressPos.x, secondPressPos.y - firstPressPos.y);
-
-            //normalize the 2d vector
-            currentSwipe.Normalize();
-
-           // Debug.Log(currentSwipe.x);
-
-            //swipe left
-            if (currentSwipe.x < -swipeLength)
-            {
-                if (actualSkin != playerSkinks.Count - 1)
-                    actualSkin++;
-                else
-                    actualSkin = 0;
-
-                Middle.GetComponent<SpriteRenderer>().sprite = playerSkinks[actualSkin];
-
-                if(actualSkin != playerSkinks.Count - 1)
-                    SkinPlus1.GetComponent<SpriteRenderer>().sprite = playerSkinks[actualSkin+1];
-                else
-                    SkinPlus1.GetComponent<SpriteRenderer>().sprite = playerSkinks[0];
-
-                if(actualSkin != 0)
-                    SkinMoins1.GetComponent<SpriteRenderer>().sprite = playerSkinks[actualSkin - 1];
-                else
-                    SkinMoins1.GetComponent<SpriteRenderer>().sprite = playerSkinks[playerSkinks.Count - 1];
-
-                gm.player.GetComponent<SpriteRenderer>().sprite = playerSkinks[actualSkin];
-
-                /*gm.player.transform.DOMoveX(-0.5f, 0.5f).SetEase(Ease.InOutBack).SetLoops(2, LoopType.Yoyo);
-                Middle.transform.DOMoveX(-0.5f, 0.5f).SetEase(Ease.InOutBack).SetLoops(2, LoopType.Yoyo);
-                SkinPlus1.transform.DOMoveX(4f, 0.5f).SetEase(Ease.InOutBack).SetLoops(2, LoopType.Yoyo);
-                SkinMoins1.transform.DOMoveX(-5f, 0.5f).SetEase(Ease.InOutBack).SetLoops(2, LoopType.Yoyo);*/
-            }
-            else if (currentSwipe.x > swipeLength)
-            {
-                if (actualSkin != 0)
-                    actualSkin--;
-                else
-                    actualSkin = playerSkinks.Count - 1;
-
-                Middle.GetComponent<SpriteRenderer>().sprite = playerSkinks[actualSkin];
-
-                if (actualSkin != playerSkinks.Count - 1)
-                    SkinPlus1.GetComponent<SpriteRenderer>().sprite = playerSkinks[actualSkin + 1];
-                else
-                    SkinPlus1.GetComponent<SpriteRenderer>().sprite = playerSkinks[0];
-
-                if (actualSkin != 0)
-                    SkinMoins1.GetComponent<SpriteRenderer>().sprite = playerSkinks[actualSkin - 1];
-                else
-                    SkinMoins1.GetComponent<SpriteRenderer>().sprite = playerSkinks[playerSkinks.Count - 1];
-
-                gm.player.GetComponent<SpriteRenderer>().sprite = playerSkinks[actualSkin];
-
-                /*gm.player.transform.DOMoveX(0.5f, 0.5f).SetEase(Ease.InOutBack).SetLoops(2, LoopType.Yoyo);
-                Middle.transform.DOMoveX(0.5f, 0.5f).SetEase(Ease.InOutBack).SetLoops(2, LoopType.Yoyo);
-                SkinPlus1.transform.DOMoveX(5f, 0.5f).SetEase(Ease.InOutBack).SetLoops(2, LoopType.Yoyo);
-                SkinMoins1.transform.DOMoveX(-4f, 0.5f).SetEase(Ease.InOutBack).SetLoops(2, LoopType.Yoyo);*/
-            }
-            else{
-                if(isOnStartButton)
-                    GameStart();
-            }
-
-            firstPressPos = Vector2.zero;
-            secondPressPos = Vector2.zero;
-        }
-    }
-
-    public void SetSkins()
-    {
-
-    }
-
-    public void CheckStrtButton()
-    {
-        isOnStartButton = true;
     }
 
 }

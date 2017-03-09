@@ -70,6 +70,7 @@ public class PlayerController : MonoBehaviour
     public int currentBullet;
     public bool passedFirstChunkpoint;
     public bool isInChunkPoint;
+    public SpriteRenderer spriteRender;
     public Vector2 targetPosition;
     float rot_z;
     int lastSpray;
@@ -83,7 +84,7 @@ public class PlayerController : MonoBehaviour
         targetPosition = new Vector2(mainCam.transform.position.x, mainCam.transform.position.y + startOffset);
         if (mainCam.transform.position.y - targetPosition.y < minDistTop)
             targetPosition = new Vector2(targetPosition.x, mainCam.orthographicSize - minDistTop);
-
+        spriteRender = GetComponent<SpriteRenderer>();
         InitPlayer();        
     }
 
@@ -243,7 +244,7 @@ public class PlayerController : MonoBehaviour
         {
             Bullets(maxBullet - currentBullet);
             isInChunkPoint = true;
-            gm.uiManager.slider.maxValue = 35;
+            gm.uiManager.slider.maxValue = 37;
         }
     }
 
