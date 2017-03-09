@@ -250,7 +250,6 @@ public class GameManager : MonoBehaviour {
     //Use this function to choose what the player unlocks when he reaches a new level
     public void UnlockBonus(int level)
     {
-        Debug.Log("Level");
         switch (level)
         {
             case 0:
